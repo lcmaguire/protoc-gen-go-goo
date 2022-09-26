@@ -5,5 +5,5 @@ import (
 	testing "testing"
 )
 
-func TestExampleService(t *testing.T) {
+func TestDeleteExamples(t *testing.T) {
 }

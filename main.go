@@ -94,7 +94,7 @@ func generateFilesForService(gen *protogen.Plugin, service *protogen.Service) (o
 		gT.P()
 		gT.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "testing", GoName: ""})
 		gT.Import("github.com/stretchr/testify/assert")
-		testFile := fmt.Sprintf(testFileTemplate, service.GoName)
+		testFile := fmt.Sprintf(testFileTemplate, v.GoName)
 		gT.P(testFile)
 
 		outfiles = append(outfiles, gT)

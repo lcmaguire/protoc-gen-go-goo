@@ -4,7 +4,10 @@ package tutorial;
 option go_package = "out/example";
 
 service ExampleService {
-    rpc Example(SearchRequest) returns (SearchResponse);
+    rpc GetExample(SearchRequest) returns (SearchResponse);
+    rpc CreateExample(SearchRequest) returns (SearchResponse);
+    rpc ListExamples(SearchRequest) returns (SearchResponse);
+    rpc DeleteExamples(SearchRequest) returns (SearchResponse);
 }
 
 message SearchRequest {
