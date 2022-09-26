@@ -1,0 +1,17 @@
+syntax = "proto3";
+package tutorial;
+
+option go_package = "out/example";
+
+service ExampleService {
+    rpc Example(SearchRequest) returns (SearchResponse);
+}
+
+message SearchRequest {
+    string name = 1;
+    string display_name = 2;
+}
+
+message SearchResponse {
+    string name = 1;
+}
