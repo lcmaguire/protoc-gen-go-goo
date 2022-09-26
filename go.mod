@@ -1,4 +1,4 @@
-module protoc-gen-go-goo
+module github.com/lcmaguire/protoc-gen-go-goo
 
 go 1.19
 
