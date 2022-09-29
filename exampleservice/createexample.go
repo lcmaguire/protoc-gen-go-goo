@@ -2,9 +2,9 @@ package exampleservice
 
 import (
 	context "context"
-	example "github.com/lcmaguire/protoc-gen-go-goo/out/example"
+	out "github.com/lcmaguire/protoc-gen-go-goo/github.com/lcmaguire/protoc-gen-go-goo/out"
 )
 
-func (e *ExampleService) CreateExample(ctx context.Context, in *example.SearchRequest) (out *example.SearchResponse, err error) {
+func (e *ExampleService) CreateExample(ctx context.Context, in *out.SearchRequest) (out *out.SearchResponse, err error) {
 	return
 }
