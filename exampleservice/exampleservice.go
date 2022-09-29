@@ -1,7 +1,7 @@
 package exampleservice
 
 import (
-	out "example/out"
+	out "github.com/lcmaguire/protoc-gen-go-goo/example/out"
 )
 
 type ExampleService struct {
