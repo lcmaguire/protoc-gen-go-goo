@@ -1,22 +1,14 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"strings"
 
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
-var root *string //= flag.String("root", "", "")
-
 func main() {
-	var flags flag.FlagSet
-	root = flags.String("root", "", "")
-
-	protogen.Options{
-		ParamFunc: flags.Set,
-	}.Run(func(gen *protogen.Plugin) error {
+	protogen.Options{}.Run(func(gen *protogen.Plugin) error {
 		for _, f := range gen.Files {
 			if !f.Generate {
 				continue
@@ -124,24 +116,24 @@ func genTestFile(gen *protogen.Plugin, service *protogen.Service, method *protog
 }
 
 // todo move to using templates or something nicer.
-var tplate = ` type %s struct 
+const tplate = ` type %s struct 
 { 
 	%s.Unimplemented%sServer
 }
 	`
 
-var methodTemplate = `
+const methodTemplate = `
 	func (%s) %s (ctx context.Context, in *%s) (out *%s, err error){
 		return
 	}
 `
 
-var testFileTemplate = `
+const testFileTemplate = `
 func Test%s(t *testing.T){
 }
 `
 
-var methodCallerTemplate = `%s *%s`
+const methodCallerTemplate = `%s *%s`
 
 func genMethodCaller(in string) string {
 	return fmt.Sprintf(methodCallerTemplate, strings.ToLower(in[0:1]), in)
