@@ -23,7 +23,7 @@ func main() {
 			}
 
 			for _, v := range f.Services {
-				generateFilesForService(gen, v)
+				generateFilesForService(gen, v, f)
 			}
 			// try using protoreflect.
 		}
@@ -40,9 +40,11 @@ func generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *proto
 	g.P("package ", strings.ToLower(service.GoName))
 	g.P()
 
-	rootGoIndent := rootPathGoIndent(gen.FilesByPath[service.Location.SourceFile]) // may run into problems depending on how files are set up.
+	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
+	arr := strings.Split(rootGoIndent.GoImportPath.String(), "/")
+	pkg := strings.Trim(arr[len(arr)-1], `"`)
 
-	structString := fmt.Sprintf(tplate, service.Desc.Name(), rootGoIndent.GoName, service.Desc.Name())
+	structString := fmt.Sprintf(tplate, service.Desc.Name(), pkg, service.Desc.Name())
 	_ = g.QualifiedGoIdent(rootGoIndent) // this auto imports too.
 
 	// todo add in template
@@ -53,7 +55,7 @@ func generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *proto
 	return g
 }
 
-func generateFilesForService(gen *protogen.Plugin, service *protogen.Service) (outfiles []*protogen.GeneratedFile) {
+func generateFilesForService(gen *protogen.Plugin, service *protogen.Service, file *protogen.File) (outfiles []*protogen.GeneratedFile) {
 	serviceFile := generateServiceFile(gen, service)
 	outfiles = append(outfiles, serviceFile)
 
@@ -64,18 +66,31 @@ func generateFilesForService(gen *protogen.Plugin, service *protogen.Service) (o
 		g := gen.NewGeneratedFile(filename, protogen.GoImportPath(service.GoName))
 
 		methodCaller := genMethodCaller(service.GoName)                                // maybe methodName or methodReciever
-		rootGoIndent := rootPathGoIndent(gen.FilesByPath[service.Location.SourceFile]) // may run into problems depending on how files are set up.
+		rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
+
+		//file.GoPackageName
+		// pName := gen.FilesByPath[service.Location.SourceFile]
+		//imp := protogen.GoImportPath(".")
+		// ind := imp.Ident(v.Input.GoIdent.GoName)
+		// g.QualifiedGoIdent(ind)
+		//protoPackage := string(service.Desc.Name())
 
 		g.QualifiedGoIdent(rootGoIndent) // this auto imports too.
 		// todo create some func with all required pkgs imported as needed
 		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "context", GoName: ""}) // it would be nice to figure out how to have this not be aliased
 
+		inArr := strings.Split(rootGoIndent.GoImportPath.String(), "/")
+		inPKG := strings.Trim(inArr[len(inArr)-1], `"`)
+
+		outArr := strings.Split(rootGoIndent.GoImportPath.String(), "/")
+		outPKG := strings.Trim(outArr[len(outArr)-1], `"`)
+
 		rpcfunc := fmt.Sprintf(
 			methodTemplate,
 			methodCaller,
 			v.GoName,
-			rootGoIndent.GoName+"."+v.Input.GoIdent.GoName,
-			rootGoIndent.GoName+"."+v.Output.GoIdent.GoName,
+			inPKG+"."+v.Input.GoIdent.GoName,
+			outPKG+"."+v.Output.GoIdent.GoName,
 		)
 
 		g.P()
@@ -125,11 +140,4 @@ var methodCallerTemplate = `%s *%s`
 
 func genMethodCaller(in string) string {
 	return fmt.Sprintf(methodCallerTemplate, strings.ToLower(in[0:1]), in)
-}
-
-func rootPathGoIndent(f *protogen.File) protogen.GoIdent {
-	importPath := f.GoImportPath
-	pkgName := f.GoPackageName
-	path := fmt.Sprintf("%s/%s", *root, string(importPath))
-	return protogen.GoImportPath(path).Ident(string(pkgName))
 }
