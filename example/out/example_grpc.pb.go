@@ -4,7 +4,7 @@
 // - protoc             v3.21.5
 // source: example.proto
 
-package example
+package out
 
 import (
 	context "context"

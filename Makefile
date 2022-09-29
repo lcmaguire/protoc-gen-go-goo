@@ -9,7 +9,8 @@ gen-goo:
 	go install . && \
 	protoc -I=. \
 	--go-goo_out=. \
-	--go-goo_opt=root=github.com/lcmaguire/protoc-gen-go-goo \
-	--go-grpc_out=. \
-	--go_out=. \
+	--go-grpc_out=example/out \
+	--go-grpc_opt=paths=source_relative \
+	--go_out=example/out  \
+	--go_opt=paths=source_relative \
 	*.proto 

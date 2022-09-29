@@ -1,9 +1,10 @@
 package exampleservice
 
 import (
-	example "github.com/lcmaguire/protoc-gen-go-goo/out/example"
+	out "github.com/lcmaguire/protoc-gen-go-goo/example/out"
 )
 
+// ExampleService ...
 type ExampleService struct {
-	example.UnimplementedExampleServiceServer
+	out.UnimplementedExampleServiceServer
 }
