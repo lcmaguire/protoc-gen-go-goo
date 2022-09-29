@@ -100,22 +100,27 @@ func generateFilesForService(gen *protogen.Plugin, service *protogen.Service, fi
 
 		outfiles = append(outfiles, g)
 
-		filename = strings.ToLower(service.GoName + "/" + v.GoName + "_test.go")
-		// will be in format /{{goo_out_path}}/{{service.GoName}}/{{method.GoName}}.go
-		gT := gen.NewGeneratedFile(filename, protogen.GoImportPath(service.GoName))
-
-		gT.P()
-		gT.P("package ", strings.ToLower(service.GoName+"_test"))
-		gT.P()
-		gT.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "testing", GoName: ""})
-		gT.Import("github.com/stretchr/testify/assert")
-		testFile := fmt.Sprintf(testFileTemplate, v.GoName)
-		gT.P(testFile)
-
+		// wil generate test file
+		gT := genTestFile(gen, service, v)
 		outfiles = append(outfiles, gT)
 	}
 
 	return outfiles
+}
+
+func genTestFile(gen *protogen.Plugin, service *protogen.Service, method *protogen.Method) *protogen.GeneratedFile {
+	filename := strings.ToLower(service.GoName + "/" + method.GoName + "_test.go")
+	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{method.GoName}}.go
+	gT := gen.NewGeneratedFile(filename, protogen.GoImportPath(service.GoName))
+
+	gT.P()
+	gT.P("package ", strings.ToLower(service.GoName+"_test"))
+	gT.P()
+	gT.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "testing", GoName: ""})
+	gT.Import("github.com/stretchr/testify/assert")
+	testFile := fmt.Sprintf(testFileTemplate, method.GoName)
+	gT.P(testFile)
+	return gT
 }
 
 // todo move to using templates or something nicer.
