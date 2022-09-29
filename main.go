@@ -91,17 +91,31 @@ func genRpcMethod(gen *protogen.Plugin, service *protogen.Service, method *proto
 func genTestFile(gen *protogen.Plugin, service *protogen.Service, method *protogen.Method) *protogen.GeneratedFile {
 	filename := strings.ToLower(service.GoName + "/" + method.GoName + "_test.go")
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{method.GoName}}.go
-	gT := gen.NewGeneratedFile(filename, protogen.GoImportPath(service.GoName))
+	g := gen.NewGeneratedFile(filename, protogen.GoImportPath(service.GoName))
 
-	gT.P()
-	gT.P("package ", strings.ToLower(service.GoName+"_test"))
-	gT.P()
-	gT.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "testing", GoName: ""})
-	gT.Import("github.com/stretchr/testify/assert")
-	testFile := fmt.Sprintf(testFileTemplate, method.GoName)
-	gT.P(testFile)
-	return gT
+	g.P()
+	g.P("package ", strings.ToLower(service.GoName))
+	g.P()
+
+	// rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
+
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "testing", GoName: ""})
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "context", GoName: ""})
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "testing", GoName: ""})
+	// g.QualifiedGoIdent(rootGoIndent) come back to this later
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(service.GoName), GoName: ""}) // it would be nice to figure out how to have this not be aliased
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/codes", GoName: ""})        // it would be nice to figure out how to have this not be aliased
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""})       // it would be nice to figure out how to have this not be aliased
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""})       // it would be nice to figure out how to have this not be aliased
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "github.com/stretchr/testify/assert", GoName: ""})  // it would be nice to figure out how to have this not be aliased
+
+	serviceFuncName := service.GoName // for if external pkg is wanted (requires a little more effort) strings.ToLower(service.GoName) + "." + service.GoName
+	testFile := formatTestFile(method.GoName, serviceFuncName)
+	g.P(testFile)
+	return g
 }
+
+const methodCallerTemplate = `%s *%s`
 
 func genMethodCaller(in string) string {
 	return fmt.Sprintf(methodCallerTemplate, strings.ToLower(in[0:1]), in)
@@ -111,6 +125,13 @@ func getParamPKG(in string) string {
 	arr := strings.Split(in, "/")
 	return strings.Trim(arr[len(arr)-1], `"`)
 }
+
+const methodTemplate = `
+	// %s ...
+	func (%s) %s (ctx context.Context, in *%s) (out *%s, err error){
+		return nil, status.Error(codes.Unimplemented, "yet to be implemented")
+	}
+`
 
 // move to go template and use write
 func formatMethod(methodCaller string, methodName string, requestType string, responseType string) string {
@@ -124,10 +145,6 @@ func formatMethod(methodCaller string, methodName string, requestType string, re
 	)
 }
 
-func formatService(serviceName string, pkg string) string {
-	return fmt.Sprintf(serviceTemplate, serviceName, serviceName, pkg, serviceName)
-}
-
 const serviceTemplate = `
 // %s ...
 type %s struct { 
@@ -135,16 +152,21 @@ type %s struct {
 }
 	`
 
-const methodTemplate = `
-	// %s ...
-	func (%s) %s (ctx context.Context, in *%s) (out *%s, err error){
-		return nil, status.Error(codes.Unimplemented, "yet to be implemented")
-	}
-`
+func formatService(serviceName string, pkg string) string {
+	return fmt.Sprintf(serviceTemplate, serviceName, serviceName, pkg, serviceName)
+}
 
 const testFileTemplate = `
-func Test%s(t *testing.T){
-}
-`
+	func Test%s(t *testing.T){
+		t.Parallel()
+		service := &%s{}
+		res, err := service.%s(context.Background(), nil)
+		assert.Error(t, err)
+		assert.Equal(t, codes.Unimplemented, status.Code(err))
+		assert.Nil(t, res)
+	}
+	`
 
-const methodCallerTemplate = `%s *%s`
+func formatTestFile(method string, service string) string {
+	return fmt.Sprintf(testFileTemplate, method, service, method)
+}
