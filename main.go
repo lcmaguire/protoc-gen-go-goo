@@ -33,8 +33,7 @@ func generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *proto
 	g.P()
 
 	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
-	arr := strings.Split(rootGoIndent.GoImportPath.String(), "/")
-	pkg := strings.Trim(arr[len(arr)-1], `"`)
+	pkg := getParamPKG(rootGoIndent.GoImportPath.String())
 
 	structString := fmt.Sprintf(tplate, service.Desc.Name(), pkg, service.Desc.Name())
 	_ = g.QualifiedGoIdent(rootGoIndent) // this auto imports too.
@@ -60,29 +59,18 @@ func generateFilesForService(gen *protogen.Plugin, service *protogen.Service, fi
 		methodCaller := genMethodCaller(service.GoName)                                // maybe methodName or methodReciever
 		rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
 
-		//file.GoPackageName
-		// pName := gen.FilesByPath[service.Location.SourceFile]
-		//imp := protogen.GoImportPath(".")
-		// ind := imp.Ident(v.Input.GoIdent.GoName)
-		// g.QualifiedGoIdent(ind)
-		//protoPackage := string(service.Desc.Name())
-
 		g.QualifiedGoIdent(rootGoIndent) // this auto imports too.
 		// todo create some func with all required pkgs imported as needed
-		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "context", GoName: ""}) // it would be nice to figure out how to have this not be aliased
-
-		inArr := strings.Split(rootGoIndent.GoImportPath.String(), "/")
-		inPKG := strings.Trim(inArr[len(inArr)-1], `"`)
-
-		outArr := strings.Split(rootGoIndent.GoImportPath.String(), "/")
-		outPKG := strings.Trim(outArr[len(outArr)-1], `"`)
+		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "context", GoName: ""})                       // it would be nice to figure out how to have this not be aliased
+		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/codes", GoName: ""})  // it would be nice to figure out how to have this not be aliased
+		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""}) // it would be nice to figure out how to have this not be aliased
 
 		rpcfunc := fmt.Sprintf(
 			methodTemplate,
 			methodCaller,
 			v.GoName,
-			inPKG+"."+v.Input.GoIdent.GoName,
-			outPKG+"."+v.Output.GoIdent.GoName,
+			getParamPKG(v.Input.GoIdent.GoImportPath.String())+"."+v.Input.GoIdent.GoName,
+			getParamPKG(v.Output.GoIdent.GoImportPath.String())+"."+v.Output.GoIdent.GoName,
 		)
 
 		g.P()
@@ -115,6 +103,15 @@ func genTestFile(gen *protogen.Plugin, service *protogen.Service, method *protog
 	return gT
 }
 
+func genMethodCaller(in string) string {
+	return fmt.Sprintf(methodCallerTemplate, strings.ToLower(in[0:1]), in)
+}
+
+func getParamPKG(in string) string {
+	arr := strings.Split(in, "/")
+	return strings.Trim(arr[len(arr)-1], `"`)
+}
+
 // todo move to using templates or something nicer.
 const tplate = ` type %s struct 
 { 
@@ -124,7 +121,7 @@ const tplate = ` type %s struct
 
 const methodTemplate = `
 	func (%s) %s (ctx context.Context, in *%s) (out *%s, err error){
-		return
+		return nil, status.Error(codes.Unimplemented, "yet to be implemented")
 	}
 `
 
@@ -134,7 +131,3 @@ func Test%s(t *testing.T){
 `
 
 const methodCallerTemplate = `%s *%s`
-
-func genMethodCaller(in string) string {
-	return fmt.Sprintf(methodCallerTemplate, strings.ToLower(in[0:1]), in)
-}
