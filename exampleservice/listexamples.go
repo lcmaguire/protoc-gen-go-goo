@@ -7,6 +7,7 @@ import (
 	status "google.golang.org/grpc/status"
 )
 
+// ListExamples ...
 func (e *ExampleService) ListExamples(ctx context.Context, in *out.SearchRequest) (out *out.SearchResponse, err error) {
 	return nil, status.Error(codes.Unimplemented, "yet to be implemented")
 }

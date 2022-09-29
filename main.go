@@ -35,7 +35,7 @@ func generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *proto
 	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
 	pkg := getParamPKG(rootGoIndent.GoImportPath.String())
 
-	structString := fmt.Sprintf(tplate, service.Desc.Name(), pkg, service.Desc.Name())
+	structString := formatService(string(service.Desc.Name()), pkg)
 	_ = g.QualifiedGoIdent(rootGoIndent) // this auto imports too.
 
 	// todo add in template
@@ -52,32 +52,8 @@ func generateFilesForService(gen *protogen.Plugin, service *protogen.Service, fi
 
 	// will create a method for all services
 	for _, v := range service.Methods {
-		filename := strings.ToLower(service.GoName + "/" + v.GoName + ".go")
-		// will be in format /{{goo_out_path}}/{{service.GoName}}/{{method.GoName}}.go
-		g := gen.NewGeneratedFile(filename, protogen.GoImportPath(service.GoName))
 
-		methodCaller := genMethodCaller(service.GoName)                                // maybe methodName or methodReciever
-		rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
-
-		g.QualifiedGoIdent(rootGoIndent) // this auto imports too.
-		// todo create some func with all required pkgs imported as needed
-		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "context", GoName: ""})                       // it would be nice to figure out how to have this not be aliased
-		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/codes", GoName: ""})  // it would be nice to figure out how to have this not be aliased
-		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""}) // it would be nice to figure out how to have this not be aliased
-
-		rpcfunc := fmt.Sprintf(
-			methodTemplate,
-			methodCaller,
-			v.GoName,
-			getParamPKG(v.Input.GoIdent.GoImportPath.String())+"."+v.Input.GoIdent.GoName,
-			getParamPKG(v.Output.GoIdent.GoImportPath.String())+"."+v.Output.GoIdent.GoName,
-		)
-
-		g.P()
-		g.P("package ", strings.ToLower(service.GoName))
-		g.P()
-		g.P(rpcfunc)
-
+		g := genRpcMethod(gen, service, v)
 		outfiles = append(outfiles, g)
 
 		// wil generate test file
@@ -86,6 +62,30 @@ func generateFilesForService(gen *protogen.Plugin, service *protogen.Service, fi
 	}
 
 	return outfiles
+}
+
+func genRpcMethod(gen *protogen.Plugin, service *protogen.Service, method *protogen.Method) *protogen.GeneratedFile {
+	filename := strings.ToLower(service.GoName + "/" + method.GoName + ".go")
+	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{method.GoName}}.go
+	g := gen.NewGeneratedFile(filename, protogen.GoImportPath(service.GoName))
+
+	methodCaller := genMethodCaller(service.GoName)                                // maybe methodName or methodReciever
+	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
+
+	// todo create some func with all required pkgs imported as needed
+	g.QualifiedGoIdent(rootGoIndent)                                                                // this auto imports too.
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "context", GoName: ""})                       // it would be nice to figure out how to have this not be aliased
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/codes", GoName: ""})  // it would be nice to figure out how to have this not be aliased
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""}) // it would be nice to figure out how to have this not be aliased
+
+	rpcfunc := formatMethod(methodCaller, method.GoName, getParamPKG(method.Input.GoIdent.GoImportPath.String())+"."+method.Input.GoIdent.GoName, getParamPKG(method.Output.GoIdent.GoImportPath.String())+"."+method.Output.GoIdent.GoName)
+
+	g.P()
+	g.P("package ", strings.ToLower(service.GoName))
+	g.P()
+	g.P(rpcfunc)
+
+	return g
 }
 
 func genTestFile(gen *protogen.Plugin, service *protogen.Service, method *protogen.Method) *protogen.GeneratedFile {
@@ -112,14 +112,31 @@ func getParamPKG(in string) string {
 	return strings.Trim(arr[len(arr)-1], `"`)
 }
 
-// todo move to using templates or something nicer.
-const tplate = ` type %s struct 
-{ 
+// move to go template and use write
+func formatMethod(methodCaller string, methodName string, requestType string, responseType string) string {
+	return fmt.Sprintf(
+		methodTemplate,
+		methodName,
+		methodCaller,
+		methodName,
+		requestType,
+		responseType,
+	)
+}
+
+func formatService(serviceName string, pkg string) string {
+	return fmt.Sprintf(serviceTemplate, serviceName, serviceName, pkg, serviceName)
+}
+
+const serviceTemplate = `
+// %s ...
+type %s struct { 
 	%s.Unimplemented%sServer
 }
 	`
 
 const methodTemplate = `
+	// %s ...
 	func (%s) %s (ctx context.Context, in *%s) (out *%s, err error){
 		return nil, status.Error(codes.Unimplemented, "yet to be implemented")
 	}
