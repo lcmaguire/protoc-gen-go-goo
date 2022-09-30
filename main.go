@@ -1,14 +1,50 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"io/ioutil"
+	"path/filepath"
 	"strings"
 
 	"google.golang.org/protobuf/compiler/protogen"
+	"gopkg.in/yaml.v3"
 )
 
+type config struct {
+	name string `yaml:"name"` // test for now until i decide config.
+}
+
+var cfg config
+
 func main() {
-	protogen.Options{}.Run(func(gen *protogen.Plugin) error {
+	var flags flag.FlagSet
+	configPath := flags.String("config", "", "")
+
+	protogen.Options{
+		ParamFunc: flags.Set,
+	}.Run(func(gen *protogen.Plugin) error {
+
+		if configPath != nil || *configPath != "" {
+			filePath, err := filepath.Abs(*configPath)
+			if err != nil {
+				//	fmt.Println(configPath)
+				panic(err)
+			}
+
+			bytes, err := ioutil.ReadFile(filePath)
+			if err != nil {
+				//	fmt.Println(*configPath)
+				panic(err)
+			}
+			//fmt.Println(filePath)
+
+			err = yaml.Unmarshal(bytes, &cfg)
+			if err != nil {
+				panic(err)
+			}
+		}
+
 		for _, f := range gen.Files {
 			if !f.Generate {
 				continue
