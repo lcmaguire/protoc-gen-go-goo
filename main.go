@@ -211,8 +211,6 @@ func formatTestFile(method string, service string) string {
 
 // add in reflection api
 const serverTemplate = `
-package main 
-
 func main() {
     if err := run(); err != nil {
         log.Fatal(err)
@@ -249,10 +247,10 @@ func generateServer(gen *protogen.Plugin, file *protogen.File) {
 
 	fileName := strings.ToLower("cmd" + "/" + string(file.GoPackageName) + "/" + "main.go")
 	g := gen.NewGeneratedFile(fileName, protogen.GoImportPath("."))
-	//g := gen.NewGeneratedFile(fileName, file.GoImportPath)
 
-	pkgName := file.GoDescriptorIdent
-	g.QualifiedGoIdent(pkgName)
+	g.P("package main ")
+
+	// required imports
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: file.GoImportPath})
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "log"})
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "net"})
@@ -260,17 +258,16 @@ func generateServer(gen *protogen.Plugin, file *protogen.File) {
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/reflection"})
 
 	// need to be for loop , hardcoding for now
-	serviceName := services[0] //formatService(string(services[0]), pkg)
-	//implementedFileName := strings.ToLower(serviceName + "/" + serviceName + ".go") // todo format in snakecase
+	serviceName := services[0]
 
-	//protogen.GoImportPath(service.GoName)
-	// gen.FilesByPath
-	// get this to be github.com/lcmaguire/protoc-gen-go-goo/{{serviceName}}
-	g.QualifiedGoIdent(protogen.GoImportPath(strings.ToLower(serviceName)).Ident(""))
-	// gen.FilesByPath
-	//protogen.GoImportPath(service.GoName).GoIdent
-	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{service.GoName}}.go
-	// g := gen.NewGeneratedFile(fileName, protogen.GoImportPath(service.GoName))
+	// this is slightly flawed as if someone uses a repeated val in their proto path
+	//  the import could end up pretty cooked.
+	protoName := strings.Trim(*file.Proto.Name, ".proto")
+	goModPath := strings.Replace(file.GeneratedFilenamePrefix, string(file.GoPackageName), "", -1)
+	goModPath = strings.Replace(goModPath, string(protoName), "", -1)
+	goModPath = strings.Trim(goModPath, "/")
+
+	g.QualifiedGoIdent(protogen.GoImportPath(goModPath + "/" + strings.ToLower(serviceName)).Ident(""))
 
 	pkg := getParamPKG(file.GoDescriptorIdent.GoImportPath.String())
 

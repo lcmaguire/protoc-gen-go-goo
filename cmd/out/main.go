@@ -1,8 +1,8 @@
 package main
 
 import (
-	exampleservice "exampleservice"
 	out "github.com/lcmaguire/protoc-gen-go-goo/example/out"
+	exampleservice "github.com/lcmaguire/protoc-gen-go-goo/exampleservice"
 	grpc "google.golang.org/grpc"
 	reflection "google.golang.org/grpc/reflection"
 	log "log"
