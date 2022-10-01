@@ -12,6 +12,11 @@ import (
 
 type config struct {
 	Name string `yaml:"name"` // test for now until i decide config.
+	// tests
+	// files to ignore
+	// connect-go ?
+	// imports
+	// server
 }
 
 var cfg *config
@@ -45,7 +50,10 @@ func main() {
 			for _, v := range f.Services {
 				generateFilesForService(gen, v, f)
 			}
-			// try using protoreflect.
+
+			if len(f.Services) > 0 {
+				generateServer(gen, f)
+			}
 		}
 		return nil
 	})
@@ -59,7 +67,7 @@ func generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *proto
 	g.P()
 	g.P("package ", strings.ToLower(service.GoName))
 	g.P()
-	g.P("// test " + cfg.Name)
+	//g.P("// test " + cfg.Name)
 
 	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
 	pkg := getParamPKG(rootGoIndent.GoImportPath.String())
@@ -72,6 +80,7 @@ func generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *proto
 
 	g.P(structString)
 	g.P()
+	g.P("// test " + gen.Response().String())
 	return g
 }
 
@@ -198,4 +207,73 @@ const testFileTemplate = `
 
 func formatTestFile(method string, service string) string {
 	return fmt.Sprintf(testFileTemplate, method, service, method)
+}
+
+const serverTemplate = `
+package main 
+
+func main() {
+    if err := run(); err != nil {
+        log.Fatal(err)
+    }
+}
+
+func run() error {
+    listenOn := "127.0.0.1:8080"
+    listener, err := net.Listen("tcp", listenOn)
+    if err != nil {
+        return  err 
+    }
+
+    server := grpc.NewServer()
+    %s.Register%sServer(server, &%s{}) // this would need to be a list or multiple.
+    log.Println("Listening on", listenOn)
+    if err := server.Serve(listener); err != nil {
+        return err 
+    }
+
+    return nil
+}
+
+`
+
+// need pkg, services,
+func generateServer(gen *protogen.Plugin, file *protogen.File) {
+	services := []string{}
+
+	for _, v := range file.Services {
+		services = append(services, v.GoName) // service.Desc.Name()
+	}
+
+	fileName := strings.ToLower("cmd" + "/" + string(file.GoPackageName) + "/" + "main.go")
+	g := gen.NewGeneratedFile(fileName, protogen.GoImportPath("."))
+
+	pkgName := file.GoDescriptorIdent
+	g.QualifiedGoIdent(pkgName)
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "log"})
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "net"})
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc"})
+
+	// need to be for loop , hardcoding for now
+	serviceName := services[0] //formatService(string(services[0]), pkg)
+	//implementedFileName := strings.ToLower(serviceName + "/" + serviceName + ".go") // todo format in snakecase
+
+	//protogen.GoImportPath(service.GoName)
+	// gen.FilesByPath
+	// get this to be github.com/lcmaguire/protoc-gen-go-goo/{{serviceName}}
+	g.QualifiedGoIdent(protogen.GoImportPath(strings.ToLower(serviceName)).Ident(""))
+	// gen.FilesByPath
+	//protogen.GoImportPath(service.GoName).GoIdent
+	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{service.GoName}}.go
+	// g := gen.NewGeneratedFile(fileName, protogen.GoImportPath(service.GoName))
+
+	pkg := getParamPKG(file.GoDescriptorIdent.GoImportPath.String())
+
+	g.P(fmt.Sprintf(
+		serverTemplate,
+		pkg,
+		serviceName,
+		strings.ToLower(serviceName)+"."+serviceName, // this needs to be path to where server is written
+	// this would need to be a list or multiple. , will be // will be in format /{{goo_out_path}}/{{service.GoName}}/{{service.GoName}}.go
+	))
 }
