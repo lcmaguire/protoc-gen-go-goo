@@ -209,6 +209,7 @@ func formatTestFile(method string, service string) string {
 	return fmt.Sprintf(testFileTemplate, method, service, method)
 }
 
+// add in reflection api
 const serverTemplate = `
 package main 
 

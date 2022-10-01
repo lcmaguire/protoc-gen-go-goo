@@ -23,3 +23,9 @@ gen-goo-proto-too:
 	--go_out=example/out  \
 	--go_opt=paths=source_relative \
 	*.proto 
+
+grpc-curl: # should return unimplemented
+	grpcurl -plaintext localhost:8080 tutorial.ExampleService/GetExample
+
+grpc-curl-reflect:
+	grpcurl -plaintext localhost:8080 list
