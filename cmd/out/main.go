@@ -1,13 +1,12 @@
 package main
 
 import (
+	exampleservice "exampleservice"
+	out "github.com/lcmaguire/protoc-gen-go-goo/example/out"
+	grpc "google.golang.org/grpc"
+	reflection "google.golang.org/grpc/reflection"
 	log "log"
 	net "net"
-
-	out "github.com/lcmaguire/protoc-gen-go-goo/example/out"
-	exampleservice "github.com/lcmaguire/protoc-gen-go-goo/exampleservice"
-	grpc "google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 func main() {
@@ -25,7 +24,7 @@ func run() error {
 
 	server := grpc.NewServer()
 	out.RegisterExampleServiceServer(server, &exampleservice.ExampleService{}) // this would need to be a list or multiple.
-	reflection.Register(server)
+	reflection.Register(server)                                                // this should perhaps be optional
 	log.Println("Listening on", listenOn)
 	if err := server.Serve(listener); err != nil {
 		return err

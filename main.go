@@ -31,7 +31,7 @@ func main() {
 	}.Run(func(gen *protogen.Plugin) error {
 
 		// todo move to func + set up defaults
-		if value != nil {
+		if value != nil && *value != "" {
 			bytes, err := ioutil.ReadFile(*value)
 			if err != nil {
 				panic(err)
@@ -228,6 +228,7 @@ func run() error {
 
     server := grpc.NewServer()
     %s.Register%sServer(server, &%s{}) // this would need to be a list or multiple.
+	reflection.Register(server) // this should perhaps be optional
     log.Println("Listening on", listenOn)
     if err := server.Serve(listener); err != nil {
         return err 
@@ -248,12 +249,15 @@ func generateServer(gen *protogen.Plugin, file *protogen.File) {
 
 	fileName := strings.ToLower("cmd" + "/" + string(file.GoPackageName) + "/" + "main.go")
 	g := gen.NewGeneratedFile(fileName, protogen.GoImportPath("."))
+	//g := gen.NewGeneratedFile(fileName, file.GoImportPath)
 
 	pkgName := file.GoDescriptorIdent
 	g.QualifiedGoIdent(pkgName)
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: file.GoImportPath})
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "log"})
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "net"})
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc"})
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/reflection"})
 
 	// need to be for loop , hardcoding for now
 	serviceName := services[0] //formatService(string(services[0]), pkg)
