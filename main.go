@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"path/filepath"
 	"strings"
 
 	"google.golang.org/protobuf/compiler/protogen"
@@ -12,39 +11,32 @@ import (
 )
 
 type config struct {
-	name string `yaml:"name"` // test for now until i decide config.
+	Name string `yaml:"name"` // test for now until i decide config.
 }
 
-var cfg config
+var cfg *config
 
 func main() {
+	// cfg = &config{}
 	var flags flag.FlagSet
-	configPath := flags.String("config", "", "")
+	value := flags.String("param", "", "")
 
 	protogen.Options{
 		ParamFunc: flags.Set,
 	}.Run(func(gen *protogen.Plugin) error {
 
-		if configPath != nil || *configPath != "" {
-			filePath, err := filepath.Abs(*configPath)
+		// todo move to func + set up defaults
+		if value != nil {
+			bytes, err := ioutil.ReadFile(*value)
 			if err != nil {
-				//	fmt.Println(configPath)
 				panic(err)
 			}
-
-			bytes, err := ioutil.ReadFile(filePath)
-			if err != nil {
-				//	fmt.Println(*configPath)
-				panic(err)
-			}
-			//fmt.Println(filePath)
 
 			err = yaml.Unmarshal(bytes, &cfg)
 			if err != nil {
 				panic(err)
 			}
 		}
-
 		for _, f := range gen.Files {
 			if !f.Generate {
 				continue
@@ -67,6 +59,7 @@ func generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *proto
 	g.P()
 	g.P("package ", strings.ToLower(service.GoName))
 	g.P()
+	g.P("// test " + cfg.Name)
 
 	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
 	pkg := getParamPKG(rootGoIndent.GoImportPath.String())

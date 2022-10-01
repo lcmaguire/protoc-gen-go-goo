@@ -10,7 +10,7 @@ gen-goo-config:
 	go install . && \
 	protoc -I=. \
 	--go-goo_out=. \
-	--go-goo_opt=config=config.yaml \
+	--go-goo_opt=param=config.yaml \
 	*.proto 
 
 # generate grpc-go, and go-proto code + goo generated code, can also include -go-goo_opt=
