@@ -13,7 +13,7 @@ import (
 )
 
 type config struct {
-	Name string `yaml:"name"` // test for now until i decide config.
+	Server bool `yaml:"server"`
 	// tests
 	// files to ignore
 	// connect-go ?
@@ -27,6 +27,7 @@ func main() {
 	// cfg = &config{}
 	var flags flag.FlagSet
 	value := flags.String("param", "", "")
+	cfg = &config{}
 
 	protogen.Options{
 		ParamFunc: flags.Set,
@@ -53,7 +54,8 @@ func main() {
 				generateFilesForService(gen, v, f)
 			}
 
-			if len(f.Services) > 0 {
+			// todo handle cfg more elegantly
+			if len(f.Services) > 0 && cfg.Server {
 				generateServer(gen, f)
 			}
 		}
