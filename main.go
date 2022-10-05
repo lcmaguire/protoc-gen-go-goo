@@ -59,7 +59,7 @@ func main() {
 	})
 }
 
-// generateFile generates a _ascii.pb.go file containing gRPC service definitions.
+// todo gen constructor.
 func generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *protogen.GeneratedFile { // consider returning []
 	fileName := strings.ToLower(service.GoName + "/" + service.GoName + ".go") // todo format in snakecase
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{service.GoName}}.go
@@ -67,7 +67,6 @@ func generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *proto
 	g.P()
 	g.P("package ", strings.ToLower(service.GoName))
 	g.P()
-	//g.P("// test " + cfg.Name)
 
 	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
 	pkg := getParamPKG(rootGoIndent.GoImportPath.String())
@@ -80,7 +79,6 @@ func generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *proto
 
 	g.P(structString)
 	g.P()
-	g.P("// test " + gen.Response().String())
 	return g
 }
 
@@ -164,6 +162,7 @@ func getParamPKG(in string) string {
 	return strings.Trim(arr[len(arr)-1], `"`)
 }
 
+// todo replace ... with gRPC method path.
 const methodTemplate = `
 	// %s ...
 	func (%s) %s (ctx context.Context, in *%s) (out *%s, err error){
@@ -171,7 +170,7 @@ const methodTemplate = `
 	}
 `
 
-// move to go template and use write
+// move to go template and use gen.Write
 func formatMethod(methodCaller string, methodName string, requestType string, responseType string) string {
 	return fmt.Sprintf(
 		methodTemplate,
@@ -278,4 +277,8 @@ func generateServer(gen *protogen.Plugin, file *protogen.File) {
 		strings.ToLower(serviceName)+"."+serviceName, // this needs to be path to where server is written
 	// this would need to be a list or multiple. , will be // will be in format /{{goo_out_path}}/{{service.GoName}}/{{service.GoName}}.go
 	))
+}
+
+func getImportPath() string {
+	return ""
 }

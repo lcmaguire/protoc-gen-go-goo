@@ -1,4 +1,3 @@
-// github.com/lcmaguire/protoc-gen-go-goo/example
 package main
 
 import (
