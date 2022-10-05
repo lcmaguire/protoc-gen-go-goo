@@ -263,8 +263,8 @@ func generateServer(gen *protogen.Plugin, file *protogen.File) {
 	// this is slightly flawed as if someone uses a repeated val in their proto path
 	//  the import could end up pretty cooked.
 	protoName := strings.Trim(*file.Proto.Name, ".proto")
-	goModPath := strings.Replace(file.GeneratedFilenamePrefix, string(file.GoPackageName), "", -1)
-	goModPath = strings.Replace(goModPath, string(protoName), "", -1)
+	goModPath := strings.Replace(file.GeneratedFilenamePrefix, string(file.GoPackageName), "", 1)
+	goModPath = strings.Replace(goModPath, string(protoName), "", 1)
 	goModPath = strings.Trim(goModPath, "/")
 
 	g.QualifiedGoIdent(protogen.GoImportPath(goModPath + "/" + strings.ToLower(serviceName)).Ident(""))

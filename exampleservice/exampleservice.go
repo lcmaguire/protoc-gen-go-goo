@@ -1,12 +1,12 @@
 package exampleservice
 
 import (
-	out "github.com/lcmaguire/protoc-gen-go-goo/example/out"
+	example "github.com/lcmaguire/protoc-gen-go-goo/example"
 )
 
 // ExampleService ...
 type ExampleService struct {
-	out.UnimplementedExampleServiceServer
+	example.UnimplementedExampleServiceServer
 }
 
-// test file:{name:"exampleservice/exampleservice.go" content:"package exampleservice\n\nimport (\n\tout \"github.com/lcmaguire/protoc-gen-go-goo/example/out\"\n)\n\n// ExampleService ...\ntype ExampleService struct {\n\tout.UnimplementedExampleServiceServer\n}\n"}
+// test file:{name:"exampleservice/exampleservice.go" content:"package exampleservice\n\nimport (\n\texample \"github.com/lcmaguire/protoc-gen-go-goo/example\"\n)\n\n// ExampleService ...\ntype ExampleService struct {\n\texample.UnimplementedExampleServiceServer\n}\n"}

@@ -18,9 +18,9 @@ gen-goo-proto-too:
 	go install . && \
 	protoc -I=. \
 	--go-goo_out=. \
-	--go-grpc_out=example/out \
+	--go-grpc_out=example \
 	--go-grpc_opt=paths=source_relative \
-	--go_out=example/out  \
+	--go_out=example  \
 	--go_opt=paths=source_relative \
 	*.proto 
 
