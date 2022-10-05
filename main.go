@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"os"
+
+	// "io/ioutil"
 	"strings"
 
 	"google.golang.org/protobuf/compiler/protogen"
@@ -32,7 +34,7 @@ func main() {
 
 		// todo move to func + set up defaults
 		if value != nil && *value != "" {
-			bytes, err := ioutil.ReadFile(*value)
+			bytes, err := os.ReadFile(*value)
 			if err != nil {
 				panic(err)
 			}
