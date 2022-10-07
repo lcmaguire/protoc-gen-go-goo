@@ -275,7 +275,7 @@ func generateServer(gen *protogen.Plugin, file *protogen.File) {
 	for _, serviceName := range services {
 		// dir goModPath + serviceName
 		// will also need to get go-goo_out path to put inbetween
-		importPath := fmt.Sprintf("%s/%s/%s", _hardCodedPath, _hardCodedGoGooOutPath, serviceName)
+		importPath := fmt.Sprintf("%s/%s/%s", _hardCodedPath, _hardCodedGoGooOutPath, strings.ToLower(serviceName))
 		g.QualifiedGoIdent(protogen.GoIdent{GoName: "", GoImportPath: protogen.GoImportPath(importPath)})
 
 		resgisteredServices += fmt.Sprintf(

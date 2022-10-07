@@ -10,6 +10,10 @@ service ExampleService {
     rpc DeleteExamples(SearchRequest) returns (SearchResponse);
 }
 
+service ExtraExampleService {
+    rpc GetExample(SearchRequest) returns (SearchResponse);
+}
+
 message SearchRequest {
     string name = 1;
     string display_name = 2;

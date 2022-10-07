@@ -211,3 +211,89 @@ var ExampleService_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "example.proto",
 }
+
+// ExtraExampleServiceClient is the client API for ExtraExampleService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ExtraExampleServiceClient interface {
+	GetExample(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
+}
+
+type extraExampleServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewExtraExampleServiceClient(cc grpc.ClientConnInterface) ExtraExampleServiceClient {
+	return &extraExampleServiceClient{cc}
+}
+
+func (c *extraExampleServiceClient) GetExample(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error) {
+	out := new(SearchResponse)
+	err := c.cc.Invoke(ctx, "/tutorial.ExtraExampleService/GetExample", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ExtraExampleServiceServer is the server API for ExtraExampleService service.
+// All implementations must embed UnimplementedExtraExampleServiceServer
+// for forward compatibility
+type ExtraExampleServiceServer interface {
+	GetExample(context.Context, *SearchRequest) (*SearchResponse, error)
+	mustEmbedUnimplementedExtraExampleServiceServer()
+}
+
+// UnimplementedExtraExampleServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedExtraExampleServiceServer struct {
+}
+
+func (UnimplementedExtraExampleServiceServer) GetExample(context.Context, *SearchRequest) (*SearchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetExample not implemented")
+}
+func (UnimplementedExtraExampleServiceServer) mustEmbedUnimplementedExtraExampleServiceServer() {}
+
+// UnsafeExtraExampleServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ExtraExampleServiceServer will
+// result in compilation errors.
+type UnsafeExtraExampleServiceServer interface {
+	mustEmbedUnimplementedExtraExampleServiceServer()
+}
+
+func RegisterExtraExampleServiceServer(s grpc.ServiceRegistrar, srv ExtraExampleServiceServer) {
+	s.RegisterService(&ExtraExampleService_ServiceDesc, srv)
+}
+
+func _ExtraExampleService_GetExample_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExtraExampleServiceServer).GetExample(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/tutorial.ExtraExampleService/GetExample",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExtraExampleServiceServer).GetExample(ctx, req.(*SearchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// ExtraExampleService_ServiceDesc is the grpc.ServiceDesc for ExtraExampleService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var ExtraExampleService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "tutorial.ExtraExampleService",
+	HandlerType: (*ExtraExampleServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetExample",
+			Handler:    _ExtraExampleService_GetExample_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "example.proto",
+}
