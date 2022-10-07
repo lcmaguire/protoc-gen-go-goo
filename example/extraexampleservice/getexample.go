@@ -1,4 +1,4 @@
-package exampleservice
+package extraexampleservice
 
 import (
 	context "context"
@@ -7,7 +7,7 @@ import (
 	status "google.golang.org/grpc/status"
 )
 
-// CreateExample ...
-func (e *ExampleService) CreateExample(ctx context.Context, in *example.SearchRequest) (out *example.SearchResponse, err error) {
+// GetExample ...
+func (e *ExtraExampleService) GetExample(ctx context.Context, in *example.SearchRequest) (out *example.SearchResponse, err error) {
 	return nil, status.Error(codes.Unimplemented, "yet to be implemented")
 }

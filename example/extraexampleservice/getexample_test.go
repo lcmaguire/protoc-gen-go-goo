@@ -1,4 +1,4 @@
-package exampleservice
+package extraexampleservice
 
 import (
 	context "context"
@@ -8,10 +8,10 @@ import (
 	testing "testing"
 )
 
-func TestListExamples(t *testing.T) {
+func TestGetExample(t *testing.T) {
 	t.Parallel()
-	service := &ExampleService{}
-	res, err := service.ListExamples(context.Background(), nil)
+	service := &ExtraExampleService{}
+	res, err := service.GetExample(context.Background(), nil)
 	assert.Error(t, err)
 	assert.Equal(t, codes.Unimplemented, status.Code(err))
 	assert.Nil(t, res)

@@ -24,7 +24,6 @@ type config struct {
 var cfg *config
 
 func main() {
-	// cfg = &config{}
 	var flags flag.FlagSet
 	value := flags.String("param", "", "")
 	cfg = &config{}
@@ -221,22 +220,28 @@ func main() {
 }
 
 func run() error {
-    listenOn := "127.0.0.1:8080"
-    listener, err := net.Listen("tcp", listenOn)
+    listenOn := "127.0.0.1:8080" // this should be passed in via config
+    listener, err := net.Listen("tcp", listenOn) // this too
     if err != nil {
         return  err 
     }
 
     server := grpc.NewServer()
-    %s.Register%sServer(server, &%s{}) // this would need to be a list or multiple.
-	reflection.Register(server) // this should perhaps be optional
-    log.Println("Listening on", listenOn)
+	// services in your protoFile
+    %s
+	log.Println("Listening on", listenOn)
     if err := server.Serve(listener); err != nil {
         return err 
     }
 
     return nil
 }
+
+`
+
+const registerServiceTemplate = `
+%s.Register%sServer(server, &%s{})
+reflection.Register(server) // this should perhaps be optional
 
 `
 
@@ -260,29 +265,26 @@ func generateServer(gen *protogen.Plugin, file *protogen.File) {
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc"})
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/reflection"})
 
-	// need to be for loop , hardcoding for now
-	serviceName := services[0]
-
-	// this is slightly flawed as if someone uses a repeated val in their proto path
-	//  the import could end up pretty cooked.
-	protoName := strings.Trim(*file.Proto.Name, ".proto")
-	goModPath := strings.Replace(file.GeneratedFilenamePrefix, string(file.GoPackageName), "", 1)
-	goModPath = strings.Replace(goModPath, string(protoName), "", 1)
-	goModPath = strings.Trim(goModPath, "/")
-
-	g.QualifiedGoIdent(protogen.GoImportPath(goModPath + "/" + strings.ToLower(serviceName)).Ident(""))
+	// hard coding these vals for now, will have to think of a cleaner way of figuring out go mod path + out path for generated services.
+	const _hardCodedPath = "github.com/lcmaguire/protoc-gen-go-goo"
+	const _hardCodedGoGooOutPath = "example"
 
 	pkg := getParamPKG(file.GoDescriptorIdent.GoImportPath.String())
 
-	g.P(fmt.Sprintf(
-		serverTemplate,
-		pkg,
-		serviceName,
-		strings.ToLower(serviceName)+"."+serviceName, // this needs to be path to where server is written
-	// this would need to be a list or multiple. , will be // will be in format /{{goo_out_path}}/{{service.GoName}}/{{service.GoName}}.go
-	))
-}
+	resgisteredServices := ""
+	for _, serviceName := range services {
+		// dir goModPath + serviceName
+		// will also need to get go-goo_out path to put inbetween
+		importPath := fmt.Sprintf("%s/%s/%s", _hardCodedPath, _hardCodedGoGooOutPath, strings.ToLower(serviceName))
+		g.QualifiedGoIdent(protogen.GoIdent{GoName: "", GoImportPath: protogen.GoImportPath(importPath)})
 
-func getImportPath() string {
-	return ""
+		resgisteredServices += fmt.Sprintf(
+			registerServiceTemplate,
+			pkg,
+			serviceName,
+			strings.ToLower(serviceName)+"."+serviceName,
+		)
+	}
+
+	g.P(fmt.Sprintf(serverTemplate, resgisteredServices))
 }
