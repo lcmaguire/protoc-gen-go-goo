@@ -1,14 +1,50 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"os"
+
+	// "io/ioutil"
 	"strings"
 
 	"google.golang.org/protobuf/compiler/protogen"
+	"gopkg.in/yaml.v3"
 )
 
+type config struct {
+	Server bool `yaml:"server"`
+	// tests
+	// files to ignore
+	// connect-go ?
+	// imports
+	// server
+}
+
+var cfg *config
+
 func main() {
-	protogen.Options{}.Run(func(gen *protogen.Plugin) error {
+	// cfg = &config{}
+	var flags flag.FlagSet
+	value := flags.String("param", "", "")
+	cfg = &config{}
+
+	protogen.Options{
+		ParamFunc: flags.Set,
+	}.Run(func(gen *protogen.Plugin) error {
+
+		// todo move to func + set up defaults
+		if value != nil && *value != "" {
+			bytes, err := os.ReadFile(*value)
+			if err != nil {
+				panic(err)
+			}
+
+			err = yaml.Unmarshal(bytes, &cfg)
+			if err != nil {
+				panic(err)
+			}
+		}
 		for _, f := range gen.Files {
 			if !f.Generate {
 				continue
@@ -17,13 +53,17 @@ func main() {
 			for _, v := range f.Services {
 				generateFilesForService(gen, v, f)
 			}
-			// try using protoreflect.
+
+			// todo handle cfg more elegantly
+			if len(f.Services) > 0 && cfg.Server {
+				generateServer(gen, f)
+			}
 		}
 		return nil
 	})
 }
 
-// generateFile generates a _ascii.pb.go file containing gRPC service definitions.
+// todo gen constructor.
 func generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *protogen.GeneratedFile { // consider returning []
 	fileName := strings.ToLower(service.GoName + "/" + service.GoName + ".go") // todo format in snakecase
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{service.GoName}}.go
@@ -126,6 +166,7 @@ func getParamPKG(in string) string {
 	return strings.Trim(arr[len(arr)-1], `"`)
 }
 
+// todo replace ... with gRPC method path.
 const methodTemplate = `
 	// %s ...
 	func (%s) %s (ctx context.Context, in *%s) (out *%s, err error){
@@ -133,7 +174,7 @@ const methodTemplate = `
 	}
 `
 
-// move to go template and use write
+// move to go template and use gen.Write
 func formatMethod(methodCaller string, methodName string, requestType string, responseType string) string {
 	return fmt.Sprintf(
 		methodTemplate,
@@ -169,4 +210,79 @@ const testFileTemplate = `
 
 func formatTestFile(method string, service string) string {
 	return fmt.Sprintf(testFileTemplate, method, service, method)
+}
+
+// add in reflection api
+const serverTemplate = `
+func main() {
+    if err := run(); err != nil {
+        log.Fatal(err)
+    }
+}
+
+func run() error {
+    listenOn := "127.0.0.1:8080"
+    listener, err := net.Listen("tcp", listenOn)
+    if err != nil {
+        return  err 
+    }
+
+    server := grpc.NewServer()
+    %s.Register%sServer(server, &%s{}) // this would need to be a list or multiple.
+	reflection.Register(server) // this should perhaps be optional
+    log.Println("Listening on", listenOn)
+    if err := server.Serve(listener); err != nil {
+        return err 
+    }
+
+    return nil
+}
+
+`
+
+// need pkg, services,
+func generateServer(gen *protogen.Plugin, file *protogen.File) {
+	services := []string{}
+
+	for _, v := range file.Services {
+		services = append(services, v.GoName) // service.Desc.Name()
+	}
+
+	fileName := strings.ToLower("cmd" + "/" + string(file.GoPackageName) + "/" + "main.go")
+	g := gen.NewGeneratedFile(fileName, protogen.GoImportPath("."))
+
+	g.P("package main ")
+
+	// required imports
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: file.GoImportPath})
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "log"})
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "net"})
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc"})
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/reflection"})
+
+	// need to be for loop , hardcoding for now
+	serviceName := services[0]
+
+	// this is slightly flawed as if someone uses a repeated val in their proto path
+	//  the import could end up pretty cooked.
+	protoName := strings.Trim(*file.Proto.Name, ".proto")
+	goModPath := strings.Replace(file.GeneratedFilenamePrefix, string(file.GoPackageName), "", 1)
+	goModPath = strings.Replace(goModPath, string(protoName), "", 1)
+	goModPath = strings.Trim(goModPath, "/")
+
+	g.QualifiedGoIdent(protogen.GoImportPath(goModPath + "/" + strings.ToLower(serviceName)).Ident(""))
+
+	pkg := getParamPKG(file.GoDescriptorIdent.GoImportPath.String())
+
+	g.P(fmt.Sprintf(
+		serverTemplate,
+		pkg,
+		serviceName,
+		strings.ToLower(serviceName)+"."+serviceName, // this needs to be path to where server is written
+	// this would need to be a list or multiple. , will be // will be in format /{{goo_out_path}}/{{service.GoName}}/{{service.GoName}}.go
+	))
+}
+
+func getImportPath() string {
+	return ""
 }
