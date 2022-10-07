@@ -1,7 +1,7 @@
 # generate only goo generated code, can also include --go-goo_opt=
 gen-goo:
 	go install . && \
-	protoc -I=. \
+	protoc -I=example \
 	--go-goo_out=. \
 	*.proto 
 
@@ -27,5 +27,5 @@ gen-goo-proto-too:
 grpc-curl: # should return unimplemented
 	grpcurl -plaintext localhost:8080 tutorial.ExampleService/GetExample
 
-grpc-curl-reflect:
+grpc-curl-reflect: # should return endpoints
 	grpcurl -plaintext localhost:8080 list
