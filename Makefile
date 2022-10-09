@@ -32,7 +32,7 @@ grpc-curl-reflect: # should return endpoints
 
 grpc-curl-connect:
 	grpcurl \
-    -protoset <(buf build -o -) -plaintext \
+    -import-path ./example -proto example.proto -plaintext \
     -d '{}' \
     localhost:8080 tutorial.ExampleService/GetExample
 
@@ -53,7 +53,5 @@ grpc-protoc-gen-connect-go:
 	--connect-go_opt=paths=source_relative  \
 	example/*.proto 
 
-
 make buf:
 	go install . && buf generate
-
