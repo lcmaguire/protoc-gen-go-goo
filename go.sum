@@ -1,3 +1,7 @@
+github.com/bufbuild/connect-go v1.0.0 h1:htSflKUT8y1jxhoPhPYTZMrsY3ipUXjjrbcZR5O2cVo=
+github.com/bufbuild/connect-go v1.0.0/go.mod h1:9iNvh/NOsfhNBUH5CtvXeVUskQO1xsrEviH7ZArwZ3I=
+github.com/bufbuild/connect-grpcreflect-go v1.0.0 h1:zWsLFYqrT1O2sNJFYfTXI5WxbAyiY2dvevvnJHPtV5A=
+github.com/bufbuild/connect-grpcreflect-go v1.0.0/go.mod h1:825I20H8bfE9rLnBH/046JSpmm3uwpNYdG4duCARetc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
