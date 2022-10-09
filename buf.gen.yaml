@@ -4,9 +4,9 @@ version: v1
 #  go_package_prefix:
 #    default: github.com/lcmaguire/protoc-gen-go-goo
 plugins:
-#  - name: go
-#    out: exampleconnect
-#    opt: paths=source_relative
+  - name: go
+    out: exampleconnect
+    opt: paths=source_relative
   - name: connect-go
     out: exampleconnect
     opt: paths=source_relative

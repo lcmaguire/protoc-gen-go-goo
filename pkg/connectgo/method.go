@@ -21,6 +21,8 @@ func genRpcMethod(gen *protogen.Plugin, service *protogen.Service, method *proto
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/codes", GoName: ""})
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""})
 
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "github.com/bufbuild/connect-go", GoName: ""})
+
 	rpcfunc := formatMethod(methodCaller, method.GoName, getParamPKG(method.Input.GoIdent.GoImportPath.String())+"."+method.Input.GoIdent.GoName, getParamPKG(method.Output.GoIdent.GoImportPath.String())+"."+method.Output.GoIdent.GoName)
 
 	g.P()
@@ -64,9 +66,9 @@ func genMethodCaller(in string) string {
 // todo replace ... with gRPC method path.
 const methodTemplate = `
 
-func (%s) %s(ctx context.Context, req *connect.Request[%s]) (*connect.Response[%s], error) {
-	res := connect.NewResponse(&pingv1.PingResponse{})
-	return res, nil
+func (%s) %s(ctx context.Context, req *connect_go.Request[%s]) (*connect_go.Response[%s], error) {
+	res := connect_go.NewResponse(&%s{})
+	return res, status.Error(codes.Unimplemented, "yet to be implemented")
 }
 
 `
@@ -75,9 +77,10 @@ func (%s) %s(ctx context.Context, req *connect.Request[%s]) (*connect.Response[%
 func formatMethod(methodCaller string, methodName string, requestType string, responseType string) string {
 	return fmt.Sprintf(
 		methodTemplate,
-		methodName,
 		methodCaller,
+		methodName,
 		requestType,
+		responseType,
 		responseType,
 	)
 }

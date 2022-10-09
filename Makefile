@@ -41,3 +41,7 @@ grpc-protoc-gen-connect-go:
 	--connect-go_out=exampleconnect \
 	--connect-go_opt=paths=source_relative  \
 	example/*.proto 
+
+
+make buf:
+	go install . && buf generate
