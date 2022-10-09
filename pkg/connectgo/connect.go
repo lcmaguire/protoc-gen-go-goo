@@ -9,10 +9,10 @@ package connectgo
 // import connectgo
 
 import (
-	"strings"
-
 	"google.golang.org/protobuf/compiler/protogen"
 )
+
+// sampled from https://connect.build/docs/go/getting-started
 
 const connectGoServerTemplate = `
 
@@ -66,25 +66,20 @@ func GenConnectRPCMethod() *protogen.GeneratedFile {
 }
 
 func GenerateFilesForService(gen *protogen.Plugin, service *protogen.Service, file *protogen.File) *protogen.GeneratedFile {
-	fileName := strings.ToLower(service.GoName + "/" + service.GoName + ".go") // todo format in snakecase
-	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{service.GoName}}.go
-	g := gen.NewGeneratedFile(fileName, protogen.GoImportPath(service.GoName))
-	g.P()
-	g.P("package ", strings.ToLower(service.GoName))
-	g.P()
+	// need to abstract stuff away, will do later
+	generateServiceFile(gen, service)
 
-	//rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
-	//pkg := getParamPKG(rootGoIndent.GoImportPath.String())
+	for _, v := range service.Methods {
 
-	//structString := formatService(string(service.Desc.Name()), pkg)
-	//_ = g.QualifiedGoIdent(rootGoIndent) // this auto imports too.
+		genRpcMethod(gen, service, v)
+		//outfiles = append(outfiles, g)
 
-	// todo add in template
-	//t := template.Must(template.New("letter").Parse(tplate))
+		// wil generate test file
+		//genTestFile(gen, service, v)
+		//outfiles = append(outfiles, gT)
+	}
 
-	//g.P(structString)
-	g.P()
-	return g
+	return nil
 }
 
 func ConnectGen(gen *protogen.Plugin) {

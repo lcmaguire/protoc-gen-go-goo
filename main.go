@@ -161,10 +161,12 @@ func genTestFile(gen *protogen.Plugin, service *protogen.Service, method *protog
 
 const methodCallerTemplate = `%s *%s`
 
+// // move to helper
 func genMethodCaller(in string) string {
 	return fmt.Sprintf(methodCallerTemplate, strings.ToLower(in[0:1]), in)
 }
 
+// move to helper
 func getParamPKG(in string) string {
 	arr := strings.Split(in, "/")
 	return strings.Trim(arr[len(arr)-1], `"`)
