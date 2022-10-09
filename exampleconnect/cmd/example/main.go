@@ -1,6 +1,7 @@
 package main
 
 import (
+	exampleconnect "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/example/exampleconnect"
 	exampleservice "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/exampleservice"
 	extraexampleservice "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/extraexampleservice"
 	http2 "golang.org/x/net/http2"
@@ -16,9 +17,9 @@ func main() {
 	// The generated constructors return a path and a plain net/http
 	// handler.
 
-	mux.Handle(example.NewExampleServiceHandler(&exampleservice.ExampleService{}))
+	mux.Handle(exampleconnect.NewExampleServiceHandler(&exampleservice.ExampleService{}))
 
-	mux.Handle(example.NewExtraExampleServiceHandler(&extraexampleservice.ExtraExampleService{}))
+	mux.Handle(exampleconnect.NewExtraExampleServiceHandler(&extraexampleservice.ExtraExampleService{}))
 
 	err := http.ListenAndServe(
 		"localhost:8080",

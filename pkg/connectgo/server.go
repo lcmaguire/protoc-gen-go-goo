@@ -53,8 +53,11 @@ func GenConnectServer(gen *protogen.Plugin, file *protogen.File) *protogen.Gener
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "golang.org/x/net/http2/h2c"})
 
 	// hard coding these vals for now, will have to think of a cleaner way of figuring out go mod path + out path for generated services.
-	const _hardCodedPath = "github.com/lcmaguire/protoc-gen-go-goo"
-	const _hardCodedGoGooOutPath = "exampleconnect"
+	const _hardCodedPath = "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect" // + {{goName}} + gonameconnect
+
+	goPKGname := strings.ToLower(string(file.GoPackageName))
+	connectGenImportPath := fmt.Sprintf("%s/%s/%s", _hardCodedPath, goPKGname, goPKGname+"connect")
+	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
 
 	pkg := getParamPKG(file.GoDescriptorIdent.GoImportPath.String())
 
@@ -62,7 +65,8 @@ func GenConnectServer(gen *protogen.Plugin, file *protogen.File) *protogen.Gener
 	for _, serviceName := range services {
 		// dir goModPath + serviceName
 		// will also need to get go-goo_out path to put inbetween
-		importPath := fmt.Sprintf("%s/%s/%s", _hardCodedPath, _hardCodedGoGooOutPath, strings.ToLower(serviceName))
+
+		importPath := fmt.Sprintf("%s/%s", _hardCodedPath, strings.ToLower(serviceName))
 		g.QualifiedGoIdent(protogen.GoIdent{GoName: "", GoImportPath: protogen.GoImportPath(importPath)})
 
 		resgisteredServices += fmt.Sprintf(
@@ -82,5 +86,5 @@ func GenConnectServer(gen *protogen.Plugin, file *protogen.File) *protogen.Gener
 
 const serviceHandleTemplate = `
 
-mux.Handle(%s.New%sHandler(&%s{}))
+mux.Handle(%sconnect.New%sHandler(&%s{}))
 `
