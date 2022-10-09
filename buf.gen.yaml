@@ -1,15 +1,15 @@
 version: v1
-managed:
-  enabled: true
-  go_package_prefix:
-    default: github.com/lcmaguire/protoc-gen-go-goo
+#managed:
+#  enabled: true
+#  go_package_prefix:
+#    default: github.com/lcmaguire/protoc-gen-go-goo
 plugins:
-  - name: go
-    out: exampleconnect
-    opt: paths=source_relative
+#  - name: go
+#    out: exampleconnect
+#    opt: paths=source_relative
   - name: connect-go
     out: exampleconnect
     opt: paths=source_relative
   - name: go-goo
     out: exampleconnect
-    opt: param=config.yaml
+    opt: param=./config.yaml
