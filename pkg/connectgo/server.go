@@ -39,14 +39,6 @@ func GenConnectServer(gen *protogen.Plugin, file *protogen.File) *protogen.Gener
 
 	g.P("package main ")
 
-	// get connect, go import path
-
-	// required imports
-	//g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: file.GoImportPath})
-	g.P("// " + protogen.GoIdent{GoImportPath: file.GoImportPath}.String())
-	// example "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/example/exampleconnect" is what we want
-	// example "github.com/lcmaguire/protoc-gen-go-goo/example" is what we get
-
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "log"})
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "net/http"})
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "golang.org/x/net/http2"})

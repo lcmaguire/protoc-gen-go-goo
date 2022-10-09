@@ -1,16 +1,15 @@
 package main
 
 import (
+	log "log"
+	http "net/http"
+
 	exampleconnect "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/example/exampleconnect"
 	exampleservice "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/exampleservice"
 	extraexampleservice "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/extraexampleservice"
 	http2 "golang.org/x/net/http2"
 	h2c "golang.org/x/net/http2/h2c"
-	log "log"
-	http "net/http"
 )
-
-// "\"github.com/lcmaguire/protoc-gen-go-goo/example\"".
 
 func main() {
 	mux := http.NewServeMux()

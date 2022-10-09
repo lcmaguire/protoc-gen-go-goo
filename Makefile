@@ -30,6 +30,17 @@ grpc-curl: # should return unimplemented
 grpc-curl-reflect: # should return endpoints
 	grpcurl -plaintext localhost:8080 list
 
+grpc-curl-connect:
+	grpcurl \
+    -protoset <(buf build -o -) -plaintext \
+    -d '{}' \
+    localhost:8080 tutorial.ExampleService/GetExample
+
+curl-connect:
+	curl \
+    --header "Content-Type: application/json" \
+    --data '{}' \
+    http://localhost:8080/tutorial.ExampleService/GetExample
 
 grpc-protoc-gen-connect-go:
 	go install . && \
@@ -45,3 +56,4 @@ grpc-protoc-gen-connect-go:
 
 make buf:
 	go install . && buf generate
+
