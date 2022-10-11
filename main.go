@@ -5,15 +5,18 @@ import (
 	"fmt"
 	"os"
 
-	// "io/ioutil"
 	"strings"
 
 	"google.golang.org/protobuf/compiler/protogen"
 	"gopkg.in/yaml.v3"
+
+	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
 )
 
 type config struct {
-	Server bool `yaml:"server"`
+	Server    bool   `yaml:"server"`
+	ConnectGo bool   `yaml:"connectGo"`
+	GoModPath string `yaml:"goModPath"`
 	// tests
 	// files to ignore
 	// connect-go ?
@@ -22,16 +25,17 @@ type config struct {
 }
 
 var cfg *config
+var GoModPath = ""
 
 func main() {
 	var flags flag.FlagSet
 	value := flags.String("param", "", "")
+	//out := flags.String("out", "", "")
 	cfg = &config{}
 
 	protogen.Options{
 		ParamFunc: flags.Set,
 	}.Run(func(gen *protogen.Plugin) error {
-
 		// todo move to func + set up defaults
 		if value != nil && *value != "" {
 			bytes, err := os.ReadFile(*value)
@@ -43,7 +47,16 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+
+			GoModPath = cfg.GoModPath
 		}
+		// this is gross and i hate it but it will do for now.
+		if cfg.ConnectGo {
+			// call func
+			connectgo.ConnectGen(gen)
+			return nil
+		}
+
 		for _, f := range gen.Files {
 			if !f.Generate {
 				continue
@@ -136,30 +149,28 @@ func genTestFile(gen *protogen.Plugin, service *protogen.Service, method *protog
 	g.P("package ", strings.ToLower(service.GoName))
 	g.P()
 
-	// rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
-
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "testing", GoName: ""})
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "context", GoName: ""})
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "testing", GoName: ""})
-	// g.QualifiedGoIdent(rootGoIndent) come back to this later
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(service.GoName), GoName: ""}) // it would be nice to figure out how to have this not be aliased
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/codes", GoName: ""})        // it would be nice to figure out how to have this not be aliased
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""})       // it would be nice to figure out how to have this not be aliased
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""})       // it would be nice to figure out how to have this not be aliased
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "github.com/stretchr/testify/assert", GoName: ""})  // it would be nice to figure out how to have this not be aliased
 
-	serviceFuncName := service.GoName // for if external pkg is wanted (requires a little more effort) strings.ToLower(service.GoName) + "." + service.GoName
-	testFile := formatTestFile(method.GoName, serviceFuncName)
+	testFile := formatTestFile(method.GoName, service.GoName)
 	g.P(testFile)
 	return g
 }
 
 const methodCallerTemplate = `%s *%s`
 
+// // move to helper
 func genMethodCaller(in string) string {
 	return fmt.Sprintf(methodCallerTemplate, strings.ToLower(in[0:1]), in)
 }
 
+// move to helper
 func getParamPKG(in string) string {
 	arr := strings.Split(in, "/")
 	return strings.Trim(arr[len(arr)-1], `"`)

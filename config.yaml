@@ -1,1 +1,3 @@
 server: True
+connectGo: True
+goModPath: github.com/lcmaguire/protoc-gen-go-goo
