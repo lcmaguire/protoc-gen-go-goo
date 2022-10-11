@@ -1,8 +1,4 @@
 version: v1
-#managed:
-#  enabled: true
-#  go_package_prefix:
-#    default: github.com/lcmaguire/protoc-gen-go-goo
 plugins:
   - name: go
     out: exampleconnect

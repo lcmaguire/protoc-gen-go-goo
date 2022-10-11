@@ -48,7 +48,7 @@ func GenConnectServer(gen *protogen.Plugin, file *protogen.File) *protogen.Gener
 	const _hardCodedPath = "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect" // + {{goName}} + gonameconnect
 
 	goPKGname := strings.ToLower(string(file.GoPackageName))
-	connectGenImportPath := fmt.Sprintf("%s/%s/%s", _hardCodedPath, goPKGname, goPKGname+"connect")
+	connectGenImportPath := fmt.Sprintf("%s/%s", _hardCodedPath, goPKGname+"connect")
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
 
 	pkg := getParamPKG(file.GoDescriptorIdent.GoImportPath.String())

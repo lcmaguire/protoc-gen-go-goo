@@ -14,8 +14,9 @@ import (
 )
 
 type config struct {
-	Server    bool `yaml:"server"`
-	ConnectGo bool `yaml:"connectGo"`
+	Server    bool   `yaml:"server"`
+	ConnectGo bool   `yaml:"connectGo"`
+	GoModPath string `yaml:"goModPath"`
 	// tests
 	// files to ignore
 	// connect-go ?
@@ -24,16 +25,17 @@ type config struct {
 }
 
 var cfg *config
+var GoModPath = ""
 
 func main() {
 	var flags flag.FlagSet
 	value := flags.String("param", "", "")
+	//out := flags.String("out", "", "")
 	cfg = &config{}
 
 	protogen.Options{
 		ParamFunc: flags.Set,
 	}.Run(func(gen *protogen.Plugin) error {
-
 		// todo move to func + set up defaults
 		if value != nil && *value != "" {
 			bytes, err := os.ReadFile(*value)
@@ -45,6 +47,8 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+
+			GoModPath = cfg.GoModPath
 		}
 		// this is gross and i hate it but it will do for now.
 		if cfg.ConnectGo {

@@ -14,7 +14,6 @@ func generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *proto
 	g.P()
 	g.P("package ", strings.ToLower(service.GoName))
 	g.P()
-	g.P("// TSUUUU")
 
 	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
 	arr := strings.Split(rootGoIndent.GoImportPath.String(), "/")
