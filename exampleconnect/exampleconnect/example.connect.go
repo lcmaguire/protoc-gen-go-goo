@@ -9,6 +9,7 @@ import (
 	errors "errors"
 	connect_go "github.com/bufbuild/connect-go"
 	example "github.com/lcmaguire/protoc-gen-go-goo/example"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
 	strings "strings"
 )
@@ -156,6 +157,7 @@ func (UnimplementedExampleServiceHandler) DeleteExamples(context.Context, *conne
 // ExtraExampleServiceClient is a client for the tutorial.ExtraExampleService service.
 type ExtraExampleServiceClient interface {
 	GetExample(context.Context, *connect_go.Request[example.SearchRequest]) (*connect_go.Response[example.SearchResponse], error)
+	DeleteExamples(context.Context, *connect_go.Request[example.SearchRequest]) (*connect_go.Response[emptypb.Empty], error)
 }
 
 // NewExtraExampleServiceClient constructs a client for the tutorial.ExtraExampleService service. By
@@ -173,12 +175,18 @@ func NewExtraExampleServiceClient(httpClient connect_go.HTTPClient, baseURL stri
 			baseURL+"/tutorial.ExtraExampleService/GetExample",
 			opts...,
 		),
+		deleteExamples: connect_go.NewClient[example.SearchRequest, emptypb.Empty](
+			httpClient,
+			baseURL+"/tutorial.ExtraExampleService/DeleteExamples",
+			opts...,
+		),
 	}
 }
 
 // extraExampleServiceClient implements ExtraExampleServiceClient.
 type extraExampleServiceClient struct {
-	getExample *connect_go.Client[example.SearchRequest, example.SearchResponse]
+	getExample     *connect_go.Client[example.SearchRequest, example.SearchResponse]
+	deleteExamples *connect_go.Client[example.SearchRequest, emptypb.Empty]
 }
 
 // GetExample calls tutorial.ExtraExampleService.GetExample.
@@ -186,9 +194,15 @@ func (c *extraExampleServiceClient) GetExample(ctx context.Context, req *connect
 	return c.getExample.CallUnary(ctx, req)
 }
 
+// DeleteExamples calls tutorial.ExtraExampleService.DeleteExamples.
+func (c *extraExampleServiceClient) DeleteExamples(ctx context.Context, req *connect_go.Request[example.SearchRequest]) (*connect_go.Response[emptypb.Empty], error) {
+	return c.deleteExamples.CallUnary(ctx, req)
+}
+
 // ExtraExampleServiceHandler is an implementation of the tutorial.ExtraExampleService service.
 type ExtraExampleServiceHandler interface {
 	GetExample(context.Context, *connect_go.Request[example.SearchRequest]) (*connect_go.Response[example.SearchResponse], error)
+	DeleteExamples(context.Context, *connect_go.Request[example.SearchRequest]) (*connect_go.Response[emptypb.Empty], error)
 }
 
 // NewExtraExampleServiceHandler builds an HTTP handler from the service implementation. It returns
@@ -203,6 +217,11 @@ func NewExtraExampleServiceHandler(svc ExtraExampleServiceHandler, opts ...conne
 		svc.GetExample,
 		opts...,
 	))
+	mux.Handle("/tutorial.ExtraExampleService/DeleteExamples", connect_go.NewUnaryHandler(
+		"/tutorial.ExtraExampleService/DeleteExamples",
+		svc.DeleteExamples,
+		opts...,
+	))
 	return "/tutorial.ExtraExampleService/", mux
 }
 
@@ -211,4 +230,8 @@ type UnimplementedExtraExampleServiceHandler struct{}
 
 func (UnimplementedExtraExampleServiceHandler) GetExample(context.Context, *connect_go.Request[example.SearchRequest]) (*connect_go.Response[example.SearchResponse], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.ExtraExampleService.GetExample is not implemented"))
+}
+
+func (UnimplementedExtraExampleServiceHandler) DeleteExamples(context.Context, *connect_go.Request[example.SearchRequest]) (*connect_go.Response[emptypb.Empty], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.ExtraExampleService.DeleteExamples is not implemented"))
 }
