@@ -3,7 +3,7 @@ gen-goo:
 	go install . && \
 	protoc -I=example \
 	--go-goo_out=. \
-	*.proto 
+	example/*.proto 
 
 # generate only goo generated code, can also include -go-goo_opt=
 gen-goo-config:

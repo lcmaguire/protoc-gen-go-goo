@@ -3,14 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 
 	"strings"
 
 	"google.golang.org/protobuf/compiler/protogen"
-	"gopkg.in/yaml.v3"
 
-	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
+	"github.com/lcmaguire/protoc-gen-go-goo/pkg/generator"
 )
 
 type config struct {
@@ -29,49 +27,22 @@ var GoModPath = ""
 
 func main() {
 	var flags flag.FlagSet
-	value := flags.String("param", "", "")
+	//value := flags.String("param", "", "")
 	//out := flags.String("out", "", "")
 	cfg = &config{}
 
 	protogen.Options{
 		ParamFunc: flags.Set,
 	}.Run(func(gen *protogen.Plugin) error {
-		// todo move to func + set up defaults
-		if value != nil && *value != "" {
-			bytes, err := os.ReadFile(*value)
-			if err != nil {
-				panic(err)
-			}
-
-			err = yaml.Unmarshal(bytes, &cfg)
-			if err != nil {
-				panic(err)
-			}
-
-			GoModPath = cfg.GoModPath
+		// todo have this passed in from config
+		g := generator.Generator{
+			ConnectGo: false,
+			Server:    false,
+			GoModPath: "",
+			Tests:     true,
 		}
-		// this is gross and i hate it but it will do for now.
-		if cfg.ConnectGo {
-			// call func
-			connectgo.ConnectGen(gen)
-			return nil
-		}
-
-		for _, f := range gen.Files {
-			if !f.Generate {
-				continue
-			}
-
-			for _, v := range f.Services {
-				generateFilesForService(gen, v, f)
-			}
-
-			// todo handle cfg more elegantly
-			if len(f.Services) > 0 && cfg.Server {
-				generateServer(gen, f)
-			}
-		}
-		return nil
+		// todo have this be used in the Run func
+		return g.Run(gen)
 	})
 }
 

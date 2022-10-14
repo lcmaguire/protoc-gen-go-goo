@@ -27,7 +27,7 @@ type Generator struct {
 	Tests     bool
 }
 
-func (g *Generator) Run(gen *protogen.Plugin) {
+func (g *Generator) Run(gen *protogen.Plugin) error {
 	for _, f := range gen.Files {
 		if !f.Generate {
 			continue
@@ -41,6 +41,7 @@ func (g *Generator) Run(gen *protogen.Plugin) {
 			g.generateServer(gen, f)
 		}
 	}
+	return nil
 }
 
 // todo gen constructor.
@@ -103,6 +104,9 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, service *protogen.Service
 	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "context", GoName: ""})                       // it would be nice to figure out how to have this not be aliased
 	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/codes", GoName: ""})  // it would be nice to figure out how to have this not be aliased
 	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""}) // it would be nice to figure out how to have this not be aliased
+
+	f.QualifiedGoIdent(method.Input.GoIdent)
+	f.QualifiedGoIdent(method.Output.GoIdent)
 
 	rpcfunc := formatMethod(methodCaller, method.GoName, getParamPKG(method.Input.GoIdent.GoImportPath.String())+"."+method.Input.GoIdent.GoName, getParamPKG(method.Output.GoIdent.GoImportPath.String())+"."+method.Output.GoIdent.GoName)
 
