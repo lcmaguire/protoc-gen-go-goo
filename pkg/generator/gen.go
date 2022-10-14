@@ -34,101 +34,107 @@ func (g *Generator) Run(gen *protogen.Plugin) {
 		}
 
 		for _, v := range f.Services {
-			generateFilesForService(gen, v, f)
+			g.generateFilesForService(gen, v, f)
 		}
 
 		if g.Server {
-			generateServer(gen, f)
+			g.generateServer(gen, f)
 		}
 	}
 }
 
 // todo gen constructor.
-func generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *protogen.GeneratedFile { // consider returning []
+func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *protogen.GeneratedFile { // consider returning []
 	fileName := strings.ToLower(service.GoName + "/" + service.GoName + ".go") // todo format in snakecase
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{service.GoName}}.go
-	g := gen.NewGeneratedFile(fileName, protogen.GoImportPath(service.GoName))
-	g.P()
-	g.P("package ", strings.ToLower(service.GoName))
-	g.P()
+	f := gen.NewGeneratedFile(fileName, protogen.GoImportPath(service.GoName))
+	f.P()
+	f.P("package ", strings.ToLower(service.GoName))
+	f.P()
 
 	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
 	pkg := getParamPKG(rootGoIndent.GoImportPath.String())
 
 	structString := formatService(string(service.Desc.Name()), pkg)
-	_ = g.QualifiedGoIdent(rootGoIndent) // this auto imports too.
+	_ = f.QualifiedGoIdent(rootGoIndent) // this auto imports too.
 
 	// todo add in template
 	//t := template.Must(template.New("letter").Parse(tplate))
 
-	g.P(structString)
-	g.P()
-	return g
+	f.P(structString)
+	f.P()
+	return f
 }
 
-func generateFilesForService(gen *protogen.Plugin, service *protogen.Service, file *protogen.File) (outfiles []*protogen.GeneratedFile) {
-	serviceFile := generateServiceFile(gen, service)
+func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *protogen.Service, file *protogen.File) (outfiles []*protogen.GeneratedFile) {
+	serviceFile := g.generateServiceFile(gen, service)
 	outfiles = append(outfiles, serviceFile)
 
 	// will create a method for all services
 	for _, v := range service.Methods {
 
-		g := genRpcMethod(gen, service, v)
-		outfiles = append(outfiles, g)
+		f := g.genRpcMethod(gen, service, v)
+		outfiles = append(outfiles, f)
 
-		// wil generate test file
-		gT := genTestFile(gen, service, v)
-		outfiles = append(outfiles, gT)
+	}
+
+	if g.Tests {
+		// i wonder if time complexity is important for proto plugins.
+		// and diff between looping twice vs looping once with an if statement is, ill use my brain later and figure it out
+		for _, v := range service.Methods {
+			f := g.genTestFile(gen, service, v)
+			outfiles = append(outfiles, f)
+		}
 	}
 
 	return outfiles
 }
 
-func genRpcMethod(gen *protogen.Plugin, service *protogen.Service, method *protogen.Method) *protogen.GeneratedFile {
+func (g *Generator) genRpcMethod(gen *protogen.Plugin, service *protogen.Service, method *protogen.Method) *protogen.GeneratedFile {
 	filename := strings.ToLower(service.GoName + "/" + method.GoName + ".go")
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{method.GoName}}.go
-	g := gen.NewGeneratedFile(filename, protogen.GoImportPath(service.GoName))
+	f := gen.NewGeneratedFile(filename, protogen.GoImportPath(service.GoName))
 
 	methodCaller := genMethodCaller(service.GoName)                                // maybe methodName or methodReciever
 	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
 
 	// todo create some func with all required pkgs imported as needed
-	g.QualifiedGoIdent(rootGoIndent)                                                                // this auto imports too.
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "context", GoName: ""})                       // it would be nice to figure out how to have this not be aliased
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/codes", GoName: ""})  // it would be nice to figure out how to have this not be aliased
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""}) // it would be nice to figure out how to have this not be aliased
+	f.QualifiedGoIdent(rootGoIndent)                                                                // this auto imports too.
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "context", GoName: ""})                       // it would be nice to figure out how to have this not be aliased
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/codes", GoName: ""})  // it would be nice to figure out how to have this not be aliased
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""}) // it would be nice to figure out how to have this not be aliased
 
 	rpcfunc := formatMethod(methodCaller, method.GoName, getParamPKG(method.Input.GoIdent.GoImportPath.String())+"."+method.Input.GoIdent.GoName, getParamPKG(method.Output.GoIdent.GoImportPath.String())+"."+method.Output.GoIdent.GoName)
 
-	g.P()
-	g.P("package ", strings.ToLower(service.GoName))
-	g.P()
-	g.P(rpcfunc)
+	f.P()
+	f.P("package ", strings.ToLower(service.GoName))
+	f.P()
+	f.P(rpcfunc)
 
-	return g
+	return f
 }
 
-func genTestFile(gen *protogen.Plugin, service *protogen.Service, method *protogen.Method) *protogen.GeneratedFile {
+func (g *Generator) genTestFile(gen *protogen.Plugin, service *protogen.Service, method *protogen.Method) *protogen.GeneratedFile {
 	filename := strings.ToLower(service.GoName + "/" + method.GoName + "_test.go")
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{method.GoName}}.go
-	g := gen.NewGeneratedFile(filename, protogen.GoImportPath(service.GoName))
+	f := gen.NewGeneratedFile(filename, protogen.GoImportPath(service.GoName))
 
-	g.P()
-	g.P("package ", strings.ToLower(service.GoName))
-	g.P()
+	f.P()
+	f.P("package ", strings.ToLower(service.GoName))
+	f.P()
 
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "testing", GoName: ""})
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "context", GoName: ""})
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "testing", GoName: ""})
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(service.GoName), GoName: ""}) // it would be nice to figure out how to have this not be aliased
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/codes", GoName: ""})        // it would be nice to figure out how to have this not be aliased
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""})       // it would be nice to figure out how to have this not be aliased
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""})       // it would be nice to figure out how to have this not be aliased
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "github.com/stretchr/testify/assert", GoName: ""})  // it would be nice to figure out how to have this not be aliased
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "testing", GoName: ""})
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "context", GoName: ""})
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "testing", GoName: ""})
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(service.GoName), GoName: ""}) // it would be nice to figure out how to have this not be aliased
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/codes", GoName: ""})        // it would be nice to figure out how to have this not be aliased
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""})       // it would be nice to figure out how to have this not be aliased
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""})       // it would be nice to figure out how to have this not be aliased
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "github.com/stretchr/testify/assert", GoName: ""})  // it would be nice to figure out how to have this not be aliased
 
 	testFile := formatTestFile(method.GoName, service.GoName)
-	g.P(testFile)
-	return g
+	f.P(testFile)
+	return f
 }
 
 const methodCallerTemplate = `%s *%s`
@@ -225,7 +231,7 @@ reflection.Register(server) // this should perhaps be optional
 `
 
 // need pkg, services,
-func generateServer(gen *protogen.Plugin, file *protogen.File) {
+func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File) {
 	services := []string{}
 
 	for _, v := range file.Services {
@@ -233,16 +239,16 @@ func generateServer(gen *protogen.Plugin, file *protogen.File) {
 	}
 
 	fileName := strings.ToLower("cmd" + "/" + string(file.GoPackageName) + "/" + "main.go")
-	g := gen.NewGeneratedFile(fileName, protogen.GoImportPath("."))
+	f := gen.NewGeneratedFile(fileName, protogen.GoImportPath("."))
 
-	g.P("package main ")
+	f.P("package main ")
 
 	// required imports
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: file.GoImportPath})
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "log"})
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "net"})
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc"})
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/reflection"})
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: file.GoImportPath})
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "log"})
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "net"})
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc"})
+	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/reflection"})
 
 	// hard coding these vals for now, will have to think of a cleaner way of figuring out go mod path + out path for generated services.
 	const _hardCodedPath = "github.com/lcmaguire/protoc-gen-go-goo"
@@ -255,7 +261,7 @@ func generateServer(gen *protogen.Plugin, file *protogen.File) {
 		// dir goModPath + serviceName
 		// will also need to get go-goo_out path to put inbetween
 		importPath := fmt.Sprintf("%s/%s/%s", _hardCodedPath, _hardCodedGoGooOutPath, strings.ToLower(serviceName))
-		g.QualifiedGoIdent(protogen.GoIdent{GoName: "", GoImportPath: protogen.GoImportPath(importPath)})
+		f.QualifiedGoIdent(protogen.GoIdent{GoName: "", GoImportPath: protogen.GoImportPath(importPath)})
 
 		resgisteredServices += fmt.Sprintf(
 			registerServiceTemplate,
@@ -265,5 +271,5 @@ func generateServer(gen *protogen.Plugin, file *protogen.File) {
 		)
 	}
 
-	g.P(fmt.Sprintf(serverTemplate, resgisteredServices))
+	f.P(fmt.Sprintf(serverTemplate, resgisteredServices))
 }
