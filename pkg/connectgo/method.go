@@ -23,6 +23,9 @@ func genRpcMethod(gen *protogen.Plugin, service *protogen.Service, method *proto
 
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "github.com/bufbuild/connect-go", GoName: ""})
 
+	g.QualifiedGoIdent(method.Input.GoIdent)
+	g.QualifiedGoIdent(method.Output.GoIdent)
+
 	rpcfunc := formatMethod(methodCaller, method.GoName, getParamPKG(method.Input.GoIdent.GoImportPath.String())+"."+method.Input.GoIdent.GoName, getParamPKG(method.Output.GoIdent.GoImportPath.String())+"."+method.Output.GoIdent.GoName)
 
 	g.P()

@@ -1,7 +1,11 @@
 syntax = "proto3";
 package tutorial;
 
+import "google/protobuf/empty.proto";
+
 option go_package = "github.com/lcmaguire/protoc-gen-go-goo/example";
+
+// todo make aip approved
 
 service ExampleService {
     rpc GetExample(SearchRequest) returns (SearchResponse);
@@ -12,6 +16,7 @@ service ExampleService {
 
 service ExtraExampleService {
     rpc GetExample(SearchRequest) returns (SearchResponse);
+    rpc DeleteExamples(SearchRequest) returns (google.protobuf.Empty);
 }
 
 message SearchRequest {
