@@ -21,7 +21,7 @@ import (
 
 // Generator holds all info for generating boiler plate code.
 type Generator struct {
-	ConnectGo bool
+	ConnectGo bool // either used as bool to decide template, or an interface for different generation. For now bool (maybe load templates based upon this)
 	Server    bool
 	GoModPath string
 	Tests     bool
@@ -88,6 +88,7 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 		}
 	}
 
+	// todo test if we can just not do this. eg return nil / empty
 	return outfiles
 }
 
