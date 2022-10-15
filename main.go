@@ -8,35 +8,20 @@ import (
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/generator"
 )
 
-type config struct {
-	Server    bool   `yaml:"server"`
-	ConnectGo bool   `yaml:"connectGo"`
-	GoModPath string `yaml:"goModPath"`
-	// tests
-	// files to ignore
-	// connect-go ?
-	// imports
-	// server
-}
-
-var cfg *config
-var GoModPath = ""
-
 func main() {
 	var flags flag.FlagSet
-	//value := flags.String("param", "", "")
-	//out := flags.String("out", "", "")
-	cfg = &config{}
+	connectGo := flags.Bool("connectGo", false, "to generate code for a connect go service, by default it will assume grpc-go")
+	tests := flags.Bool("tests", true, "to generate tests for your service")
+	server := flags.Bool("server", false, "will generate a basic server that implements your services.")
 
 	protogen.Options{
 		ParamFunc: flags.Set,
 	}.Run(func(gen *protogen.Plugin) error {
-		// todo have this passed in from config
-		g := generator.Generator{
-			ConnectGo: false,
-			Server:    true,
+		g := &generator.Generator{
+			ConnectGo: *connectGo,
+			Server:    *tests,
 			GoModPath: "",
-			Tests:     true,
+			Tests:     *server,
 		}
 		// todo have this be used in the Run func
 		return g.Run(gen)

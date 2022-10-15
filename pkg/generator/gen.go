@@ -27,15 +27,6 @@ type Generator struct {
 	Tests     bool
 }
 
-/*
-type moreUseFullStruct struct {
-	imports []string // all imports required
-	templates []string // templates to use
-	connectGo bool // a way to decide to gen connectGo code or not
-}
-
-*/
-
 func (g *Generator) Run(gen *protogen.Plugin) error {
 	for _, f := range gen.Files {
 		if !f.Generate {

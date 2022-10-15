@@ -23,11 +23,6 @@ func formatService(serviceName string, pkg string) string {
 	return fmt.Sprintf(templates.ServiceTemplate, serviceName, serviceName, pkg, serviceName)
 }
 
-func formatTestFile(method string, service string) string {
-	return fmt.Sprintf(templates.TestFileTemplate, method, service, method)
-}
-
-// // move to helper
 func genMethodCaller(in string) string {
 	return fmt.Sprintf(templates.MethodCallerTemplate, strings.ToLower(in[0:1]), in)
 }
