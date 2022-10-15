@@ -25,7 +25,7 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File) {
 	// hardcoding for now
 	const _hardCodedPath = "github.com/lcmaguire/protoc-gen-go-goo/example" // if connect + connect
 
-	imports := _serviceImports
+	imports := append(_serviceImports, protogen.GoImportPath(file.GoImportPath))
 	if g.ConnectGo {
 		// get different imports
 		imports = connectgo.ServiceImports
@@ -35,7 +35,7 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File) {
 
 	}
 
-	imports = append(imports, protogen.GoImportPath(file.GoImportPath))
+	// imports = append(imports, protogen.GoImportPath(file.GoImportPath))
 	for _, v := range imports {
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v}) // service imports should probably be GoIdent
 	}
@@ -47,6 +47,9 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File) {
 	for _, serviceName := range services {
 		// dir goModPath + serviceName
 		importPath := fmt.Sprintf("%s/%s", _hardCodedPath, strings.ToLower(serviceName))
+		if g.ConnectGo {
+			importPath = fmt.Sprintf("%s/%s", _hardCodedPath+"connect", strings.ToLower(serviceName))
+		}
 		f.QualifiedGoIdent(protogen.GoIdent{GoName: "", GoImportPath: protogen.GoImportPath(importPath)})
 
 		// will probably need to be an interface or variable funcs
