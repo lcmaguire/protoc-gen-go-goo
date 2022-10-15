@@ -45,10 +45,11 @@ const TestFileTemplate = `
 	func Test%s(t *testing.T){
 		t.Parallel()
 		service := &%s{}
-		res, err := service.%s(context.Background(), nil)
+		req := &%s{}
+		res, err := service.%s(context.Background(), req)
 		assert.Error(t, err)
 		assert.Equal(t, codes.Unimplemented, status.Code(err))
-		assert.Nil(t, res)
+		proto.Equal(res, &%s{})
 	}
 	`
 

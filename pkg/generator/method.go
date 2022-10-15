@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
+	"github.com/lcmaguire/protoc-gen-go-goo/pkg/templates"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
@@ -58,13 +59,21 @@ func (g *Generator) genTestFile(gen *protogen.Plugin, service *protogen.Service,
 	f.P("package ", strings.ToLower(service.GoName))
 	f.P()
 
-	imports := _testImports
-	testFile := formatTestFile(method.GoName, service.GoName)
 	f.QualifiedGoIdent(method.Input.GoIdent)
 	f.QualifiedGoIdent(method.Output.GoIdent)
 
 	request := getParamPKG(method.Input.GoIdent.GoImportPath.String()) + "." + method.Input.GoIdent.GoName
 	response := getParamPKG(method.Output.GoIdent.GoImportPath.String()) + "." + method.Output.GoIdent.GoName
+
+	imports := _testImports
+	testFile := fmt.Sprintf(
+		templates.TestFileTemplate,
+		method.GoName,
+		service.GoName,
+		request,
+		method.GoName,
+		response,
+	)
 	if g.ConnectGo {
 		imports = connectgo.TestImports
 		testFile = fmt.Sprintf(

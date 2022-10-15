@@ -36,7 +36,7 @@ func main() {
 			ConnectGo: true,
 			Server:    true,
 			GoModPath: "",
-			Tests:     false,
+			Tests:     true,
 		}
 		// todo have this be used in the Run func
 		return g.Run(gen)
