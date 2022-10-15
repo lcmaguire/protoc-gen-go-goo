@@ -1,4 +1,4 @@
-package exampleservice
+package extraexampleservice
 
 import (
 	context "context"
@@ -8,17 +8,18 @@ import (
 	assert "github.com/stretchr/testify/assert"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	testing "testing"
 )
 
-func TestCreateExample(t *testing.T) {
+func TestDeleteExamples(t *testing.T) {
 	t.Parallel()
-	service := &ExampleService{}
+	service := &ExtraExampleService{}
 	req := &connect_go.Request[example.SearchRequest]{
 		Msg: &example.SearchRequest{},
 	}
-	res, err := service.CreateExample(context.Background(), req)
+	res, err := service.DeleteExamples(context.Background(), req)
 	assert.Error(t, err)
 	assert.Equal(t, codes.Unimplemented, status.Code(err))
-	proto.Equal(res.Msg, &example.SearchResponse{})
+	proto.Equal(res.Msg, &emptypb.Empty{})
 }
