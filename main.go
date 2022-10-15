@@ -33,7 +33,7 @@ func main() {
 	}.Run(func(gen *protogen.Plugin) error {
 		// todo have this passed in from config
 		g := generator.Generator{
-			ConnectGo: true,
+			ConnectGo: false,
 			Server:    true,
 			GoModPath: "",
 			Tests:     true,
