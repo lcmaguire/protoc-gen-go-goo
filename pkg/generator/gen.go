@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/templates"
 	"google.golang.org/protobuf/compiler/protogen"
 )
@@ -21,12 +22,22 @@ import (
 */
 
 // Generator holds all info for generating boiler plate code.
+// consider this being purely cfg and creating another more useful struct
 type Generator struct {
 	ConnectGo bool // either used as bool to decide template, or an interface for different generation. For now bool (maybe load templates based upon this)
 	Server    bool
 	GoModPath string
 	Tests     bool
 }
+
+/*
+type moreUseFullStruct struct {
+	imports []string // all imports required
+	templates []string // templates to use
+	connectGo bool // a way to decide to gen connectGo code or not
+}
+
+*/
 
 func (g *Generator) Run(gen *protogen.Plugin) error {
 	for _, f := range gen.Files {
@@ -155,25 +166,31 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File) {
 	f := gen.NewGeneratedFile(fileName, protogen.GoImportPath("."))
 
 	f.P("package main ")
+	// hardcoding for now
+	const _hardCodedPath = "github.com/lcmaguire/protoc-gen-go-goo/example" // if connect + connect
 
-	// required imports
-	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: file.GoImportPath})
-	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "log"})
-	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "net"})
-	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc"})
-	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/reflection"})
+	imports := _serviceImports
+	if g.ConnectGo {
+		// get different imports
+		imports = connectgo.ServiceImports
 
-	// hard coding these vals for now, will have to think of a cleaner way of figuring out go mod path + out path for generated services.
-	const _hardCodedPath = "github.com/lcmaguire/protoc-gen-go-goo"
-	const _hardCodedGoGooOutPath = "example"
+		goPKGname := strings.ToLower(string(file.GoPackageName))
+		connectGenImportPath := fmt.Sprintf("%s/%s", _hardCodedPath, goPKGname+"connect")
+		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
+
+	}
+
+	imports = append(imports, protogen.GoImportPath(file.GoImportPath))
+	for _, v := range imports {
+		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v}) // service imports should probably be GoIdent
+	}
 
 	pkg := getParamPKG(file.GoDescriptorIdent.GoImportPath.String())
 
 	resgisteredServices := ""
 	for _, serviceName := range services {
 		// dir goModPath + serviceName
-		// will also need to get go-goo_out path to put inbetween
-		importPath := fmt.Sprintf("%s/%s/%s", _hardCodedPath, _hardCodedGoGooOutPath, strings.ToLower(serviceName))
+		importPath := fmt.Sprintf("%s/%s", _hardCodedPath, strings.ToLower(serviceName))
 		f.QualifiedGoIdent(protogen.GoIdent{GoName: "", GoImportPath: protogen.GoImportPath(importPath)})
 
 		resgisteredServices += fmt.Sprintf(
