@@ -30,7 +30,7 @@ mux.Handle(%sconnect.New%sHandler(&%s{}))
 
 // can probably pass in  req  *connect_go.Request[%s] , *connect_go.Response[%s]
 
-const methodTemplate = `
+const MethodTemplate = `
 
 func (%s) %s(ctx context.Context, req *connect_go.Request[%s]) (*connect_go.Response[%s], error) {
 	res := connect_go.NewResponse(&%s{})
