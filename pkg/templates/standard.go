@@ -40,3 +40,23 @@ const RegisterServiceTemplate = `
 reflection.Register(server) // this should perhaps be optional
 
 `
+
+const TestFileTemplate = `
+	func Test%s(t *testing.T){
+		t.Parallel()
+		service := &%s{}
+		res, err := service.%s(context.Background(), nil)
+		assert.Error(t, err)
+		assert.Equal(t, codes.Unimplemented, status.Code(err))
+		assert.Nil(t, res)
+	}
+	`
+
+const MethodTemplate = `
+	// %s ...
+	func (%s) %s (ctx context.Context, in *%s) (out *%s, err error){
+		return nil, status.Error(codes.Unimplemented, "yet to be implemented")
+	}
+`
+
+const MethodCallerTemplate = `%s *%s`

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/lcmaguire/protoc-gen-go-goo/pkg/templates"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
@@ -142,99 +143,6 @@ func (g *Generator) genTestFile(gen *protogen.Plugin, service *protogen.Service,
 	return f
 }
 
-const methodCallerTemplate = `%s *%s`
-
-// // move to helper
-func genMethodCaller(in string) string {
-	return fmt.Sprintf(methodCallerTemplate, strings.ToLower(in[0:1]), in)
-}
-
-// move to helper
-func getParamPKG(in string) string {
-	arr := strings.Split(in, "/")
-	return strings.Trim(arr[len(arr)-1], `"`)
-}
-
-// todo replace ... with gRPC method path.
-const methodTemplate = `
-	// %s ...
-	func (%s) %s (ctx context.Context, in *%s) (out *%s, err error){
-		return nil, status.Error(codes.Unimplemented, "yet to be implemented")
-	}
-`
-
-// move to go template and use gen.Write
-func formatMethod(methodCaller string, methodName string, requestType string, responseType string) string {
-	return fmt.Sprintf(
-		methodTemplate,
-		methodName,
-		methodCaller,
-		methodName,
-		requestType,
-		responseType,
-	)
-}
-
-const serviceTemplate = `
-// %s ...
-type %s struct { 
-	%s.Unimplemented%sServer
-}
-	`
-
-func formatService(serviceName string, pkg string) string {
-	return fmt.Sprintf(serviceTemplate, serviceName, serviceName, pkg, serviceName)
-}
-
-const testFileTemplate = `
-	func Test%s(t *testing.T){
-		t.Parallel()
-		service := &%s{}
-		res, err := service.%s(context.Background(), nil)
-		assert.Error(t, err)
-		assert.Equal(t, codes.Unimplemented, status.Code(err))
-		assert.Nil(t, res)
-	}
-	`
-
-func formatTestFile(method string, service string) string {
-	return fmt.Sprintf(testFileTemplate, method, service, method)
-}
-
-// add in reflection api
-const serverTemplate = `
-func main() {
-    if err := run(); err != nil {
-        log.Fatal(err)
-    }
-}
-
-func run() error {
-    listenOn := "127.0.0.1:8080" // this should be passed in via config
-    listener, err := net.Listen("tcp", listenOn) // this too
-    if err != nil {
-        return  err 
-    }
-
-    server := grpc.NewServer()
-	// services in your protoFile
-    %s
-	log.Println("Listening on", listenOn)
-    if err := server.Serve(listener); err != nil {
-        return err 
-    }
-
-    return nil
-}
-
-`
-
-const registerServiceTemplate = `
-%s.Register%sServer(server, &%s{})
-reflection.Register(server) // this should perhaps be optional
-
-`
-
 // need pkg, services,
 func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File) {
 	services := []string{}
@@ -269,12 +177,12 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File) {
 		f.QualifiedGoIdent(protogen.GoIdent{GoName: "", GoImportPath: protogen.GoImportPath(importPath)})
 
 		resgisteredServices += fmt.Sprintf(
-			registerServiceTemplate,
+			templates.RegisterServiceTemplate,
 			pkg,
 			serviceName,
 			strings.ToLower(serviceName)+"."+serviceName,
 		)
 	}
 
-	f.P(fmt.Sprintf(serverTemplate, resgisteredServices))
+	f.P(fmt.Sprintf(templates.ServerTemplate, resgisteredServices))
 }
