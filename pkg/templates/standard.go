@@ -1,6 +1,6 @@
 package templates
 
-const serviceTemplate = `
+const ServiceTemplate = `
 // %s ...
 type %s struct { 
 	%s.Unimplemented%sServer
@@ -8,7 +8,7 @@ type %s struct {
 	`
 
 // add in reflection api
-const serverTemplate = `
+const ServerTemplate = `
 func main() {
     if err := run(); err != nil {
         log.Fatal(err)
@@ -35,7 +35,7 @@ func run() error {
 
 `
 
-const registerServiceTemplate = `
+const RegisterServiceTemplate = `
 %s.Register%sServer(server, &%s{})
 reflection.Register(server) // this should perhaps be optional
 
