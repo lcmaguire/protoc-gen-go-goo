@@ -8,4 +8,4 @@ plugins:
     opt: paths=source_relative
   - name: go-goo
     out: exampleconnect
-    opt: param=./config.yaml
+    opt: tests=true,server=true,connectGo=true

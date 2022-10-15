@@ -85,8 +85,15 @@ func TestCreateExample(t *testing.T) {
 
 ```
 
+## Params / Config
+
+| Name | Type |   Use   | Default |
+| ---- | --- |  --  | ------- |
+|  tests  | bool |   to determine if you want test files + tests generated for your generated RPC methods   | true |
+|  server | bool     |  if true will generate a basic server that will run your rpc services  | true |
+|  connectGo  | bool |   will use [connect-go](https://pkg.go.dev/github.com/bufbuild/connect-go) over normal grpc-go   | false |
+
+
 ## gRPC Server implmentation
 
-coming shortly
-
-todo: add in config usage
+todo

@@ -10,10 +10,6 @@ import (
 	net "net"
 )
 
-// github.com/lcmaguire/protoc-gen-go-goo/example/example
-// aqui
-// example
-
 func main() {
 	if err := run(); err != nil {
 		log.Fatal(err)
