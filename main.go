@@ -20,10 +20,10 @@ func main() {
 		g := &generator.Generator{
 			ConnectGo: *connectGo,
 			Server:    *tests,
-			GoModPath: "",
+			GoModPath: "", // todo implement this so server gen doesn't need to be hardcoded.
 			Tests:     *server,
 		}
-		// todo have this be used in the Run func
+		// todo have this be used in place of the Run func (if possible)
 		return g.Run(gen)
 	})
 }

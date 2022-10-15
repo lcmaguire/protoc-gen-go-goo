@@ -3,6 +3,7 @@ gen-goo:
 	go install . && \
 	protoc -I=example \
 	--go-goo_out=example \
+	--go-goo_opt=tests=true,server=true,connectGo=false \
 	example/*.proto 
 
 
@@ -11,6 +12,7 @@ grpc-go-goo:
 	go install . && \
 	protoc -I=example \
 	--go-goo_out=example \
+	--go-goo_opt=tests=true,server=true,connectGo=false \
 	--go-grpc_out=example \
 	--go-grpc_opt=paths=source_relative \
 	--go_out=example  \
@@ -22,6 +24,7 @@ connect-go-goo:
 	go install . && \
 	protoc -I=example \
 	--go-goo_out=exampleconnect \
+	--go-goo_opt=tests=true,server=true,connectGo=true \
 	--go_out=exampleconnect  \
 	--go_opt=paths=source_relative \
 	--connect-go_out=exampleconnect \
