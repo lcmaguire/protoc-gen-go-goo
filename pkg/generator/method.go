@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
-	connectgotemplates "github.com/lcmaguire/protoc-gen-go-goo/pkg/templates/connecttemplates"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
@@ -34,7 +33,7 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, service *protogen.Service
 	response := getParamPKG(method.Output.GoIdent.GoImportPath.String()) + "." + method.Output.GoIdent.GoName
 	rpcfunc := formatMethod(methodCaller, method.GoName, request, response)
 	if g.ConnectGo {
-		rpcfunc = fmt.Sprintf(connectgotemplates.MethodTemplate,
+		rpcfunc = fmt.Sprintf(connectgo.MethodTemplate,
 			methodCaller,
 			method.GoName,
 			request,

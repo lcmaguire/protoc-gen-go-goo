@@ -6,7 +6,6 @@ import (
 
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/templates"
-	connectgotemplates "github.com/lcmaguire/protoc-gen-go-goo/pkg/templates/connecttemplates"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
@@ -55,7 +54,7 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File) {
 		// will probably need to be an interface or variable funcs
 		if g.ConnectGo {
 			resgisteredServices += fmt.Sprintf(
-				connectgotemplates.ServiceHandleTemplate,
+				connectgo.ServiceHandleTemplate,
 				pkg,
 				serviceName,
 				strings.ToLower(serviceName)+"."+serviceName,
@@ -71,7 +70,7 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File) {
 	}
 
 	if g.ConnectGo {
-		f.P(fmt.Sprintf(connectgotemplates.ConnectGoServerTemplate, resgisteredServices))
+		f.P(fmt.Sprintf(connectgo.ConnectGoServerTemplate, resgisteredServices))
 		return
 	}
 	f.P(fmt.Sprintf(templates.ServerTemplate, resgisteredServices))

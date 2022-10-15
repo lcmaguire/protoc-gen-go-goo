@@ -1,46 +1,63 @@
 package connectgo
 
-// service appears to be the same
+// Server stuff looks v different
+// sampled from https://connect.build/docs/go/getting-started
 
-// rpc methods recieve/return connect.Request, connect.NewResponse
+const ConnectGoServerTemplate = `
 
-// server is much simpler
+func main() {
+	mux := http.NewServeMux()
+	// The generated constructors return a path and a plain net/http
+	// handler.
+	%s
+	err := http.ListenAndServe(
+	  "localhost:8080",
+	  // For gRPC clients, it's convenient to support HTTP/2 without TLS. You can
+	  // avoid x/net/http2 by using http.ListenAndServeTLS.
+	  h2c.NewHandler(mux, &http2.Server{}),
+	)
+	log.Fatalf("listen failed: " + err.Error())
+  }
+  
+`
 
-// import connectgo
+const ServiceHandleTemplate = `
 
-import (
-	"google.golang.org/protobuf/compiler/protogen"
-)
+mux.Handle(%sconnect.New%sHandler(&%s{}))
+`
 
-func GenerateFilesForService(gen *protogen.Plugin, service *protogen.Service, file *protogen.File) *protogen.GeneratedFile {
-	// need to abstract stuff away, will do later
-	generateServiceFile(gen, service)
+// METHOD
 
-	for _, v := range service.Methods {
+// can probably pass in  req  *connect_go.Request[%s] , *connect_go.Response[%s]
 
-		genRpcMethod(gen, service, v)
-		//outfiles = append(outfiles, g)
+const MethodTemplate = `
 
-		// wil generate test file
-		//genTestFile(gen, service, v)
-		//outfiles = append(outfiles, gT)
-	}
-
-	return nil
+func (%s) %s(ctx context.Context, req *connect_go.Request[%s]) (*connect_go.Response[%s], error) {
+	res := connect_go.NewResponse(&%s{})
+	return res, status.Error(codes.Unimplemented, "yet to be implemented")
 }
 
-func ConnectGen(gen *protogen.Plugin) {
-	//
-	for _, f := range gen.Files {
-		if !f.Generate {
-			continue
-		}
+`
 
-		for _, v := range f.Services {
-			GenerateFilesForService(gen, v, f)
-		}
-
-		GenConnectServer(gen, f)
+// todo make this work
+const TestFileTemplate = `
+	func Test%s(t *testing.T){
+		t.Parallel()
+		service := &%s{}
+		res, err := service.%s(context.Background(), nil)
+		assert.Error(t, err)
+		assert.Equal(t, codes.Unimplemented, status.Code(err))
+		assert.Nil(t, res)
 	}
+	`
 
+// looks the same, can probably use default
+const serviceTemplate = `
+// %s ...
+type %s struct { 
+	%s.Unimplemented%sServer
 }
+	`
+
+// can probably use defualt.
+const methodCallerTemplate = `%s *%s`
