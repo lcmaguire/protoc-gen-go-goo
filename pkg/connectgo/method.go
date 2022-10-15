@@ -20,7 +20,6 @@ func genRpcMethod(gen *protogen.Plugin, service *protogen.Service, method *proto
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "context", GoName: ""})
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/codes", GoName: ""})
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "google.golang.org/grpc/status", GoName: ""})
-
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "github.com/bufbuild/connect-go", GoName: ""})
 
 	g.QualifiedGoIdent(method.Input.GoIdent)

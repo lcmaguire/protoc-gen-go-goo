@@ -1,9 +1,9 @@
-package templates
+package connectgotemplates
 
 // Server stuff looks v different
 // sampled from https://connect.build/docs/go/getting-started
 
-const connectGoServerTemplate = `
+const ConnectGoServerTemplate = `
 
 func main() {
 	mux := http.NewServeMux()
@@ -21,7 +21,7 @@ func main() {
   
 `
 
-const serviceHandleTemplate = `
+const ServiceHandleTemplate = `
 
 mux.Handle(%sconnect.New%sHandler(&%s{}))
 `

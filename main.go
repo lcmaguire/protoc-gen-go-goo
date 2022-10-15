@@ -34,7 +34,7 @@ func main() {
 		// todo have this passed in from config
 		g := generator.Generator{
 			ConnectGo: false,
-			Server:    false,
+			Server:    true,
 			GoModPath: "",
 			Tests:     true,
 		}
