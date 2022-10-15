@@ -46,7 +46,6 @@ grpc-protoc-gen-connect-go:
 	go install . && \
 	protoc -I=example \
 	--go-goo_out=exampleconnect \
-	--go-goo_opt=param=config.yaml \
 	--go_out=exampleconnect  \
 	--go_opt=paths=source_relative \
 	--connect-go_out=exampleconnect \
