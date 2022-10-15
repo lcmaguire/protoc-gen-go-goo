@@ -3,6 +3,7 @@ package connectgo
 // Server stuff looks v different
 // sampled from https://connect.build/docs/go/getting-started
 
+// ConnectGoServerTemplate ...
 const ConnectGoServerTemplate = `
 
 func main() {
@@ -21,15 +22,13 @@ func main() {
   
 `
 
+// ServiceHandleTemplate ...
 const ServiceHandleTemplate = `
 
 mux.Handle(%sconnect.New%sHandler(&%s{}))
 `
 
-// METHOD
-
-// can probably pass in  req  *connect_go.Request[%s] , *connect_go.Response[%s]
-
+// MethodTemplate ...
 const MethodTemplate = `
 
 func (%s) %s(ctx context.Context, req *connect_go.Request[%s]) (*connect_go.Response[%s], error) {
@@ -44,20 +43,12 @@ const TestFileTemplate = `
 	func Test%s(t *testing.T){
 		t.Parallel()
 		service := &%s{}
+		req := connect_go.Request[%s]{
+			Msg: &%s{},
+		}
 		res, err := service.%s(context.Background(), nil)
 		assert.Error(t, err)
 		assert.Equal(t, codes.Unimplemented, status.Code(err))
-		assert.Nil(t, res)
+		proto.Equal(res.Msg, &%s{})
 	}
 	`
-
-// looks the same, can probably use default
-const serviceTemplate = `
-// %s ...
-type %s struct { 
-	%s.Unimplemented%sServer
-}
-	`
-
-// can probably use defualt.
-const methodCallerTemplate = `%s *%s`

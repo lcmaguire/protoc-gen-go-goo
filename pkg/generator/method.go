@@ -58,17 +58,31 @@ func (g *Generator) genTestFile(gen *protogen.Plugin, service *protogen.Service,
 	f.P("package ", strings.ToLower(service.GoName))
 	f.P()
 
+	imports := _testImports
+	testFile := formatTestFile(method.GoName, service.GoName)
+	f.QualifiedGoIdent(method.Input.GoIdent)
+	f.QualifiedGoIdent(method.Output.GoIdent)
+
+	request := getParamPKG(method.Input.GoIdent.GoImportPath.String()) + "." + method.Input.GoIdent.GoName
+	response := getParamPKG(method.Output.GoIdent.GoImportPath.String()) + "." + method.Output.GoIdent.GoName
+	if g.ConnectGo {
+		imports = connectgo.TestImports
+		testFile = fmt.Sprintf(
+			connectgo.TestFileTemplate,
+			method.GoName,
+			service.GoName,
+			request,
+			request,
+			method.GoName,
+			response,
+		)
+	}
+
 	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(service.GoName), GoName: ""})
-	for _, v := range _testImports {
+	for _, v := range imports {
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v})
 	}
 
-	if g.ConnectGo {
-		// import connect go code + format in + out to make sense
-
-	}
-
-	testFile := formatTestFile(method.GoName, service.GoName)
 	f.P(testFile)
 	return f
 }
