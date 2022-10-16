@@ -1,18 +1,14 @@
 package templates
 
 const ServiceTemplate = `
-// %s ...
-type %s struct { 
-	%s.Unimplemented%sServer
-}
-	`
-
-const ActualServiceTemplate = `
-// {{.ServiceName}} ...
+// {{.ServiceName}} implements {{.FullName}}.
 type {{.ServiceName}} struct { 
 	{{.Pkg}}.Unimplemented{{.ServiceName}}Server
 }
 	
+func New{{.ServiceName}} () *{{.ServiceName}} {
+	return &{{.ServiceName}}{}
+}
 `
 
 // add in reflection api

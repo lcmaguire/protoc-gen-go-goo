@@ -1,8 +1,6 @@
 package generator
 
 import (
-	"bytes"
-	"html/template"
 	"strings"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/templates"
@@ -69,7 +67,6 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 	return outfiles
 }
 
-// todo gen constructor.
 func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *protogen.GeneratedFile { // consider returning []
 	fileName := strings.ToLower(service.GoName + "/" + service.GoName + ".go") // todo format in snakecase
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{service.GoName}}.go
@@ -80,32 +77,22 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 
 	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
 	pkg := getParamPKG(rootGoIndent.GoImportPath.String())
+	_ = f.QualifiedGoIdent(rootGoIndent)
 
-	//structString := formatService(string(service.Desc.Name()), pkg)
-	_ = f.QualifiedGoIdent(rootGoIndent) // this auto imports too.
-
+	// todo think harder about this (where should this data be kept)
 	type serviceT struct {
 		ServiceName string
 		Pkg         string
+		FullName    string
 	}
-
 	s := serviceT{
 		ServiceName: string(service.Desc.Name()),
 		Pkg:         pkg,
-	}
-	// todo see what this means.
-
-	templ, err := template.New("").Parse(templates.ActualServiceTemplate)
-	if err != nil {
-		panic(err)
+		FullName:    string(service.Desc.FullName()),
 	}
 
-	buffy := bytes.NewBuffer([]byte{})
-	if err := templ.Execute(buffy, s); err != nil {
-		panic(err)
-	}
-
-	f.P(buffy.String())
+	data := templates.ExecuteTemplate(templates.ServiceTemplate, s)
+	f.P(data)
 	f.P()
 	return f
 }
