@@ -39,15 +39,15 @@ func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, req *connect_go.Re
 `
 
 const TestFileTemplate = `
-	func Test%s(t *testing.T){
+	func Test{{.MethodName}}(t *testing.T){
 		t.Parallel()
-		service := &%s{}
-		req := &connect_go.Request[%s]{
-			Msg: &%s{},
+		service := &{{.ServiceName}}{}
+		req := &connect_go.Request[{{.RequestType}}]{
+			Msg: &{{.RequestType}}{},
 		}
-		res, err := service.%s(context.Background(), req)
+		res, err := service.{{.MethodName}}(context.Background(), req)
 		assert.Error(t, err)
 		assert.Equal(t, codes.Unimplemented, status.Code(err))
-		proto.Equal(res.Msg, &%s{})
+		proto.Equal(res.Msg, &{{.ResponseType}}{})
 	}
 	`

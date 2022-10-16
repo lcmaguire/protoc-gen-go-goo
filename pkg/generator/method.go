@@ -1,7 +1,6 @@
 package generator
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
@@ -10,6 +9,7 @@ import (
 )
 
 type methodData struct {
+	ServiceName  string
 	MethodCaller string
 	MethodName   string
 	RequestType  string
@@ -42,7 +42,8 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, service *protogen.Service
 	response := getParamPKG(method.Output.GoIdent.GoImportPath.String()) + "." + method.Output.GoIdent.GoName
 
 	methData := methodData{
-		MethodCaller: methodCaller,
+		ServiceName:  service.GoName,
+		MethodCaller: methodCaller, // todo depreceate (just have first char of ServiceName)
 		MethodName:   method.GoName,
 		RequestType:  request,
 		ResponseType: response,
@@ -79,26 +80,20 @@ func (g *Generator) genTestFile(gen *protogen.Plugin, service *protogen.Service,
 	response := getParamPKG(method.Output.GoIdent.GoImportPath.String()) + "." + method.Output.GoIdent.GoName
 
 	imports := _testImports
-	testFile := fmt.Sprintf(
-		templates.TestFileTemplate,
-		method.GoName,
-		service.GoName,
-		request,
-		method.GoName,
-		response,
-	)
+	methData := methodData{
+		ServiceName:  service.GoName,
+		MethodName:   method.GoName,
+		RequestType:  request,
+		ResponseType: response,
+		FullName:     string(method.Desc.FullName()),
+	}
+
+	tplate := templates.TestFileTemplate
 	if g.ConnectGo {
 		imports = connectgo.TestImports
-		testFile = fmt.Sprintf(
-			connectgo.TestFileTemplate,
-			method.GoName,
-			service.GoName,
-			request,
-			request,
-			method.GoName,
-			response,
-		)
+		tplate = connectgo.TestFileTemplate
 	}
+	testFile := templates.ExecuteTemplate(tplate, methData)
 
 	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(service.GoName), GoName: ""})
 	for _, v := range imports {

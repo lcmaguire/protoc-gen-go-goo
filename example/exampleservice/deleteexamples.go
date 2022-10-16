@@ -7,7 +7,7 @@ import (
 	status "google.golang.org/grpc/status"
 )
 
-// DeleteExamples ... implements
+// DeleteExamples implements tutorial.ExampleService.DeleteExamples.
 func (e *ExampleService) DeleteExamples(ctx context.Context, in *example.SearchRequest) (out *example.SearchResponse, err error) {
 	return nil, status.Error(codes.Unimplemented, "yet to be implemented")
 }

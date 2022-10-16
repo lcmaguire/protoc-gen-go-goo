@@ -46,19 +46,19 @@ reflection.Register(server) // this should perhaps be optional
 `
 
 const TestFileTemplate = `
-	func Test%s(t *testing.T){
+	func Test{{.MethodName}}(t *testing.T){
 		t.Parallel()
-		service := &%s{}
-		req := &%s{}
-		res, err := service.%s(context.Background(), req)
+		service := &{{.ServiceName}}{}
+		req := &{{.RequestType}}{}
+		res, err := service.{{.MethodName}}(context.Background(), req)
 		assert.Error(t, err)
 		assert.Equal(t, codes.Unimplemented, status.Code(err))
-		proto.Equal(res, &%s{})
+		proto.Equal(res, &{{.ResponseType}}{})
 	}
 	`
 
 const MethodTemplate = `
-	// {{.MethodName}} ... implements
+	// {{.MethodName}} implements {{.FullName}}.
 	func ({{.MethodCaller}}) {{.MethodName}} (ctx context.Context, in *{{.RequestType}}) (out *{{.ResponseType}}, err error){
 		return nil, status.Error(codes.Unimplemented, "yet to be implemented")
 	}
