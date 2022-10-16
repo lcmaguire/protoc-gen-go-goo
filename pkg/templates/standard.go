@@ -7,6 +7,14 @@ type %s struct {
 }
 	`
 
+const ActualServiceTemplate = `
+// {{.ServiceName}} ...
+type {{.ServiceName}} struct { 
+	{{Pkg}}.Unimplemented{{.ServiceName}}Server
+}
+	
+`
+
 // add in reflection api
 const ServerTemplate = `
 func main() {

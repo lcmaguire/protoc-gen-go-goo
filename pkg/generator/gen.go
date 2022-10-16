@@ -1,8 +1,11 @@
 package generator
 
 import (
+	"html/template"
+	"os"
 	"strings"
 
+	"github.com/lcmaguire/protoc-gen-go-goo/pkg/templates"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
@@ -80,6 +83,27 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 
 	structString := formatService(string(service.Desc.Name()), pkg)
 	_ = f.QualifiedGoIdent(rootGoIndent) // this auto imports too.
+
+	type serviceT struct {
+		ServiceName string
+		Pkg         string
+	}
+
+	s := serviceT{
+		ServiceName: string(service.Desc.Name()),
+		Pkg:         pkg,
+	}
+	// todo see what this means.
+
+	// could try f.Bytes + x.
+	templ, err := template.New("test").Parse(templates.ActualServiceTemplate)
+	if err != nil {
+		return nil
+	}
+
+	if err := templ.Execute(os.Stdout, s); err != nil {
+		panic(err)
+	}
 
 	// todo add in template
 	//t := template.Must(template.New("letter").Parse(tplate))
