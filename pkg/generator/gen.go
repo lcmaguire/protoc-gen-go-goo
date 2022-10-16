@@ -1,8 +1,8 @@
 package generator
 
 import (
+	"bytes"
 	"html/template"
-	"os"
 	"strings"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/templates"
@@ -81,7 +81,7 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
 	pkg := getParamPKG(rootGoIndent.GoImportPath.String())
 
-	structString := formatService(string(service.Desc.Name()), pkg)
+	//structString := formatService(string(service.Desc.Name()), pkg)
 	_ = f.QualifiedGoIdent(rootGoIndent) // this auto imports too.
 
 	type serviceT struct {
@@ -95,20 +95,17 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 	}
 	// todo see what this means.
 
-	// could try f.Bytes + x.
-	templ, err := template.New("test").Parse(templates.ActualServiceTemplate)
+	templ, err := template.New("").Parse(templates.ActualServiceTemplate)
 	if err != nil {
-		return nil
-	}
-
-	if err := templ.Execute(os.Stdout, s); err != nil {
 		panic(err)
 	}
 
-	// todo add in template
-	//t := template.Must(template.New("letter").Parse(tplate))
+	buffy := bytes.NewBuffer([]byte{})
+	if err := templ.Execute(buffy, s); err != nil {
+		panic(err)
+	}
 
-	f.P(structString)
+	f.P(buffy.String())
 	f.P()
 	return f
 }

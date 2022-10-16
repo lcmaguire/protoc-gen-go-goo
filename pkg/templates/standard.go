@@ -10,7 +10,7 @@ type %s struct {
 const ActualServiceTemplate = `
 // {{.ServiceName}} ...
 type {{.ServiceName}} struct { 
-	{{Pkg}}.Unimplemented{{.ServiceName}}Server
+	{{.Pkg}}.Unimplemented{{.ServiceName}}Server
 }
 	
 `
