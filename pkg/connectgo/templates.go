@@ -31,7 +31,7 @@ mux.Handle(%sconnect.New%sHandler(&%s{}))
 // MethodTemplate ...
 const MethodTemplate = `
 // {{.MethodName}} implements {{.FullName}}.
-func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
+func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	res := connect_go.NewResponse(&{{.ResponseType}}{})
 	return res, status.Error(codes.Unimplemented, "yet to be implemented")
 }

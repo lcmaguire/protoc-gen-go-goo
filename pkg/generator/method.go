@@ -9,97 +9,67 @@ import (
 )
 
 type methodData struct {
+	S1           string
 	ServiceName  string
-	MethodCaller string
 	MethodName   string
 	RequestType  string
 	ResponseType string
 	FullName     string
+	Imports      []protogen.GoIdent
 }
 
-func (g *Generator) genRpcMethod(gen *protogen.Plugin, service *protogen.Service, method *protogen.Method) *protogen.GeneratedFile {
-	filename := strings.ToLower(service.GoName + "/" + method.GoName + ".go")
+func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protogen.GeneratedFile {
+	filename := strings.ToLower(data.ServiceName + "/" + data.MethodName + ".go")
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{method.GoName}}.go
-	f := gen.NewGeneratedFile(filename, protogen.GoImportPath(service.GoName))
+	f := gen.NewGeneratedFile(filename, protogen.GoImportPath(data.ServiceName))
 
-	methodCaller := genMethodCaller(service.GoName)                                // maybe methodName or methodReciever
-	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
-
-	// todo create some func with all required pkgs imported as needed
 	imports := _methodImports
-	if g.ConnectGo {
-		imports = connectgo.MethodImports
-	}
-
-	f.QualifiedGoIdent(rootGoIndent) // this auto imports too.
-	for _, v := range imports {      // should be func
-		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v})
-	}
-	f.QualifiedGoIdent(method.Input.GoIdent)
-	f.QualifiedGoIdent(method.Output.GoIdent)
-
-	request := getParamPKG(method.Input.GoIdent.GoImportPath.String()) + "." + method.Input.GoIdent.GoName
-	response := getParamPKG(method.Output.GoIdent.GoImportPath.String()) + "." + method.Output.GoIdent.GoName
-
-	methData := methodData{
-		ServiceName:  service.GoName,
-		MethodCaller: methodCaller, // todo depreceate (just have first char of ServiceName)
-		MethodName:   method.GoName,
-		RequestType:  request,
-		ResponseType: response,
-		FullName:     string(method.Desc.FullName()),
-	}
-
 	tplate := templates.MethodTemplate
 	if g.ConnectGo {
+		imports = connectgo.MethodImports
 		tplate = connectgo.MethodTemplate
 	}
-	rpcfunc := templates.ExecuteTemplate(tplate, methData)
+
+	// these are always imported.
+	for _, v := range data.Imports {
+		f.QualifiedGoIdent(v)
+	}
+	for _, v := range imports {
+		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v})
+	}
+
+	rpcfunc := templates.ExecuteTemplate(tplate, data)
 
 	f.P()
-	f.P("package ", strings.ToLower(service.GoName))
+	f.P("package ", strings.ToLower(data.ServiceName))
 	f.P()
 	f.P(rpcfunc)
 
 	return f
 }
 
-func (g *Generator) genTestFile(gen *protogen.Plugin, service *protogen.Service, method *protogen.Method) *protogen.GeneratedFile {
-	filename := strings.ToLower(service.GoName + "/" + method.GoName + "_test.go")
+func (g *Generator) genTestFile(gen *protogen.Plugin, data methodData) *protogen.GeneratedFile {
+	filename := strings.ToLower(data.ServiceName + "/" + data.MethodName + "_test.go")
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{method.GoName}}.go
-	f := gen.NewGeneratedFile(filename, protogen.GoImportPath(service.GoName))
+	f := gen.NewGeneratedFile(filename, protogen.GoImportPath(data.ServiceName))
 
 	f.P()
-	f.P("package ", strings.ToLower(service.GoName))
+	f.P("package ", strings.ToLower(data.ServiceName))
 	f.P()
-
-	f.QualifiedGoIdent(method.Input.GoIdent)
-	f.QualifiedGoIdent(method.Output.GoIdent)
-
-	request := getParamPKG(method.Input.GoIdent.GoImportPath.String()) + "." + method.Input.GoIdent.GoName
-	response := getParamPKG(method.Output.GoIdent.GoImportPath.String()) + "." + method.Output.GoIdent.GoName
 
 	imports := _testImports
-	methData := methodData{
-		ServiceName:  service.GoName,
-		MethodName:   method.GoName,
-		RequestType:  request,
-		ResponseType: response,
-		FullName:     string(method.Desc.FullName()),
-	}
-
 	tplate := templates.TestFileTemplate
 	if g.ConnectGo {
 		imports = connectgo.TestImports
 		tplate = connectgo.TestFileTemplate
 	}
-	testFile := templates.ExecuteTemplate(tplate, methData)
-
-	f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(service.GoName), GoName: ""})
+	for _, v := range data.Imports {
+		f.QualifiedGoIdent(v)
+	}
 	for _, v := range imports {
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v})
 	}
-
+	testFile := templates.ExecuteTemplate(tplate, data)
 	f.P(testFile)
 	return f
 }

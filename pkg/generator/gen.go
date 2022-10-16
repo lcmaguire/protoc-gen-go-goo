@@ -51,15 +51,19 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 
 	// will create a method for all services
 	for _, v := range service.Methods {
-		f := g.genRpcMethod(gen, service, v)
+		mData := methodData{
+			S1:           strings.ToLower(service.GoName[0:1]),
+			ServiceName:  service.GoName,
+			MethodName:   v.GoName,
+			FullName:     string(v.Desc.FullName()),
+			RequestType:  getParamPKG(v.Input.GoIdent.GoImportPath.String()) + "." + v.Input.GoIdent.GoName,
+			ResponseType: getParamPKG(v.Output.GoIdent.GoImportPath.String()) + "." + v.Output.GoIdent.GoName,
+			Imports:      []protogen.GoIdent{v.Input.GoIdent, v.Output.GoIdent, protogen.GoIdent{GoImportPath: protogen.GoImportPath(service.GoName)}},
+		}
+		f := g.genRpcMethod(gen, mData)
 		outfiles = append(outfiles, f)
-	}
-
-	if g.Tests {
-		// i wonder if time complexity is important for proto plugins.
-		// and diff between looping twice vs looping once with an if statement is, ill use my brain later and figure it out
-		for _, v := range service.Methods {
-			f := g.genTestFile(gen, service, v)
+		if g.Tests {
+			f := g.genTestFile(gen, mData)
 			outfiles = append(outfiles, f)
 		}
 	}
