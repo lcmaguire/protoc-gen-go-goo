@@ -9,6 +9,14 @@ import (
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
+type methodData struct {
+	MethodCaller string
+	MethodName   string
+	RequestType  string
+	ResponseType string
+	FullName     string
+}
+
 func (g *Generator) genRpcMethod(gen *protogen.Plugin, service *protogen.Service, method *protogen.Method) *protogen.GeneratedFile {
 	filename := strings.ToLower(service.GoName + "/" + method.GoName + ".go")
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{method.GoName}}.go
@@ -32,15 +40,20 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, service *protogen.Service
 
 	request := getParamPKG(method.Input.GoIdent.GoImportPath.String()) + "." + method.Input.GoIdent.GoName
 	response := getParamPKG(method.Output.GoIdent.GoImportPath.String()) + "." + method.Output.GoIdent.GoName
-	rpcfunc := formatMethod(methodCaller, method.GoName, request, response)
-	if g.ConnectGo {
-		rpcfunc = fmt.Sprintf(connectgo.MethodTemplate,
-			methodCaller,
-			method.GoName,
-			request,
-			response,
-			response)
+
+	methData := methodData{
+		MethodCaller: methodCaller,
+		MethodName:   method.GoName,
+		RequestType:  request,
+		ResponseType: response,
+		FullName:     string(method.Desc.FullName()),
 	}
+
+	tplate := templates.MethodTemplate
+	if g.ConnectGo {
+		tplate = connectgo.MethodTemplate
+	}
+	rpcfunc := templates.ExecuteTemplate(tplate, methData)
 
 	f.P()
 	f.P("package ", strings.ToLower(service.GoName))

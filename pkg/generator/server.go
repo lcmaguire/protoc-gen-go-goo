@@ -14,7 +14,7 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File) {
 	services := []string{}
 
 	for _, v := range file.Services {
-		services = append(services, v.GoName) // service.Desc.Name()
+		services = append(services, v.GoName)
 	}
 
 	fileName := strings.ToLower("cmd" + "/" + string(file.GoPackageName) + "/" + "main.go")
