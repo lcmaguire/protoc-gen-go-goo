@@ -33,13 +33,15 @@ func (g *Generator) Run(gen *protogen.Plugin) error {
 		if !f.Generate {
 			continue
 		}
-
+		services := []string{}
 		for _, v := range f.Services {
+			// list services here.
 			g.generateFilesForService(gen, v, f)
+			services = append(services, v.GoName)
 		}
 
 		if g.Server {
-			g.generateServer(gen, f)
+			g.generateServer(gen, f, services)
 		}
 	}
 	return nil

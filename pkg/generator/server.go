@@ -10,13 +10,7 @@ import (
 )
 
 // need pkg, services,
-func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File) {
-	services := []string{}
-
-	for _, v := range file.Services {
-		services = append(services, v.GoName)
-	}
-
+func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File, services []string) {
 	fileName := strings.ToLower("cmd" + "/" + string(file.GoPackageName) + "/" + "main.go")
 	f := gen.NewGeneratedFile(fileName, protogen.GoImportPath("."))
 
@@ -26,7 +20,6 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File) {
 
 	imports := append(_serviceImports, protogen.GoImportPath(file.GoImportPath))
 	if g.ConnectGo {
-		// get different imports
 		imports = connectgo.ServiceImports
 		goPKGname := strings.ToLower(string(file.GoPackageName))
 		connectGenImportPath := fmt.Sprintf("%s/%s", _hardCodedPath+"connect", goPKGname+"connect")
@@ -34,13 +27,11 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File) {
 
 	}
 
-	// imports = append(imports, protogen.GoImportPath(file.GoImportPath))
 	for _, v := range imports {
-		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v}) // service imports should probably be GoIdent
+		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v})
 	}
 
 	pkg := getParamPKG(file.GoDescriptorIdent.GoImportPath.String())
-	// try strings.ToLower(string(file.GoPackageName))
 
 	resgisteredServices := ""
 	for _, serviceName := range services {
