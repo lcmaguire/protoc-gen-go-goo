@@ -22,9 +22,21 @@ grpc-go-goo:
 # generates grpc-go and go-proto code 
 connect-go-goo:
 	go install . && \
-	protoc -I=example \
+	protoc -I=exampleconnect \
 	--go-goo_out=exampleconnect \
-	--go-goo_opt=tests=true,server=true,connectGo=true,generatedPath=github.com/lcmaguire/protoc-gen-go-goo/example \
+	--go-goo_opt=tests=true,server=true,connectGo=true,generatedPath=github.com/lcmaguire/protoc-gen-go-goo/exampleconnect \
+	--go_out=exampleconnect  \
+	--go_opt=paths=source_relative \
+	--connect-go_out=. \
+	--connect-go_opt=paths=source_relative  \
+	exampleconnect/example.proto 
+
+#gooey/yeet
+connect-go-goo-diff:
+	go install . && \
+	protoc -I=example \
+	--go-goo_out=../gooey \
+	--go-goo_opt=tests=true,server=true,connectGo=true,generatedPath=gooey \
 	--go_out=exampleconnect  \
 	--go_opt=paths=source_relative \
 	--connect-go_out=exampleconnect \

@@ -19,9 +19,8 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File, se
 	if g.ConnectGo {
 		imports = connectgo.ServiceImports
 		goPKGname := strings.ToLower(string(file.GoPackageName))
-		connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath+"connect", goPKGname+"connect")
+		connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, goPKGname+"connect")
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
-
 	}
 
 	for _, v := range imports {
@@ -35,7 +34,7 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File, se
 		// dir goModPath + serviceName
 		importPath := fmt.Sprintf("%s/%s", g.GoModPath, strings.ToLower(serviceName))
 		if g.ConnectGo {
-			importPath = fmt.Sprintf("%s/%s", g.GoModPath+"connect", strings.ToLower(serviceName))
+			importPath = fmt.Sprintf("%s/%s", g.GoModPath, strings.ToLower(serviceName))
 		}
 		f.QualifiedGoIdent(protogen.GoIdent{GoName: "", GoImportPath: protogen.GoImportPath(importPath)})
 

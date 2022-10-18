@@ -7,5 +7,5 @@ plugins:
     out: exampleconnect
     opt: paths=source_relative
   - name: go-goo
-    out: exampleconnect
-    opt: tests=true,server=true,connectGo=true,generatedPath=github.com/lcmaguire/protoc-gen-go-goo/example
+    out: ../gooey
+    opt: tests=true,server=true,connectGo=true,generatedPath=gooey
