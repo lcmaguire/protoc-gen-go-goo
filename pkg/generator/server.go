@@ -15,14 +15,11 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File, se
 	f := gen.NewGeneratedFile(fileName, protogen.GoImportPath("."))
 
 	f.P("package main ")
-	// hardcoding for now
-	const _hardCodedPath = "github.com/lcmaguire/protoc-gen-go-goo/example" // if connect + connect
-
 	imports := append(_serviceImports, protogen.GoImportPath(file.GoImportPath))
 	if g.ConnectGo {
 		imports = connectgo.ServiceImports
 		goPKGname := strings.ToLower(string(file.GoPackageName))
-		connectGenImportPath := fmt.Sprintf("%s/%s", _hardCodedPath+"connect", goPKGname+"connect")
+		connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath+"connect", goPKGname+"connect")
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
 
 	}
@@ -36,9 +33,9 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File, se
 	resgisteredServices := ""
 	for _, serviceName := range services {
 		// dir goModPath + serviceName
-		importPath := fmt.Sprintf("%s/%s", _hardCodedPath, strings.ToLower(serviceName))
+		importPath := fmt.Sprintf("%s/%s", g.GoModPath, strings.ToLower(serviceName))
 		if g.ConnectGo {
-			importPath = fmt.Sprintf("%s/%s", _hardCodedPath+"connect", strings.ToLower(serviceName))
+			importPath = fmt.Sprintf("%s/%s", g.GoModPath+"connect", strings.ToLower(serviceName))
 		}
 		f.QualifiedGoIdent(protogen.GoIdent{GoName: "", GoImportPath: protogen.GoImportPath(importPath)})
 

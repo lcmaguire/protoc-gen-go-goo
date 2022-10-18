@@ -8,4 +8,4 @@ plugins:
     opt: paths=source_relative
   - name: go-goo
     out: exampleconnect
-    opt: tests=true,server=true,connectGo=true
+    opt: tests=true,server=true,connectGo=true,generatedPath=github.com/lcmaguire/protoc-gen-go-goo/example

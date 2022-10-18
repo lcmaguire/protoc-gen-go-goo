@@ -24,7 +24,7 @@ connect-go-goo:
 	go install . && \
 	protoc -I=example \
 	--go-goo_out=exampleconnect \
-	--go-goo_opt=tests=true,server=true,connectGo=true \
+	--go-goo_opt=tests=true,server=true,connectGo=true,generatedPath=github.com/lcmaguire/protoc-gen-go-goo/example \
 	--go_out=exampleconnect  \
 	--go_opt=paths=source_relative \
 	--connect-go_out=exampleconnect \
