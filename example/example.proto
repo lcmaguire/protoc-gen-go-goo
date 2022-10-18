@@ -1,12 +1,11 @@
 syntax = "proto3";
-package tutorial;
+package tutorial; // todo rename and re gen to be different package
 
 import "google/protobuf/empty.proto";
 
 option go_package = "github.com/lcmaguire/protoc-gen-go-goo/example";
 
-// todo make aip approved
-
+// todo make AIP approved
 service ExampleService {
     rpc GetExample(SearchRequest) returns (SearchResponse);
     rpc CreateExample(SearchRequest) returns (SearchResponse);
@@ -14,6 +13,7 @@ service ExampleService {
     rpc DeleteExamples(SearchRequest) returns (SearchResponse);
 }
 
+// todo make AIP approved
 service ExtraExampleService {
     rpc GetExample(SearchRequest) returns (SearchResponse);
     rpc DeleteExamples(SearchRequest) returns (google.protobuf.Empty);

@@ -3,6 +3,7 @@ package generator
 import (
 	"strings"
 
+	"github.com/lcmaguire/protoc-gen-go-goo/pkg/templates"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
@@ -32,13 +33,15 @@ func (g *Generator) Run(gen *protogen.Plugin) error {
 		if !f.Generate {
 			continue
 		}
-
+		services := []string{}
 		for _, v := range f.Services {
+			// list services here.
 			g.generateFilesForService(gen, v, f)
+			services = append(services, v.GoName)
 		}
 
 		if g.Server {
-			g.generateServer(gen, f)
+			g.generateServer(gen, f, services)
 		}
 	}
 	return nil
@@ -50,15 +53,19 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 
 	// will create a method for all services
 	for _, v := range service.Methods {
-		f := g.genRpcMethod(gen, service, v)
+		mData := methodData{
+			S1:           strings.ToLower(service.GoName[0:1]),
+			ServiceName:  service.GoName,
+			MethodName:   v.GoName,
+			FullName:     string(v.Desc.FullName()),
+			RequestType:  getParamPKG(v.Input.GoIdent.GoImportPath.String()) + "." + v.Input.GoIdent.GoName,
+			ResponseType: getParamPKG(v.Output.GoIdent.GoImportPath.String()) + "." + v.Output.GoIdent.GoName,
+			Imports:      []protogen.GoIdent{v.Input.GoIdent, v.Output.GoIdent, {GoImportPath: protogen.GoImportPath(service.GoName)}},
+		}
+		f := g.genRpcMethod(gen, mData)
 		outfiles = append(outfiles, f)
-	}
-
-	if g.Tests {
-		// i wonder if time complexity is important for proto plugins.
-		// and diff between looping twice vs looping once with an if statement is, ill use my brain later and figure it out
-		for _, v := range service.Methods {
-			f := g.genTestFile(gen, service, v)
+		if g.Tests {
+			f := g.genTestFile(gen, mData)
 			outfiles = append(outfiles, f)
 		}
 	}
@@ -66,7 +73,6 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 	return outfiles
 }
 
-// todo gen constructor.
 func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *protogen.GeneratedFile { // consider returning []
 	fileName := strings.ToLower(service.GoName + "/" + service.GoName + ".go") // todo format in snakecase
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{service.GoName}}.go
@@ -77,14 +83,22 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 
 	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
 	pkg := getParamPKG(rootGoIndent.GoImportPath.String())
+	_ = f.QualifiedGoIdent(rootGoIndent)
 
-	structString := formatService(string(service.Desc.Name()), pkg)
-	_ = f.QualifiedGoIdent(rootGoIndent) // this auto imports too.
+	// todo think harder about this (where should this data be kept)
+	type serviceT struct {
+		ServiceName string
+		Pkg         string
+		FullName    string
+	}
+	s := serviceT{
+		ServiceName: string(service.Desc.Name()),
+		Pkg:         pkg,
+		FullName:    string(service.Desc.FullName()),
+	}
 
-	// todo add in template
-	//t := template.Must(template.New("letter").Parse(tplate))
-
-	f.P(structString)
+	data := templates.ExecuteTemplate(templates.ServiceTemplate, s)
+	f.P(data)
 	f.P()
 	return f
 }

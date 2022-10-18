@@ -8,6 +8,7 @@ import (
 	status "google.golang.org/grpc/status"
 )
 
+// ListExamples implements tutorial.ExampleService.ListExamples.
 func (e *ExampleService) ListExamples(ctx context.Context, req *connect_go.Request[example.SearchRequest]) (*connect_go.Response[example.SearchResponse], error) {
 	res := connect_go.NewResponse(&example.SearchResponse{})
 	return res, status.Error(codes.Unimplemented, "yet to be implemented")

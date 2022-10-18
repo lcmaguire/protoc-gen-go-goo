@@ -30,25 +30,24 @@ mux.Handle(%sconnect.New%sHandler(&%s{}))
 
 // MethodTemplate ...
 const MethodTemplate = `
-
-func (%s) %s(ctx context.Context, req *connect_go.Request[%s]) (*connect_go.Response[%s], error) {
-	res := connect_go.NewResponse(&%s{})
+// {{.MethodName}} implements {{.FullName}}.
+func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
+	res := connect_go.NewResponse(&{{.ResponseType}}{})
 	return res, status.Error(codes.Unimplemented, "yet to be implemented")
 }
 
 `
 
-// todo make this work
 const TestFileTemplate = `
-	func Test%s(t *testing.T){
+	func Test{{.MethodName}}(t *testing.T){
 		t.Parallel()
-		service := &%s{}
-		req := &connect_go.Request[%s]{
-			Msg: &%s{},
+		service := &{{.ServiceName}}{}
+		req := &connect_go.Request[{{.RequestType}}]{
+			Msg: &{{.RequestType}}{},
 		}
-		res, err := service.%s(context.Background(), req)
+		res, err := service.{{.MethodName}}(context.Background(), req)
 		assert.Error(t, err)
 		assert.Equal(t, codes.Unimplemented, status.Code(err))
-		proto.Equal(res.Msg, &%s{})
+		proto.Equal(res.Msg, &{{.ResponseType}}{})
 	}
 	`

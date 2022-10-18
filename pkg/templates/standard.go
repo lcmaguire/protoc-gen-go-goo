@@ -1,11 +1,15 @@
 package templates
 
 const ServiceTemplate = `
-// %s ...
-type %s struct { 
-	%s.Unimplemented%sServer
+// {{.ServiceName}} implements {{.FullName}}.
+type {{.ServiceName}} struct { 
+	{{.Pkg}}.Unimplemented{{.ServiceName}}Server
 }
-	`
+	
+func New{{.ServiceName}} () *{{.ServiceName}} {
+	return &{{.ServiceName}}{}
+}
+`
 
 // add in reflection api
 const ServerTemplate = `
@@ -42,20 +46,20 @@ reflection.Register(server) // this should perhaps be optional
 `
 
 const TestFileTemplate = `
-	func Test%s(t *testing.T){
+	func Test{{.MethodName}}(t *testing.T){
 		t.Parallel()
-		service := &%s{}
-		req := &%s{}
-		res, err := service.%s(context.Background(), req)
+		service := &{{.ServiceName}}{}
+		req := &{{.RequestType}}{}
+		res, err := service.{{.MethodName}}(context.Background(), req)
 		assert.Error(t, err)
 		assert.Equal(t, codes.Unimplemented, status.Code(err))
-		proto.Equal(res, &%s{})
+		proto.Equal(res, &{{.ResponseType}}{})
 	}
 	`
 
 const MethodTemplate = `
-	// %s ...
-	func (%s) %s (ctx context.Context, in *%s) (out *%s, err error){
+	// {{.MethodName}} implements {{.FullName}}.
+	func ({{.S1}}*{{.ServiceName}}) {{.MethodName}} (ctx context.Context, in *{{.RequestType}}) (out *{{.ResponseType}}, err error){
 		return nil, status.Error(codes.Unimplemented, "yet to be implemented")
 	}
 `
