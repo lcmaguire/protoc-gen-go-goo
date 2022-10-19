@@ -12,7 +12,7 @@ grpc-go-goo:
 	go install . && \
 	protoc -I=example \
 	--go-goo_out=example \
-	--go-goo_opt=tests=true,server=true,connectGo=false \
+	--go-goo_opt=tests=true,server=true,connectGo=false,generatedPath=github.com/lcmaguire/protoc-gen-go-goo/example \
 	--go-grpc_out=example \
 	--go-grpc_opt=paths=source_relative \
 	--go_out=example  \
