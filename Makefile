@@ -31,21 +31,6 @@ connect-go-goo:
 	--connect-go_opt=paths=source_relative  \
 	exampleconnect/example.proto 
 
-## try -> move codegen to gen/ link in https://connect.build/docs/go/getting-started/
-## maybe connectexample/gen
-
-#gooey/yeet
-connect-go-goo-diff:
-	go install . && \
-	protoc -I=example \
-	--go-goo_out=../gooey \
-	--go-goo_opt=tests=true,server=true,connectGo=true,generatedPath=gooey \
-	--go_out=exampleconnect  \
-	--go_opt=paths=source_relative \
-	--connect-go_out=exampleconnect \
-	--connect-go_opt=paths=source_relative  \
-	example/*.proto 
-
 # same as above but easier to manage via buf files.
 make buf:
 	go install . && buf generate
