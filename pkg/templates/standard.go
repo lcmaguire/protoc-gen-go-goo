@@ -3,7 +3,7 @@ package templates
 const ServiceTemplate = `
 // {{.ServiceName}} implements {{.FullName}}.
 type {{.ServiceName}} struct { 
-	{{.Pkg}}.Unimplemented{{.ServiceName}}Handler
+	{{.Pkg}}.Unimplemented{{.ServiceName}}Server
 }
 	
 func New{{.ServiceName}} () *{{.ServiceName}} {

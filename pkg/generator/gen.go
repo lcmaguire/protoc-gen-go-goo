@@ -3,6 +3,7 @@ package generator
 import (
 	"strings"
 
+	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/templates"
 	"google.golang.org/protobuf/compiler/protogen"
 )
@@ -83,14 +84,13 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 
 	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
 	pkg := getParamPKG(rootGoIndent.GoImportPath.String())
+	tplate := templates.ServiceTemplate
 	if g.ConnectGo {
-		//rootGoIndent.GoName += "connect"
 		pkg += "connect"
-		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: rootGoIndent.GoImportPath + "connect"})
-
-	} else {
-		_ = f.QualifiedGoIdent(rootGoIndent)
+		tplate = connectgo.ServiceTemplate
+		rootGoIndent = protogen.GoIdent{GoImportPath: rootGoIndent.GoImportPath + "connect"}
 	}
+	f.QualifiedGoIdent(rootGoIndent)
 
 	// todo think harder about this (where should this data be kept)
 	type serviceT struct {
@@ -104,7 +104,7 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 		FullName:    string(service.Desc.FullName()),
 	}
 
-	data := templates.ExecuteTemplate(templates.ServiceTemplate, s)
+	data := templates.ExecuteTemplate(tplate, s)
 	f.P(data)
 	f.P()
 	return f
