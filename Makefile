@@ -12,7 +12,7 @@ grpc-go-goo:
 	go install . && \
 	protoc -I=example \
 	--go-goo_out=example \
-	--go-goo_opt=tests=true,server=true,connectGo=false \
+	--go-goo_opt=tests=true,server=true,connectGo=false,generatedPath=github.com/lcmaguire/protoc-gen-go-goo/example \
 	--go-grpc_out=example \
 	--go-grpc_opt=paths=source_relative \
 	--go_out=example  \
@@ -22,14 +22,14 @@ grpc-go-goo:
 # generates grpc-go and go-proto code 
 connect-go-goo:
 	go install . && \
-	protoc -I=example \
+	protoc -I=exampleconnect \
 	--go-goo_out=exampleconnect \
-	--go-goo_opt=tests=true,server=true,connectGo=true \
-	--go_out=exampleconnect  \
+	--go-goo_opt=tests=true,server=true,connectGo=true,generatedPath=github.com/lcmaguire/protoc-gen-go-goo/exampleconnect \
+	--go_out=exampleconnect/sample  \
 	--go_opt=paths=source_relative \
 	--connect-go_out=exampleconnect \
 	--connect-go_opt=paths=source_relative  \
-	example/*.proto 
+	exampleconnect/example.proto 
 
 # same as above but easier to manage via buf files.
 make buf:

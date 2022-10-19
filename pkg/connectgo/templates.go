@@ -51,3 +51,13 @@ const TestFileTemplate = `
 		proto.Equal(res.Msg, &{{.ResponseType}}{})
 	}
 	`
+const ServiceTemplate = `
+	// {{.ServiceName}} implements {{.FullName}}.
+	type {{.ServiceName}} struct { 
+		{{.Pkg}}.Unimplemented{{.ServiceName}}Handler
+	}
+		
+	func New{{.ServiceName}} () *{{.ServiceName}} {
+		return &{{.ServiceName}}{}
+	}
+	`

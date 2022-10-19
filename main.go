@@ -13,6 +13,7 @@ func main() {
 	connectGo := flags.Bool("connectGo", false, "to generate code for a connect go service, by default it will assume grpc-go")
 	tests := flags.Bool("tests", true, "to generate tests for your service")
 	server := flags.Bool("server", false, "will generate a basic server that implements your services.")
+	generatedGoModPath := flags.String("generatedPath", "", "GoModPath + generated code path so that server will import correctly.")
 
 	protogen.Options{
 		ParamFunc: flags.Set,
@@ -20,7 +21,7 @@ func main() {
 		g := &generator.Generator{
 			ConnectGo: *connectGo,
 			Server:    *tests,
-			GoModPath: "", // todo implement this so server gen doesn't need to be hardcoded.
+			GoModPath: *generatedGoModPath, // todo implement this so server gen doesn't need to be hardcoded.
 			Tests:     *server,
 		}
 		// todo have this be used in place of the Run func (if possible)
