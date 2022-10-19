@@ -11,8 +11,6 @@ func New{{.ServiceName}} () *{{.ServiceName}} {
 }
 `
 
-// UnimplementedExtraExampleServiceHandler
-
 // add in reflection api
 const ServerTemplate = `
 func main() {
