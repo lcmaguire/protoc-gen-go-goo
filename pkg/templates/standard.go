@@ -3,13 +3,15 @@ package templates
 const ServiceTemplate = `
 // {{.ServiceName}} implements {{.FullName}}.
 type {{.ServiceName}} struct { 
-	{{.Pkg}}.Unimplemented{{.ServiceName}}Server
+	{{.Pkg}}.Unimplemented{{.ServiceName}}Handler
 }
 	
 func New{{.ServiceName}} () *{{.ServiceName}} {
 	return &{{.ServiceName}}{}
 }
 `
+
+// UnimplementedExtraExampleServiceHandler
 
 // add in reflection api
 const ServerTemplate = `

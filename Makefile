@@ -25,11 +25,14 @@ connect-go-goo:
 	protoc -I=exampleconnect \
 	--go-goo_out=exampleconnect \
 	--go-goo_opt=tests=true,server=true,connectGo=true,generatedPath=github.com/lcmaguire/protoc-gen-go-goo/exampleconnect \
-	--go_out=exampleconnect  \
+	--go_out=exampleconnect/sample  \
 	--go_opt=paths=source_relative \
-	--connect-go_out=. \
+	--connect-go_out=exampleconnect \
 	--connect-go_opt=paths=source_relative  \
 	exampleconnect/example.proto 
+
+## try -> move codegen to gen/ link in https://connect.build/docs/go/getting-started/
+## maybe connectexample/gen
 
 #gooey/yeet
 connect-go-goo-diff:

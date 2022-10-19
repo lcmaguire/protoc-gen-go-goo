@@ -4,7 +4,7 @@ import (
 	context "context"
 	connect_go "github.com/bufbuild/connect-go"
 	proto "github.com/golang/protobuf/proto"
-	example "github.com/lcmaguire/protoc-gen-go-goo/example"
+	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 	assert "github.com/stretchr/testify/assert"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -15,8 +15,8 @@ import (
 func TestDeleteExamples(t *testing.T) {
 	t.Parallel()
 	service := &ExtraExampleService{}
-	req := &connect_go.Request[example.SearchRequest]{
-		Msg: &example.SearchRequest{},
+	req := &connect_go.Request[sample.SearchRequest]{
+		Msg: &sample.SearchRequest{},
 	}
 	res, err := service.DeleteExamples(context.Background(), req)
 	assert.Error(t, err)

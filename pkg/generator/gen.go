@@ -84,8 +84,10 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
 	pkg := getParamPKG(rootGoIndent.GoImportPath.String())
 	if g.ConnectGo {
-		rootGoIndent.GoName += "connect"
+		//rootGoIndent.GoName += "connect"
+		pkg += "connect"
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: rootGoIndent.GoImportPath + "connect"})
+
 	} else {
 		_ = f.QualifiedGoIdent(rootGoIndent)
 	}

@@ -1,12 +1,12 @@
 package exampleservice
 
 import (
-	exampleconnect "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect"
+	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
 )
 
 // ExampleService implements tutorial.ExampleService.
 type ExampleService struct {
-	example.UnimplementedExampleServiceServer
+	sampleconnect.UnimplementedExampleServiceHandler
 }
 
 func NewExampleService() *ExampleService {

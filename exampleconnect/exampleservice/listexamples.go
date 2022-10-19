@@ -3,13 +3,13 @@ package exampleservice
 import (
 	context "context"
 	connect_go "github.com/bufbuild/connect-go"
-	example "github.com/lcmaguire/protoc-gen-go-goo/example"
+	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 )
 
 // ListExamples implements tutorial.ExampleService.ListExamples.
-func (e *ExampleService) ListExamples(ctx context.Context, req *connect_go.Request[example.SearchRequest]) (*connect_go.Response[example.SearchResponse], error) {
-	res := connect_go.NewResponse(&example.SearchResponse{})
+func (e *ExampleService) ListExamples(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
+	res := connect_go.NewResponse(&sample.SearchResponse{})
 	return res, status.Error(codes.Unimplemented, "yet to be implemented")
 }

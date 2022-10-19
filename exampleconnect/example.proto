@@ -3,7 +3,7 @@ package tutorial; // todo rename and re gen to be different package
 
 import "google/protobuf/empty.proto";
 
-option go_package = "github.com/lcmaguire/protoc-gen-go-goo/example";
+option go_package = "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample";
 
 // todo make AIP approved
 service ExampleService {
