@@ -7,11 +7,13 @@ option go_package = "github.com/lcmaguire/protoc-gen-go-goo/example";
 
 // todo make AIP approved
 service ExampleService {
-    rpc GetExample(SearchRequest) returns (SearchResponse);
     rpc CreateExample(SearchRequest) returns (SearchResponse);
+    rpc GetExample(SearchRequest) returns (SearchResponse);
     rpc ListExamples(SearchRequest) returns (SearchResponse);
-    rpc DeleteExamples(SearchRequest) returns (google.protobuf.Empty);
+    rpc UpdateExample(SearchRequest) returns (SearchResponse);
+    rpc DeleteExample(SearchRequest) returns (google.protobuf.Empty);
 }
+
 
 message SearchRequest {
     string name = 1;
