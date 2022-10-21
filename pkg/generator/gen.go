@@ -57,6 +57,8 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 		requestType := getParamPKG(v.Input.GoIdent.GoImportPath.String()) + "." + v.Input.GoIdent.GoName
 		responseType := getParamPKG(v.Output.GoIdent.GoImportPath.String()) + "." + v.Output.GoIdent.GoName
 
+		v.Input.Desc.FullName()
+		// v.Desc.IsStreamingClient()
 		mData := methodData{
 			S1:           strings.ToLower(service.GoName[0:1]),
 			ServiceName:  service.GoName,
@@ -66,7 +68,7 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 			ResponseType: responseType,
 			Imports:      []protogen.GoIdent{v.Input.GoIdent, v.Output.GoIdent, {GoImportPath: protogen.GoImportPath(service.GoName)}},
 			methodDesc:   v.Desc,
-			ReqPkg:       v.Output.GoIdent.GoImportPath.Ident(".").String(),
+			ReqPkg:       string(v.Input.Desc.FullName()),
 		}
 		f := g.genRpcMethod(gen, mData)
 		outfiles = append(outfiles, f)
