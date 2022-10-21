@@ -8,7 +8,7 @@ import (
 
 func TestBiDirectionalStream(t *testing.T) {
 	t.Parallel()
-	// yet to be implemented.
+	// tests for this type of RPC yet to be implemented.
 	assert.NotNil(t, &sample.GreetRequest{})
 	assert.NotNil(t, &sample.GreetResponse{})
 }

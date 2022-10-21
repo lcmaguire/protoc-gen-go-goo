@@ -55,20 +55,20 @@ func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *con
 const ServerStreamingTemplate = `
 // {{.MethodName}} implements {{.FullName}}.
 func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}], stream *connect_go.ServerStream[{{.ResponseType}}]) error {
-	/* ticker := time.NewTicker(time.Second) // You should set this via config.
+	ticker := time.NewTicker(time.Second) // You should set this via config.
 	defer ticker.Stop()
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 5 ; i++ {
 		if ticker != nil {
 			select {
-			case <-ctx.Done():
+			case <- ctx.Done():
 				return ctx.Err()
-			case <-ticker.C:
+			case <- ticker.C:
 			}
 		}
 		if err := stream.Send(&{{.ResponseType}}{}); err != nil {
 			return err
 		}
-	}*/
+	}
 	return connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
 }
 `
