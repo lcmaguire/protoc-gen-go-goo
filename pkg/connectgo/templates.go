@@ -108,6 +108,15 @@ const TestFileTemplate = `
 		proto.Equal(res.Msg, &{{.ResponseType}}{})
 	}
 	`
+
+const UnsportedTestFile = `
+func Test{{.MethodName}}(t *testing.T){
+	t.Parallel()
+	// yet to be implemented.
+	assert.NotNil(t, &{{.RequestType}}{})
+	assert.NotNil(t, &{{.ResponseType}}{})
+}
+`
 const ServiceTemplate = `
 	// {{.ServiceName}} implements {{.FullName}}.
 	type {{.ServiceName}} struct { 
