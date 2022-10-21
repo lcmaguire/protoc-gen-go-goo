@@ -48,7 +48,7 @@ func TestBiDirectionalStream(t *testing.T) {
 			fmt.Println(err)
 		}
 	})
-	t.Run("converse", func(t *testing.T) {
+	t.Run("bidirectionalTest", func(t *testing.T) {
 		for _, client := range clients {
 			sendValues := []string{"Hello!", "How are you doing?", "I have an issue with my bike", "bye"}
 			var receivedValues []string

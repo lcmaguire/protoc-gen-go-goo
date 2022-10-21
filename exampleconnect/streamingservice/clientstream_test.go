@@ -1,10 +1,18 @@
 package streamingservice
 
 import (
+	context "context"
+	fmt "fmt"
+	"net/http"
+	"net/http/httptest"
+	"sync"
 	testing "testing"
 
+	connect_go "github.com/bufbuild/connect-go"
 	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
 	assert "github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestClientStream(t *testing.T) {
@@ -13,40 +21,41 @@ func TestClientStream(t *testing.T) {
 	assert.NotNil(t, &sample.GreetRequest{})
 	assert.NotNil(t, &sample.GreetResponse{})
 
-	/*
-		mux := http.NewServeMux()
+	mux := http.NewServeMux()
 
-		mux.Handle(sampleconnect.NewStreamingServiceHandler(&StreamingService{}))
-		server := httptest.NewUnstartedServer(mux)
-		server.EnableHTTP2 = true
-		server.StartTLS()
-		defer server.Close()
+	mux.Handle(sampleconnect.NewStreamingServiceHandler(&StreamingService{}))
+	server := httptest.NewUnstartedServer(mux)
+	server.EnableHTTP2 = true
+	server.StartTLS()
+	defer server.Close()
 
-		connectClient := sampleconnect.NewStreamingServiceClient(
-			server.Client(),
-			server.URL,
-		)
-		grpcClient := sampleconnect.NewStreamingServiceClient(
-			server.Client(),
-			server.URL,
-			connect_go.WithGRPC(),
-		)
-		clients := []sampleconnect.StreamingServiceClient{connectClient, grpcClient}
-	*/
+	connectClient := sampleconnect.NewStreamingServiceClient(
+		server.Client(),
+		server.URL,
+	)
+	grpcClient := sampleconnect.NewStreamingServiceClient(
+		server.Client(),
+		server.URL,
+		connect_go.WithGRPC(),
+	)
+	clients := []sampleconnect.StreamingServiceClient{connectClient, grpcClient}
 
-	/*
-		t.Run("introduce", func(t *testing.T) {
-			total := 0
-			for _, client := range clients {
-				request := connect.NewRequest(&sample.SearchRequest{})
-				stream, err := client.ClientStream(context.Background(), request)
-				assert.Nil(t, err)
-				for stream.Receive() {
-					total++
-				}
-				assert.Nil(t, stream.Err())
-				assert.Nil(t, stream.Close())
-				assert.True(t, total > 0)
+	for _, client := range clients {
+		sendValues := []string{"Hello!", "How are you doing?", "I have an issue with my bike", "bye"}
+		stream := client.ClientStream(context.Background())
+		var wg sync.WaitGroup
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for _, sentence := range sendValues {
+				err := stream.Send(&sample.GreetRequest{})
+				require.Nil(t, err, fmt.Sprintf(`failed for string sentence: "%s"`, sentence))
 			}
-		})*/
+		}()
+		wg.Wait()
+		res, err := stream.CloseAndReceive()
+		require.Error(t, err)
+		assert.Equal(t, connect_go.CodeUnimplemented, connect_go.CodeOf(err))
+		assert.Nil(t, res)
+	}
 }
