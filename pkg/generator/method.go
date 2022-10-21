@@ -17,6 +17,7 @@ type methodData struct {
 	ResponseType string
 	FullName     string
 	Imports      []protogen.GoIdent
+	ReqPkg       string
 	methodDesc   protoreflect.MethodDescriptor
 }
 
@@ -41,15 +42,15 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 			imports = append(imports, "errors")
 			tplate = connectgo.ClientStreamingTemplate
 		}
-	}
-
-	switch {
-	case data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer():
-		// handle normal grpc streaming
-	case data.methodDesc.IsStreamingServer():
-		// handle normal grpc streaming
-	case data.methodDesc.IsStreamingClient():
-		// handle normal grpc streaming
+	} else {
+		switch {
+		case data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer():
+			tplate = templates.BidirectionStreamingMethod
+		case data.methodDesc.IsStreamingServer():
+			tplate = templates.ServerStreamingMethod
+		case data.methodDesc.IsStreamingClient():
+			tplate = templates.ClientStreamingMethod
+		}
 	}
 
 	// these are always imported.

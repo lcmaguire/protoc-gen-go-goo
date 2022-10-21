@@ -66,34 +66,46 @@ const MethodTemplate = `
 
 const ClientStreamingMethod = `
 	// {{.MethodName}} implements {{.FullName}}.
-	func ({{.S1}}*{{.ServiceName}}) {{.MethodName}} (ctx context.Context, in *{{.RequestType}}) (out *{{.ResponseType}}, err error){
-		return nil, status.Error(codes.Unimplemented, "yet to be implemented")
+	func ({{.S1}}*{{.ServiceName}}) {{.MethodName}} ( ) error{
+		return status.Error(codes.Unimplemented, "yet to be implemented")
 	}
 `
 
-/* {{ServiceName}}_{{.Method}}Client
-(ctx context.Context, opts ...grpc.CallOption) (StreamingService_ClientStreamClient, error)
+/*
+func (s *StreamingService) ClientStream(stream example.StreamingService_ClientStreamServer) error {
+	return status.Error(codes.Unimplemented, "yet to be implemented")
+}
 */
 
 const ServerStreamingMethod = `
 	// {{.MethodName}} implements {{.FullName}}.
-	func ({{.S1}}*{{.ServiceName}}) {{.MethodName}} (ctx context.Context, in *{{.RequestType}}) (out *{{.ResponseType}}, err error){
-		for _, feature := range s.savedFeatures {
-			if inRange(feature.Location, rect) {
-			  if err := stream.Send(feature); err != nil {
-				return err
-			  }
-			}
-		  }
-		  return nil
+	func ({{.S1}}*{{.ServiceName}}) {{.MethodName}} (in *{{.RequestType}}, stream {{.ReqPkg}}.{{.ServiceName}}_{{.MethodName}}Server) error{
+
+		  return status.Error(codes.Unimplemented, "yet to be implemented")
 	}
 `
 
+//  {{ServiceName}}_{{MethodName}}Server
+
+/*
+func (s *StreamingService) ResponseStream(in *example.GreetRequest, stream example.StreamingService_ResponseStreamServer) error {
+	return status.Error(codes.Unimplemented, "yet to be implemented")
+}
+*/
+
 const BidirectionStreamingMethod = `
 	// {{.MethodName}} implements {{.FullName}}.
-	func ({{.S1}}*{{.ServiceName}}) {{.MethodName}} (ctx context.Context, in *{{.RequestType}}) (out *{{.ResponseType}}, err error){
-		return nil, status.Error(codes.Unimplemented, "yet to be implemented")
+	func ({{.S1}}*{{.ServiceName}}) {{.MethodName}} (stream example.StreamingService_BiDirectionalStreamServer) error {
+		return status.Error(codes.Unimplemented, "yet to be implemented")
 	}
 `
+
+/*
+
+func (s *StreamingService) BiDirectionalStream(stream example.StreamingService_BiDirectionalStreamServer) error {
+	return status.Error(codes.Unimplemented, "yet to be implemented")
+}
+
+*/
 
 const MethodCallerTemplate = `%s *%s`
