@@ -30,18 +30,26 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 	if g.ConnectGo {
 		imports = connectgo.MethodImports
 		tplate = connectgo.MethodTemplate
+		switch {
+		case data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer():
+			imports = append(imports, "errors", "io", "fmt")
+			tplate = connectgo.BiDirectionalStreamingTemplate
+		case data.methodDesc.IsStreamingServer():
+			imports = append(imports, "time")
+			tplate = connectgo.ServerStreamingTemplate
+		case data.methodDesc.IsStreamingClient():
+			imports = append(imports, "errors")
+			tplate = connectgo.ClientStreamingTemplate
+		}
 	}
 
 	switch {
 	case data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer():
-		imports = append(imports, "errors", "io", "fmt")
-		tplate = connectgo.BiDirectionalStreamingTemplate
+		// handle normal grpc streaming
 	case data.methodDesc.IsStreamingServer():
-		imports = append(imports, "time")
-		tplate = connectgo.ServerStreamingTemplate
+		// handle normal grpc streaming
 	case data.methodDesc.IsStreamingClient():
-		imports = append(imports, "errors")
-		tplate = connectgo.ClientStreamingTemplate
+		// handle normal grpc streaming
 	}
 
 	// these are always imported.
