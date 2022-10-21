@@ -13,20 +13,6 @@ service ExampleService {
     rpc DeleteExamples(SearchRequest) returns (google.protobuf.Empty);
 }
 
-message GreetRequest {
-    string name = 1;
-  }
-  
-  message GreetResponse {
-    string greeting = 1;
-  }
-
-service StreamingService {
-    rpc ClientStream(stream GreetRequest) returns (GreetResponse) {}
-    rpc ResponseStream(GreetRequest) returns (stream GreetResponse) {}
-    rpc BiDirectionalStream(stream GreetRequest) returns (stream GreetResponse) {}
-}
-
 message SearchRequest {
     string name = 1;
     string display_name = 2;
@@ -34,4 +20,18 @@ message SearchRequest {
 
 message SearchResponse {
     string name = 1;
+}
+
+service StreamingService {
+    rpc ClientStream(stream GreetRequest) returns (GreetResponse) {}
+    rpc ResponseStream(GreetRequest) returns (stream GreetResponse) {}
+    rpc BiDirectionalStream(stream GreetRequest) returns (stream GreetResponse) {}
+}
+
+message GreetRequest {
+    string name = 1;
+}
+  
+message GreetResponse {
+    string greeting = 1;
 }
