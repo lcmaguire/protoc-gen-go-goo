@@ -1,4 +1,4 @@
-package exampleservice
+package streamingservice
 
 import (
 	context "context"
@@ -9,14 +9,14 @@ import (
 	testing "testing"
 )
 
-func TestListExamples(t *testing.T) {
+func TestClientStream(t *testing.T) {
 	t.Parallel()
-	service := &ExampleService{}
-	req := &connect_go.Request[sample.SearchRequest]{
-		Msg: &sample.SearchRequest{},
+	service := &StreamingService{}
+	req := &connect_go.Request[sample.GreetRequest]{
+		Msg: &sample.GreetRequest{},
 	}
-	res, err := service.ListExamples(context.Background(), req)
+	res, err := service.ClientStream(context.Background(), req)
 	assert.Error(t, err)
 	assert.Equal(t, connect_go.CodeUnimplemented, connect_go.CodeOf(err))
-	proto.Equal(res.Msg, &sample.SearchResponse{})
+	proto.Equal(res.Msg, &sample.GreetResponse{})
 }

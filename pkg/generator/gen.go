@@ -52,16 +52,34 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 	serviceFile := g.generateServiceFile(gen, service)
 	outfiles = append(outfiles, serviceFile)
 
+	// if stream response *connect_go.ServerStream
+
+	// bidi  *connect_go.BidiStream[sample.GreetRequest, sample.GreetResponse]
+	//  client stream ClientStream
+
+	// provided we can determine this from req.
+
+	// if method in.Type == Stream?
+
+	//service.Desc.
+
+	// method.desc.IsStreamClient?
+	// if true MAY need to change server.
+
 	// will create a method for all services
 	for _, v := range service.Methods {
+		requestType := getParamPKG(v.Input.GoIdent.GoImportPath.String()) + "." + v.Input.GoIdent.GoName
+		responseType := getParamPKG(v.Output.GoIdent.GoImportPath.String()) + "." + v.Output.GoIdent.GoName
+
 		mData := methodData{
 			S1:           strings.ToLower(service.GoName[0:1]),
 			ServiceName:  service.GoName,
 			MethodName:   v.GoName,
 			FullName:     string(v.Desc.FullName()),
-			RequestType:  getParamPKG(v.Input.GoIdent.GoImportPath.String()) + "." + v.Input.GoIdent.GoName,
-			ResponseType: getParamPKG(v.Output.GoIdent.GoImportPath.String()) + "." + v.Output.GoIdent.GoName,
+			RequestType:  requestType,
+			ResponseType: responseType,
 			Imports:      []protogen.GoIdent{v.Input.GoIdent, v.Output.GoIdent, {GoImportPath: protogen.GoImportPath(service.GoName)}},
+			methodDesc:   v.Desc,
 		}
 		f := g.genRpcMethod(gen, mData)
 		outfiles = append(outfiles, f)

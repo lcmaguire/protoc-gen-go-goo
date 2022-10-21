@@ -33,9 +33,66 @@ const MethodTemplate = `
 // {{.MethodName}} implements {{.FullName}}.
 func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	res := connect_go.NewResponse(&{{.ResponseType}}{})
-	return res, status.Error(codes.Unimplemented, "yet to be implemented")
+	return res, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
 }
 
+`
+
+const ClientStreamingTemplate = `
+// {{.MethodName}} implements {{.FullName}}.
+func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *connect_go.ClientStream[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
+	for stream.Receive() {
+		// implement logic here.
+	}
+	if err := stream.Err(); err != nil {
+	  return nil, connect_go.NewError(connect_go.CodeUnknown, err)
+	}
+	res := connect_go.NewResponse(&{{.ResponseType}}{})
+	return res, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented")) 
+  }
+`
+
+const ServerStreamingTemplate = `
+// {{.MethodName}} implements {{.FullName}}.
+func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}], stream *connect_go.ServerStream[{{.ResponseType}}]) error {
+	/* ticker := time.NewTicker(time.Second) // You should set this via config.
+	defer ticker.Stop()
+	for i := 0; i < 5; i++ {
+		if ticker != nil {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-ticker.C:
+			}
+		}
+		if err := stream.Send(&{{.ResponseType}}{}); err != nil {
+			return err
+		}
+	}*/
+	return connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
+}
+`
+
+const BiDirectionalStreamingTemplate = `
+// {{.MethodName}} implements {{.FullName}}.
+func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *connect_go.BidiStream[{{.RequestType}}, {{.ResponseType}}]) error {
+	for {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		request, err := stream.Receive()
+		if err != nil && errors.Is(err, io.EOF) {
+			return nil
+		} else if err != nil {
+			return err
+		}
+		fmt.Println("incoming request ", request)
+		if err := stream.Send(&{{.ResponseType}}{}); err != nil {
+			return err
+		}
+		connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
+	}
+}
 `
 
 const TestFileTemplate = `
@@ -47,7 +104,7 @@ const TestFileTemplate = `
 		}
 		res, err := service.{{.MethodName}}(context.Background(), req)
 		assert.Error(t, err)
-		assert.Equal(t, codes.Unimplemented, status.Code(err))
+		assert.Equal(t, connect_go.CodeUnimplemented, connect_go.CodeOf(err))
 		proto.Equal(res.Msg, &{{.ResponseType}}{})
 	}
 	`

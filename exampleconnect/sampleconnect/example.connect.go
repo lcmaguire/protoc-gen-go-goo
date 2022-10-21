@@ -26,6 +26,8 @@ const (
 	ExampleServiceName = "tutorial.ExampleService"
 	// ExtraExampleServiceName is the fully-qualified name of the ExtraExampleService service.
 	ExtraExampleServiceName = "tutorial.ExtraExampleService"
+	// StreamingServiceName is the fully-qualified name of the StreamingService service.
+	StreamingServiceName = "tutorial.StreamingService"
 )
 
 // ExampleServiceClient is a client for the tutorial.ExampleService service.
@@ -234,4 +236,108 @@ func (UnimplementedExtraExampleServiceHandler) GetExample(context.Context, *conn
 
 func (UnimplementedExtraExampleServiceHandler) DeleteExamples(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[emptypb.Empty], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.ExtraExampleService.DeleteExamples is not implemented"))
+}
+
+// StreamingServiceClient is a client for the tutorial.StreamingService service.
+type StreamingServiceClient interface {
+	ClientStream(context.Context) *connect_go.ClientStreamForClient[sample.GreetRequest, sample.GreetResponse]
+	ResponseStream(context.Context, *connect_go.Request[sample.GreetRequest]) (*connect_go.ServerStreamForClient[sample.GreetResponse], error)
+	BiDirectionalStream(context.Context) *connect_go.BidiStreamForClient[sample.GreetRequest, sample.GreetResponse]
+}
+
+// NewStreamingServiceClient constructs a client for the tutorial.StreamingService service. By
+// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
+// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
+// connect.WithGRPC() or connect.WithGRPCWeb() options.
+//
+// The URL supplied here should be the base URL for the Connect or gRPC server (for example,
+// http://api.acme.com or https://acme.com/grpc).
+func NewStreamingServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) StreamingServiceClient {
+	baseURL = strings.TrimRight(baseURL, "/")
+	return &streamingServiceClient{
+		clientStream: connect_go.NewClient[sample.GreetRequest, sample.GreetResponse](
+			httpClient,
+			baseURL+"/tutorial.StreamingService/ClientStream",
+			opts...,
+		),
+		responseStream: connect_go.NewClient[sample.GreetRequest, sample.GreetResponse](
+			httpClient,
+			baseURL+"/tutorial.StreamingService/ResponseStream",
+			opts...,
+		),
+		biDirectionalStream: connect_go.NewClient[sample.GreetRequest, sample.GreetResponse](
+			httpClient,
+			baseURL+"/tutorial.StreamingService/BiDirectionalStream",
+			opts...,
+		),
+	}
+}
+
+// streamingServiceClient implements StreamingServiceClient.
+type streamingServiceClient struct {
+	clientStream        *connect_go.Client[sample.GreetRequest, sample.GreetResponse]
+	responseStream      *connect_go.Client[sample.GreetRequest, sample.GreetResponse]
+	biDirectionalStream *connect_go.Client[sample.GreetRequest, sample.GreetResponse]
+}
+
+// ClientStream calls tutorial.StreamingService.ClientStream.
+func (c *streamingServiceClient) ClientStream(ctx context.Context) *connect_go.ClientStreamForClient[sample.GreetRequest, sample.GreetResponse] {
+	return c.clientStream.CallClientStream(ctx)
+}
+
+// ResponseStream calls tutorial.StreamingService.ResponseStream.
+func (c *streamingServiceClient) ResponseStream(ctx context.Context, req *connect_go.Request[sample.GreetRequest]) (*connect_go.ServerStreamForClient[sample.GreetResponse], error) {
+	return c.responseStream.CallServerStream(ctx, req)
+}
+
+// BiDirectionalStream calls tutorial.StreamingService.BiDirectionalStream.
+func (c *streamingServiceClient) BiDirectionalStream(ctx context.Context) *connect_go.BidiStreamForClient[sample.GreetRequest, sample.GreetResponse] {
+	return c.biDirectionalStream.CallBidiStream(ctx)
+}
+
+// StreamingServiceHandler is an implementation of the tutorial.StreamingService service.
+type StreamingServiceHandler interface {
+	ClientStream(context.Context, *connect_go.ClientStream[sample.GreetRequest]) (*connect_go.Response[sample.GreetResponse], error)
+	ResponseStream(context.Context, *connect_go.Request[sample.GreetRequest], *connect_go.ServerStream[sample.GreetResponse]) error
+	BiDirectionalStream(context.Context, *connect_go.BidiStream[sample.GreetRequest, sample.GreetResponse]) error
+}
+
+// NewStreamingServiceHandler builds an HTTP handler from the service implementation. It returns the
+// path on which to mount the handler and the handler itself.
+//
+// By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
+// and JSON codecs. They also support gzip compression.
+func NewStreamingServiceHandler(svc StreamingServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
+	mux := http.NewServeMux()
+	mux.Handle("/tutorial.StreamingService/ClientStream", connect_go.NewClientStreamHandler(
+		"/tutorial.StreamingService/ClientStream",
+		svc.ClientStream,
+		opts...,
+	))
+	mux.Handle("/tutorial.StreamingService/ResponseStream", connect_go.NewServerStreamHandler(
+		"/tutorial.StreamingService/ResponseStream",
+		svc.ResponseStream,
+		opts...,
+	))
+	mux.Handle("/tutorial.StreamingService/BiDirectionalStream", connect_go.NewBidiStreamHandler(
+		"/tutorial.StreamingService/BiDirectionalStream",
+		svc.BiDirectionalStream,
+		opts...,
+	))
+	return "/tutorial.StreamingService/", mux
+}
+
+// UnimplementedStreamingServiceHandler returns CodeUnimplemented from all methods.
+type UnimplementedStreamingServiceHandler struct{}
+
+func (UnimplementedStreamingServiceHandler) ClientStream(context.Context, *connect_go.ClientStream[sample.GreetRequest]) (*connect_go.Response[sample.GreetResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.StreamingService.ClientStream is not implemented"))
+}
+
+func (UnimplementedStreamingServiceHandler) ResponseStream(context.Context, *connect_go.Request[sample.GreetRequest], *connect_go.ServerStream[sample.GreetResponse]) error {
+	return connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.StreamingService.ResponseStream is not implemented"))
+}
+
+func (UnimplementedStreamingServiceHandler) BiDirectionalStream(context.Context, *connect_go.BidiStream[sample.GreetRequest, sample.GreetResponse]) error {
+	return connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.StreamingService.BiDirectionalStream is not implemented"))
 }

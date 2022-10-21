@@ -4,6 +4,7 @@ import (
 	exampleservice "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/exampleservice"
 	extraexampleservice "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/extraexampleservice"
 	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
+	streamingservice "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/streamingservice"
 	http2 "golang.org/x/net/http2"
 	h2c "golang.org/x/net/http2/h2c"
 	log "log"
@@ -18,6 +19,8 @@ func main() {
 	mux.Handle(sampleconnect.NewExampleServiceHandler(&exampleservice.ExampleService{}))
 
 	mux.Handle(sampleconnect.NewExtraExampleServiceHandler(&extraexampleservice.ExtraExampleService{}))
+
+	mux.Handle(sampleconnect.NewStreamingServiceHandler(&streamingservice.StreamingService{}))
 
 	err := http.ListenAndServe(
 		"localhost:8080",

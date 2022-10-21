@@ -6,6 +6,7 @@ import (
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/templates"
 	"google.golang.org/protobuf/compiler/protogen"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 type methodData struct {
@@ -16,6 +17,7 @@ type methodData struct {
 	ResponseType string
 	FullName     string
 	Imports      []protogen.GoIdent
+	methodDesc   protoreflect.MethodDescriptor
 }
 
 func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protogen.GeneratedFile {
@@ -28,6 +30,21 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 	if g.ConnectGo {
 		imports = connectgo.MethodImports
 		tplate = connectgo.MethodTemplate
+	}
+
+	if data.methodDesc.IsStreamingClient() {
+		imports = append(imports, "errors")
+		tplate = connectgo.ClientStreamingTemplate
+	}
+
+	if data.methodDesc.IsStreamingServer() {
+		//imports = append(imports, "errors", "fmt")
+		tplate = connectgo.ServerStreamingTemplate
+	}
+
+	if data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer() {
+		imports = append(imports, "errors", "io", "fmt")
+		tplate = connectgo.BiDirectionalStreamingTemplate
 	}
 
 	// these are always imported.
