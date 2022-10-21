@@ -112,7 +112,7 @@ const TestFileTemplate = `
 const UnsportedTestFile = `
 func Test{{.MethodName}}(t *testing.T){
 	t.Parallel()
-	// yet to be implemented.
+	// tests for this type of RPC yet to be implemented.
 	assert.NotNil(t, &{{.RequestType}}{})
 	assert.NotNil(t, &{{.ResponseType}}{})
 }
