@@ -7,6 +7,7 @@ import (
 	assert "github.com/stretchr/testify/assert"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	testing "testing"
 )
 
@@ -17,5 +18,5 @@ func TestDeleteExamples(t *testing.T) {
 	res, err := service.DeleteExamples(context.Background(), req)
 	assert.Error(t, err)
 	assert.Equal(t, codes.Unimplemented, status.Code(err))
-	proto.Equal(res, &example.SearchResponse{})
+	proto.Equal(res, &emptypb.Empty{})
 }

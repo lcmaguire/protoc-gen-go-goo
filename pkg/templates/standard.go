@@ -64,4 +64,36 @@ const MethodTemplate = `
 	}
 `
 
+const ClientStreamingMethod = `
+	// {{.MethodName}} implements {{.FullName}}.
+	func ({{.S1}}*{{.ServiceName}}) {{.MethodName}} (ctx context.Context, in *{{.RequestType}}) (out *{{.ResponseType}}, err error){
+		return nil, status.Error(codes.Unimplemented, "yet to be implemented")
+	}
+`
+
+/* {{ServiceName}}_{{.Method}}Client
+(ctx context.Context, opts ...grpc.CallOption) (StreamingService_ClientStreamClient, error)
+*/
+
+const ServerStreamingMethod = `
+	// {{.MethodName}} implements {{.FullName}}.
+	func ({{.S1}}*{{.ServiceName}}) {{.MethodName}} (ctx context.Context, in *{{.RequestType}}) (out *{{.ResponseType}}, err error){
+		for _, feature := range s.savedFeatures {
+			if inRange(feature.Location, rect) {
+			  if err := stream.Send(feature); err != nil {
+				return err
+			  }
+			}
+		  }
+		  return nil
+	}
+`
+
+const BidirectionStreamingMethod = `
+	// {{.MethodName}} implements {{.FullName}}.
+	func ({{.S1}}*{{.ServiceName}}) {{.MethodName}} (ctx context.Context, in *{{.RequestType}}) (out *{{.ResponseType}}, err error){
+		return nil, status.Error(codes.Unimplemented, "yet to be implemented")
+	}
+`
+
 const MethodCallerTemplate = `%s *%s`

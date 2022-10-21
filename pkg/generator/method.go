@@ -84,10 +84,11 @@ func (g *Generator) genTestFile(gen *protogen.Plugin, data methodData) *protogen
 	if g.ConnectGo {
 		imports = connectgo.TestImports
 		tplate = connectgo.TestFileTemplate
-		if data.methodDesc.IsStreamingClient() || data.methodDesc.IsStreamingServer() {
-			tplate = connectgo.UnsportedTestFile // streaming types are hard to make tests for.
-			imports = []protogen.GoImportPath{"testing", "github.com/stretchr/testify/assert"}
-		}
+	}
+
+	if data.methodDesc.IsStreamingClient() || data.methodDesc.IsStreamingServer() {
+		tplate = connectgo.UnsportedTestFile // streaming types are hard to make tests for.
+		imports = []protogen.GoImportPath{"testing", "github.com/stretchr/testify/assert"}
 	}
 
 	for _, v := range data.Imports {

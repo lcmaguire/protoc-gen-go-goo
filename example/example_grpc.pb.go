@@ -26,7 +26,7 @@ type ExampleServiceClient interface {
 	GetExample(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
 	CreateExample(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
 	ListExamples(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
-	DeleteExamples(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
+	DeleteExamples(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type exampleServiceClient struct {
@@ -64,8 +64,8 @@ func (c *exampleServiceClient) ListExamples(ctx context.Context, in *SearchReque
 	return out, nil
 }
 
-func (c *exampleServiceClient) DeleteExamples(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error) {
-	out := new(SearchResponse)
+func (c *exampleServiceClient) DeleteExamples(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/tutorial.ExampleService/DeleteExamples", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -80,7 +80,7 @@ type ExampleServiceServer interface {
 	GetExample(context.Context, *SearchRequest) (*SearchResponse, error)
 	CreateExample(context.Context, *SearchRequest) (*SearchResponse, error)
 	ListExamples(context.Context, *SearchRequest) (*SearchResponse, error)
-	DeleteExamples(context.Context, *SearchRequest) (*SearchResponse, error)
+	DeleteExamples(context.Context, *SearchRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedExampleServiceServer()
 }
 
@@ -97,7 +97,7 @@ func (UnimplementedExampleServiceServer) CreateExample(context.Context, *SearchR
 func (UnimplementedExampleServiceServer) ListExamples(context.Context, *SearchRequest) (*SearchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListExamples not implemented")
 }
-func (UnimplementedExampleServiceServer) DeleteExamples(context.Context, *SearchRequest) (*SearchResponse, error) {
+func (UnimplementedExampleServiceServer) DeleteExamples(context.Context, *SearchRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteExamples not implemented")
 }
 func (UnimplementedExampleServiceServer) mustEmbedUnimplementedExampleServiceServer() {}
@@ -213,124 +213,253 @@ var ExampleService_ServiceDesc = grpc.ServiceDesc{
 	Metadata: "example.proto",
 }
 
-// ExtraExampleServiceClient is the client API for ExtraExampleService service.
+// StreamingServiceClient is the client API for StreamingService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ExtraExampleServiceClient interface {
-	GetExample(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
-	DeleteExamples(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+type StreamingServiceClient interface {
+	ClientStream(ctx context.Context, opts ...grpc.CallOption) (StreamingService_ClientStreamClient, error)
+	ResponseStream(ctx context.Context, in *GreetRequest, opts ...grpc.CallOption) (StreamingService_ResponseStreamClient, error)
+	BiDirectionalStream(ctx context.Context, opts ...grpc.CallOption) (StreamingService_BiDirectionalStreamClient, error)
 }
 
-type extraExampleServiceClient struct {
+type streamingServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewExtraExampleServiceClient(cc grpc.ClientConnInterface) ExtraExampleServiceClient {
-	return &extraExampleServiceClient{cc}
+func NewStreamingServiceClient(cc grpc.ClientConnInterface) StreamingServiceClient {
+	return &streamingServiceClient{cc}
 }
 
-func (c *extraExampleServiceClient) GetExample(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error) {
-	out := new(SearchResponse)
-	err := c.cc.Invoke(ctx, "/tutorial.ExtraExampleService/GetExample", in, out, opts...)
+func (c *streamingServiceClient) ClientStream(ctx context.Context, opts ...grpc.CallOption) (StreamingService_ClientStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &StreamingService_ServiceDesc.Streams[0], "/tutorial.StreamingService/ClientStream", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &streamingServiceClientStreamClient{stream}
+	return x, nil
 }
 
-func (c *extraExampleServiceClient) DeleteExamples(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/tutorial.ExtraExampleService/DeleteExamples", in, out, opts...)
+type StreamingService_ClientStreamClient interface {
+	Send(*GreetRequest) error
+	CloseAndRecv() (*GreetResponse, error)
+	grpc.ClientStream
+}
+
+type streamingServiceClientStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *streamingServiceClientStreamClient) Send(m *GreetRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *streamingServiceClientStreamClient) CloseAndRecv() (*GreetResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(GreetResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *streamingServiceClient) ResponseStream(ctx context.Context, in *GreetRequest, opts ...grpc.CallOption) (StreamingService_ResponseStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &StreamingService_ServiceDesc.Streams[1], "/tutorial.StreamingService/ResponseStream", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &streamingServiceResponseStreamClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
 }
 
-// ExtraExampleServiceServer is the server API for ExtraExampleService service.
-// All implementations must embed UnimplementedExtraExampleServiceServer
+type StreamingService_ResponseStreamClient interface {
+	Recv() (*GreetResponse, error)
+	grpc.ClientStream
+}
+
+type streamingServiceResponseStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *streamingServiceResponseStreamClient) Recv() (*GreetResponse, error) {
+	m := new(GreetResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *streamingServiceClient) BiDirectionalStream(ctx context.Context, opts ...grpc.CallOption) (StreamingService_BiDirectionalStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &StreamingService_ServiceDesc.Streams[2], "/tutorial.StreamingService/BiDirectionalStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &streamingServiceBiDirectionalStreamClient{stream}
+	return x, nil
+}
+
+type StreamingService_BiDirectionalStreamClient interface {
+	Send(*GreetRequest) error
+	Recv() (*GreetResponse, error)
+	grpc.ClientStream
+}
+
+type streamingServiceBiDirectionalStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *streamingServiceBiDirectionalStreamClient) Send(m *GreetRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *streamingServiceBiDirectionalStreamClient) Recv() (*GreetResponse, error) {
+	m := new(GreetResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+// StreamingServiceServer is the server API for StreamingService service.
+// All implementations must embed UnimplementedStreamingServiceServer
 // for forward compatibility
-type ExtraExampleServiceServer interface {
-	GetExample(context.Context, *SearchRequest) (*SearchResponse, error)
-	DeleteExamples(context.Context, *SearchRequest) (*emptypb.Empty, error)
-	mustEmbedUnimplementedExtraExampleServiceServer()
+type StreamingServiceServer interface {
+	ClientStream(StreamingService_ClientStreamServer) error
+	ResponseStream(*GreetRequest, StreamingService_ResponseStreamServer) error
+	BiDirectionalStream(StreamingService_BiDirectionalStreamServer) error
+	mustEmbedUnimplementedStreamingServiceServer()
 }
 
-// UnimplementedExtraExampleServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedExtraExampleServiceServer struct {
+// UnimplementedStreamingServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedStreamingServiceServer struct {
 }
 
-func (UnimplementedExtraExampleServiceServer) GetExample(context.Context, *SearchRequest) (*SearchResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetExample not implemented")
+func (UnimplementedStreamingServiceServer) ClientStream(StreamingService_ClientStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method ClientStream not implemented")
 }
-func (UnimplementedExtraExampleServiceServer) DeleteExamples(context.Context, *SearchRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteExamples not implemented")
+func (UnimplementedStreamingServiceServer) ResponseStream(*GreetRequest, StreamingService_ResponseStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method ResponseStream not implemented")
 }
-func (UnimplementedExtraExampleServiceServer) mustEmbedUnimplementedExtraExampleServiceServer() {}
+func (UnimplementedStreamingServiceServer) BiDirectionalStream(StreamingService_BiDirectionalStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method BiDirectionalStream not implemented")
+}
+func (UnimplementedStreamingServiceServer) mustEmbedUnimplementedStreamingServiceServer() {}
 
-// UnsafeExtraExampleServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ExtraExampleServiceServer will
+// UnsafeStreamingServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to StreamingServiceServer will
 // result in compilation errors.
-type UnsafeExtraExampleServiceServer interface {
-	mustEmbedUnimplementedExtraExampleServiceServer()
+type UnsafeStreamingServiceServer interface {
+	mustEmbedUnimplementedStreamingServiceServer()
 }
 
-func RegisterExtraExampleServiceServer(s grpc.ServiceRegistrar, srv ExtraExampleServiceServer) {
-	s.RegisterService(&ExtraExampleService_ServiceDesc, srv)
+func RegisterStreamingServiceServer(s grpc.ServiceRegistrar, srv StreamingServiceServer) {
+	s.RegisterService(&StreamingService_ServiceDesc, srv)
 }
 
-func _ExtraExampleService_GetExample_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchRequest)
-	if err := dec(in); err != nil {
+func _StreamingService_ClientStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(StreamingServiceServer).ClientStream(&streamingServiceClientStreamServer{stream})
+}
+
+type StreamingService_ClientStreamServer interface {
+	SendAndClose(*GreetResponse) error
+	Recv() (*GreetRequest, error)
+	grpc.ServerStream
+}
+
+type streamingServiceClientStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *streamingServiceClientStreamServer) SendAndClose(m *GreetResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *streamingServiceClientStreamServer) Recv() (*GreetRequest, error) {
+	m := new(GreetRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
-	if interceptor == nil {
-		return srv.(ExtraExampleServiceServer).GetExample(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/tutorial.ExtraExampleService/GetExample",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExtraExampleServiceServer).GetExample(ctx, req.(*SearchRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return m, nil
 }
 
-func _ExtraExampleService_DeleteExamples_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchRequest)
-	if err := dec(in); err != nil {
+func _StreamingService_ResponseStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GreetRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(StreamingServiceServer).ResponseStream(m, &streamingServiceResponseStreamServer{stream})
+}
+
+type StreamingService_ResponseStreamServer interface {
+	Send(*GreetResponse) error
+	grpc.ServerStream
+}
+
+type streamingServiceResponseStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *streamingServiceResponseStreamServer) Send(m *GreetResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _StreamingService_BiDirectionalStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(StreamingServiceServer).BiDirectionalStream(&streamingServiceBiDirectionalStreamServer{stream})
+}
+
+type StreamingService_BiDirectionalStreamServer interface {
+	Send(*GreetResponse) error
+	Recv() (*GreetRequest, error)
+	grpc.ServerStream
+}
+
+type streamingServiceBiDirectionalStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *streamingServiceBiDirectionalStreamServer) Send(m *GreetResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *streamingServiceBiDirectionalStreamServer) Recv() (*GreetRequest, error) {
+	m := new(GreetRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
-	if interceptor == nil {
-		return srv.(ExtraExampleServiceServer).DeleteExamples(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/tutorial.ExtraExampleService/DeleteExamples",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExtraExampleServiceServer).DeleteExamples(ctx, req.(*SearchRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return m, nil
 }
 
-// ExtraExampleService_ServiceDesc is the grpc.ServiceDesc for ExtraExampleService service.
+// StreamingService_ServiceDesc is the grpc.ServiceDesc for StreamingService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var ExtraExampleService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "tutorial.ExtraExampleService",
-	HandlerType: (*ExtraExampleServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
+var StreamingService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "tutorial.StreamingService",
+	HandlerType: (*StreamingServiceServer)(nil),
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "GetExample",
-			Handler:    _ExtraExampleService_GetExample_Handler,
+			StreamName:    "ClientStream",
+			Handler:       _StreamingService_ClientStream_Handler,
+			ClientStreams: true,
 		},
 		{
-			MethodName: "DeleteExamples",
-			Handler:    _ExtraExampleService_DeleteExamples_Handler,
+			StreamName:    "ResponseStream",
+			Handler:       _StreamingService_ResponseStream_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "BiDirectionalStream",
+			Handler:       _StreamingService_BiDirectionalStream_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "example.proto",
 }
