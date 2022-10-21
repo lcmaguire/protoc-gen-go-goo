@@ -10,12 +10,6 @@ service ExampleService {
     rpc GetExample(SearchRequest) returns (SearchResponse);
     rpc CreateExample(SearchRequest) returns (SearchResponse);
     rpc ListExamples(SearchRequest) returns (SearchResponse);
-    rpc DeleteExamples(SearchRequest) returns (SearchResponse);
-}
-
-// todo make AIP approved
-service ExtraExampleService {
-    rpc GetExample(SearchRequest) returns (SearchResponse);
     rpc DeleteExamples(SearchRequest) returns (google.protobuf.Empty);
 }
 
@@ -26,4 +20,18 @@ message SearchRequest {
 
 message SearchResponse {
     string name = 1;
+}
+
+service StreamingService {
+    rpc ClientStream(stream GreetRequest) returns (GreetResponse) {}
+    rpc ResponseStream(GreetRequest) returns (stream GreetResponse) {}
+    rpc BiDirectionalStream(stream GreetRequest) returns (stream GreetResponse) {}
+}
+
+message GreetRequest {
+    string name = 1;
+}
+  
+message GreetResponse {
+    string greeting = 1;
 }
