@@ -41,6 +41,7 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File, se
 		// will probably need to be an interface or variable funcs
 		if g.ConnectGo {
 			resgisteredServices += fmt.Sprintf(
+				// todo move to template
 				connectgo.ServiceHandleTemplate,
 				pkg,
 				serviceName,

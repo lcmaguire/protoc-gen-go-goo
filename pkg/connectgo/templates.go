@@ -109,6 +109,60 @@ const TestFileTemplate = `
 	}
 	`
 
+// %sconnect.New%sHandler(&%s{})
+const TestBidirectionalStreamTemplate = `
+	mux := http.NewServeMux()
+
+	mux.Handle({{.Pkg}}connect.New{{.ServiceName}}Handler(&{{.ServiceName}}{}))
+	server := httptest.NewUnstartedServer(mux)
+	server.EnableHTTP2 = true
+	server.StartTLS()
+	defer server.Close()
+
+	connectClient := {{.Pkg}}connect.New{{.ServiceName}}Client(
+		server.Client(),
+		server.URL,
+	)
+	grpcClient := {{.Pkg}}connect.New{{.ServiceName}}Client(
+		server.Client(),
+		server.URL,
+		connect_go.WithGRPC(),
+	)
+	clients := []{{.Pkg}}connect.{{.ServiceName}}Client{connectClient, grpcClient}
+
+	t.Run("bidirectionalTest", func(t *testing.T) {
+		for _, client := range clients {
+			sendValues := []string{"Hello!", "How are you doing?", "I have an issue with my bike", "bye"}
+			var receivedValues []string
+			stream := client.{{.MethodName}}(context.Background())
+			var wg sync.WaitGroup
+			wg.Add(2)
+			go func() {
+				defer wg.Done()
+				for i := 0; i < , sentence := range sendValues {
+					err := stream.Send(&{{.RequestType}}{})
+					require.Nil(t, err, )
+				}
+				require.Nil(t, stream.CloseRequest())
+			}()
+			go func() {
+				defer wg.Done()
+				for {
+					_, err := stream.Receive()
+					if errors.Is(err, io.EOF) {
+						break
+					}
+					require.Nil(t, err)
+					receivedValues = append(receivedValues, "")
+				}
+				require.Nil(t, stream.CloseResponse())
+			}()
+			wg.Wait()
+			assert.Equal(t, len(receivedValues), len(sendValues))
+		}
+	})
+	`
+
 const UnsportedTestFile = `
 func Test{{.MethodName}}(t *testing.T){
 	t.Parallel()

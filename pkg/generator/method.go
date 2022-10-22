@@ -17,7 +17,7 @@ type methodData struct {
 	ResponseType string
 	FullName     string
 	Imports      []protogen.GoIdent
-	ReqPkg       string
+	Pkg          string
 	methodDesc   protoreflect.MethodDescriptor
 }
 

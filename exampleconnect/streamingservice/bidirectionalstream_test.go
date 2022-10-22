@@ -10,7 +10,6 @@ import (
 	"sync"
 	testing "testing"
 
-	"github.com/bufbuild/connect-go"
 	connect_go "github.com/bufbuild/connect-go"
 
 	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
@@ -40,14 +39,6 @@ func TestBiDirectionalStream(t *testing.T) {
 	)
 	clients := []sampleconnect.StreamingServiceClient{connectClient, grpcClient}
 
-	t.Run("response_stream", func(t *testing.T) {
-		for _, client := range clients {
-			result, err := client.ResponseStream(context.Background(), connect.NewRequest(&sample.GreetRequest{}))
-			assert.NoError(t, err)
-			assert.NotNil(t, result)
-			fmt.Println(err)
-		}
-	})
 	t.Run("bidirectionalTest", func(t *testing.T) {
 		for _, client := range clients {
 			sendValues := []string{"Hello!", "How are you doing?", "I have an issue with my bike", "bye"}
