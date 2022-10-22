@@ -90,19 +90,21 @@ func (g *Generator) genTestFile(gen *protogen.Plugin, data methodData) *protogen
 
 	switch {
 	case data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer():
-		tplate = connectgo.TestBidirectionalStreamTemplate // streaming types are hard to make tests for.
+		tplate = connectgo.TestBidirectionalStreamTemplate
 		imports = connectgo.TestBiDirectionalMethod
 		// imports connect go gRPC.
 		connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, data.Pkg+"connect")
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
 	case data.methodDesc.IsStreamingClient():
-		tplate = connectgo.TestClientStreamTemplate // streaming types are hard to make tests for.
-		imports = connectgo.TestClientStreamMethod  // make seperate for clientStreaming.
+		tplate = connectgo.TestClientStreamTemplate
+		imports = connectgo.TestClientStreamMethod
 		connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, data.Pkg+"connect")
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
 	case data.methodDesc.IsStreamingServer():
-		tplate = connectgo.UnsportedTestFile // streaming types are hard to make tests for.
-		imports = []protogen.GoImportPath{"testing", "github.com/stretchr/testify/assert"}
+		tplate = connectgo.TestResponseStreamTemplate
+		imports = connectgo.TestServerStreamMethod
+		connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, data.Pkg+"connect")
+		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
 	}
 
 	for _, v := range data.Imports {

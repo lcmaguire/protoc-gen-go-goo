@@ -2,15 +2,13 @@ package streamingservice
 
 import (
 	context "context"
-	"net/http"
-	"net/http/httptest"
-	testing "testing"
-
-	"github.com/bufbuild/connect-go"
 	connect_go "github.com/bufbuild/connect-go"
 	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
 	assert "github.com/stretchr/testify/assert"
+	http "net/http"
+	httptest "net/http/httptest"
+	testing "testing"
 )
 
 func TestResponseStream(t *testing.T) {
@@ -37,7 +35,7 @@ func TestResponseStream(t *testing.T) {
 	t.Run("response_stream", func(t *testing.T) {
 		total := 0
 		for _, client := range clients {
-			request := connect.NewRequest(&sample.GreetRequest{})
+			request := connect_go.NewRequest(&sample.GreetRequest{})
 			stream, err := client.ResponseStream(context.Background(), request)
 			assert.Nil(t, err)
 			for stream.Receive() {

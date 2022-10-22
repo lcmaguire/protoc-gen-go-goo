@@ -236,7 +236,7 @@ func Test{{.MethodName}}(t *testing.T) {
 	t.Run("response_stream", func(t *testing.T) {
 		total := 0
 		for _, client := range clients {
-			request := connect.NewRequest(&{{.RequestType}}{})
+			request := connect_go.NewRequest(&{{.RequestType}}{})
 			stream, err := client.{{.MethodName}}(context.Background(), request)
 			assert.Nil(t, err)
 			for stream.Receive() {
