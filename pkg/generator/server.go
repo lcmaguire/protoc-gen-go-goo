@@ -40,13 +40,7 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File, se
 
 		// will probably need to be an interface or variable funcs
 		if g.ConnectGo {
-			resgisteredServices += fmt.Sprintf(
-				// todo move to template
-				connectgo.ServiceHandleTemplate,
-				pkg,
-				serviceName,
-				strings.ToLower(serviceName)+"."+serviceName,
-			)
+			resgisteredServices += templates.ExecuteTemplate(connectgo.ServiceHandleTemplate, serviceHandleData{Pkg: pkg, ServiceName: serviceName, ServiceStruct: strings.ToLower(serviceName) + "." + serviceName})
 		} else {
 			resgisteredServices += fmt.Sprintf(
 				templates.RegisterServiceTemplate,
@@ -58,8 +52,18 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File, se
 	}
 
 	if g.ConnectGo {
-		f.P(fmt.Sprintf(connectgo.ServerTemplate, resgisteredServices))
+		f.P(templates.ExecuteTemplate(connectgo.ServerTemplate, serverData{Services: resgisteredServices}))
 		return
 	}
 	f.P(fmt.Sprintf(templates.ServerTemplate, resgisteredServices))
+}
+
+type serviceHandleData struct {
+	Pkg           string
+	ServiceName   string
+	ServiceStruct string
+}
+
+type serverData struct {
+	Services string
 }

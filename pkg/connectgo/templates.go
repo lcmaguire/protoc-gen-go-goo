@@ -9,7 +9,7 @@ func main() {
 	mux := http.NewServeMux()
 	// The generated constructors return a path and a plain net/http
 	// handler.
-	%s
+	{{.Services}}
 	err := http.ListenAndServe(
 	  "localhost:8080",
 	  // For gRPC clients, it's convenient to support HTTP/2 without TLS. You can
@@ -21,12 +21,10 @@ func main() {
   
 `
 
-// TODO make this be  nicer
-
-// ServiceHandleTemplate template for getting gRPC handlers.
+// TODO add in reflection + health.
 const ServiceHandleTemplate = `
 
-mux.Handle(%sconnect.New%sHandler(&%s{}))
+mux.Handle({{.Pkg}}connect.New{{.ServiceName}}Handler(&{{.ServiceStruct}}{}))
 `
 
 // ServiceTemplate template for the body of a file that creates a struct for your service handler + a constructor.
