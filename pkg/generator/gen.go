@@ -8,18 +8,6 @@ import (
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
-/*
-	What I want
-	Struct that has all info from protogen.
-	funcs that handle all string manipulation / contatonation
-	options that allow for certain things to happen in certain orders.
-
-	if connect == true.
-
-	then when GenerateMethod It SHOULD generate a connect compatable thing.
-
-*/
-
 // Generator holds all info for generating boiler plate code.
 // consider this being purely cfg and creating another more useful struct
 type Generator struct {
@@ -58,8 +46,6 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 		requestType := getParamPKG(v.Input.GoIdent.GoImportPath.String()) + "." + v.Input.GoIdent.GoName
 		responseType := getParamPKG(v.Output.GoIdent.GoImportPath.String()) + "." + v.Output.GoIdent.GoName
 
-		v.Input.Desc.FullName()
-		// v.Desc.IsStreamingClient()
 		mData := methodData{
 			MethodCaller: genMethodCaller(service.GoName),
 			ServiceName:  service.GoName,
@@ -78,7 +64,7 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 			outfiles = append(outfiles, f)
 		}
 	}
-	// todo test if we can just not do this. eg return nil / empty
+	// todo test if we can just not do this. eg return nil / empty OR return data needed for files and gen in one big batch.
 	return outfiles
 }
 
