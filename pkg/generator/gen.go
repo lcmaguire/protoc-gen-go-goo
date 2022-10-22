@@ -37,10 +37,9 @@ func (g *Generator) Run(gen *protogen.Plugin) error {
 }
 
 func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *protogen.Service, file *protogen.File) (outfiles []*protogen.GeneratedFile) {
-	serviceFile := g.generateServiceFile(gen, service)
+	serviceFile := g.generateServiceFile(gen, service, file) 
 	outfiles = append(outfiles, serviceFile)
 
-	// pkg := getParamPKG(file.GoDescriptorIdent.GoImportPath.String()) get pkg
 	// will create a method for all services
 	for _, v := range service.Methods {
 		requestType := getParamPKG(v.Input.GoIdent.GoImportPath.String()) + "." + v.Input.GoIdent.GoName
@@ -68,7 +67,7 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 	return outfiles
 }
 
-func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.Service) *protogen.GeneratedFile { // consider returning []
+func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.Service, file *protogen.File) *protogen.GeneratedFile { // consider returning []
 	fileName := strings.ToLower(service.GoName + "/" + service.GoName + ".go") // todo format in snakecase
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{service.GoName}}.go
 	f := gen.NewGeneratedFile(fileName, protogen.GoImportPath(service.GoName))
@@ -76,7 +75,7 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 	f.P("package ", strings.ToLower(service.GoName))
 	f.P()
 
-	rootGoIndent := gen.FilesByPath[service.Location.SourceFile].GoDescriptorIdent // may run into problems depending on how files are set up.
+	rootGoIndent := file.GoDescriptorIdent
 	pkg := getParamPKG(rootGoIndent.GoImportPath.String())
 	tplate := templates.ServiceTemplate
 	if g.ConnectGo {
