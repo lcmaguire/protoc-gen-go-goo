@@ -33,7 +33,7 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File, se
 	for _, serviceName := range services {
 		// dir goModPath + serviceName
 		importPath := fmt.Sprintf("%s/%s", g.GoModPath, strings.ToLower(serviceName))
-		if g.ConnectGo {
+		if g.ConnectGo { // see if this can be deleted.
 			importPath = fmt.Sprintf("%s/%s", g.GoModPath, strings.ToLower(serviceName))
 		}
 		f.QualifiedGoIdent(protogen.GoIdent{GoName: "", GoImportPath: protogen.GoImportPath(importPath)})
