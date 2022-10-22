@@ -13,11 +13,11 @@ for all services included in your protoc command will generate a directory conta
 
 
 ```
-# generate only goo generated code, can also include --go-goo_opt=
-go install . && \
+# generate only goo generated code, can also include 
     protoc -I=example \
-    --go-goo_out=. \
-    *.proto 
+    --go-goo_out=example \
+	
+    example/*.proto 
 
 ```
 
