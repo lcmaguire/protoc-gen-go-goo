@@ -8,8 +8,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
-// DeleteExamples implements tutorial.ExampleService.DeleteExamples.
-func (e *ExampleService) DeleteExamples(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[emptypb.Empty], error) {
+// DeleteExample implements tutorial.ExampleService.DeleteExample.
+func (e *ExampleService) DeleteExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[emptypb.Empty], error) {
 	res := connect_go.NewResponse(&emptypb.Empty{})
 	return res, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
 }

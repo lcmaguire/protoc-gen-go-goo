@@ -2,7 +2,7 @@ package templates
 
 import (
 	"bytes"
-	"html/template"
+	"text/template"
 )
 
 // ExecuteTemplate something to implement templates.

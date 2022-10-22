@@ -59,7 +59,7 @@ const TestFileTemplate = `
 
 const MethodTemplate = `
 	// {{.MethodName}} implements {{.FullName}}.
-	func ({{.S1}}*{{.ServiceName}}) {{.MethodName}} (ctx context.Context, in *{{.RequestType}}) (out *{{.ResponseType}}, err error){
+	func ({{.MethodCaller}}) {{.MethodName}} (ctx context.Context, in *{{.RequestType}}) (out *{{.ResponseType}}, err error){
 		return nil, status.Error(codes.Unimplemented, "yet to be implemented")
 	}
 `

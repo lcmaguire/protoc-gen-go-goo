@@ -43,13 +43,19 @@ grpc-curl-reflect: # should return endpoints
 
 grpc-curl-connect: # grpc curl for connect service
 	grpcurl \
-    -import-path ./example -proto example.proto -plaintext \
+    -import-path ./exampleconnect -proto example.proto -plaintext \
     -d '{}' \
     localhost:8080 tutorial.ExampleService/GetExample
-
+	
 curl-connect: # normal curl for connect service
 	curl \
     --header "Content-Type: application/json" \
     --data '{}' \
     http://localhost:8080/tutorial.ExampleService/GetExample
 
+## Streaming curls.
+grpc-connect-streaming: # grpc curl for connect streaming service
+	grpcurl \
+    -import-path ./exampleconnect -proto example.proto -plaintext \
+    -d '{}' \
+    localhost:8080 tutorial.StreamingService/ResponseStream

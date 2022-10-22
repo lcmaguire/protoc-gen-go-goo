@@ -8,18 +8,6 @@ import (
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
-/*
-	What I want
-	Struct that has all info from protogen.
-	funcs that handle all string manipulation / contatonation
-	options that allow for certain things to happen in certain orders.
-
-	if connect == true.
-
-	then when GenerateMethod It SHOULD generate a connect compatable thing.
-
-*/
-
 // Generator holds all info for generating boiler plate code.
 // consider this being purely cfg and creating another more useful struct
 type Generator struct {
@@ -52,16 +40,22 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 	serviceFile := g.generateServiceFile(gen, service)
 	outfiles = append(outfiles, serviceFile)
 
+	// pkg := getParamPKG(file.GoDescriptorIdent.GoImportPath.String()) get pkg
 	// will create a method for all services
 	for _, v := range service.Methods {
+		requestType := getParamPKG(v.Input.GoIdent.GoImportPath.String()) + "." + v.Input.GoIdent.GoName
+		responseType := getParamPKG(v.Output.GoIdent.GoImportPath.String()) + "." + v.Output.GoIdent.GoName
+
 		mData := methodData{
-			S1:           strings.ToLower(service.GoName[0:1]),
+			MethodCaller: genMethodCaller(service.GoName),
 			ServiceName:  service.GoName,
 			MethodName:   v.GoName,
 			FullName:     string(v.Desc.FullName()),
-			RequestType:  getParamPKG(v.Input.GoIdent.GoImportPath.String()) + "." + v.Input.GoIdent.GoName,
-			ResponseType: getParamPKG(v.Output.GoIdent.GoImportPath.String()) + "." + v.Output.GoIdent.GoName,
+			RequestType:  requestType,
+			ResponseType: responseType,
 			Imports:      []protogen.GoIdent{v.Input.GoIdent, v.Output.GoIdent, {GoImportPath: protogen.GoImportPath(service.GoName)}},
+			methodDesc:   v.Desc,
+			Pkg:          getParamPKG(file.GoDescriptorIdent.GoImportPath.String()),
 		}
 		f := g.genRpcMethod(gen, mData)
 		outfiles = append(outfiles, f)
@@ -70,7 +64,7 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 			outfiles = append(outfiles, f)
 		}
 	}
-	// todo test if we can just not do this. eg return nil / empty
+	// todo test if we can just not do this. eg return nil / empty OR return data needed for files and gen in one big batch.
 	return outfiles
 }
 

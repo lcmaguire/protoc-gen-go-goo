@@ -11,7 +11,6 @@ func genMethodCaller(in string) string {
 	return fmt.Sprintf(templates.MethodCallerTemplate, strings.ToLower(in[0:1]), in)
 }
 
-// move to helper
 func getParamPKG(in string) string {
 	arr := strings.Split(in, "/")
 	return strings.Trim(arr[len(arr)-1], `"`)

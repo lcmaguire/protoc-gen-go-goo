@@ -3,7 +3,6 @@ package main
 import (
 	example "github.com/lcmaguire/protoc-gen-go-goo/example"
 	exampleservice "github.com/lcmaguire/protoc-gen-go-goo/example/exampleservice"
-	extraexampleservice "github.com/lcmaguire/protoc-gen-go-goo/example/extraexampleservice"
 	grpc "google.golang.org/grpc"
 	reflection "google.golang.org/grpc/reflection"
 	log "log"
@@ -27,9 +26,6 @@ func run() error {
 	// services in your protoFile
 
 	example.RegisterExampleServiceServer(server, &exampleservice.ExampleService{})
-	reflection.Register(server) // this should perhaps be optional
-
-	example.RegisterExtraExampleServiceServer(server, &extraexampleservice.ExtraExampleService{})
 	reflection.Register(server) // this should perhaps be optional
 
 	log.Println("Listening on", listenOn)
