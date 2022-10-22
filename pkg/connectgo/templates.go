@@ -168,7 +168,7 @@ func Test{{.MethodName}}(t *testing.T){
 	`
 
 const TestClientStreamTemplate = `
-func TestClientStream(t *testing.T) {	
+func Test{{.MethodName}}(t *testing.T) {	
 	t.Parallel()
 	mux := http.NewServeMux()
 
@@ -210,6 +210,46 @@ func TestClientStream(t *testing.T) {
 	}
 }
 	`
+
+const TestResponseStreamTemplate = `
+func Test{{.MethodName}}(t *testing.T) {
+	t.Parallel()
+	mux := http.NewServeMux()
+
+	mux.Handle({{.Pkg}}connect.New{{.ServiceName}}Handler(&{{.ServiceName}}{}))
+	server := httptest.NewUnstartedServer(mux)
+	server.EnableHTTP2 = true
+	server.StartTLS()
+	defer server.Close()
+
+	connectClient := {{.Pkg}}connect.New{{.ServiceName}}Client(
+		server.Client(),
+		server.URL,
+	)
+	grpcClient := {{.Pkg}}connect.New{{.ServiceName}}Client(
+		server.Client(),
+		server.URL,
+		connect_go.WithGRPC(),
+	)
+	clients := []{{.Pkg}}connect.{{.ServiceName}}Client{connectClient, grpcClient}
+
+	t.Run("response_stream", func(t *testing.T) {
+		total := 0
+		for _, client := range clients {
+			request := connect.NewRequest(&{{.RequestType}}{})
+			stream, err := client.{{.MethodName}}(context.Background(), request)
+			assert.Nil(t, err)
+			for stream.Receive() {
+				total++
+			}
+			assert.Nil(t, err)
+			assert.Error(t, stream.Err())
+			assert.Nil(t, stream.Close())
+			assert.Equal(t, connect_go.CodeUnimplemented, connect_go.CodeOf(stream.Err()))
+			assert.True(t, total > 0)
+		}
+	})
+}`
 
 const UnsportedTestFile = `
 func Test{{.MethodName}}(t *testing.T){
