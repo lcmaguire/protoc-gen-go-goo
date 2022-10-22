@@ -102,23 +102,3 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 	f.P()
 	return f
 }
-
-/*
-	Run
-
-	Get All info
-
-	Goo {
-		*gen
-		serverData
-		-serviceData
-		--methodData
-	}
-
-	Gen -> Service (Connect)-> (Gather -> Imports + Templates) (certain imports etc can be reused / not regened (or at least shared easier))
-
-	stuff that can be shared
-	- connectgo import
-	- proto.go pkg.
-
-*/
