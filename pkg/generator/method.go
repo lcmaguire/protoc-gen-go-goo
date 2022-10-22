@@ -38,10 +38,10 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 			tplate = connectgo.BiDirectionalStreamingTemplate
 		case data.methodDesc.IsStreamingServer():
 			imports = append(imports, "time")
-			tplate = connectgo.ServerStreamingTemplate
+			tplate = connectgo.StreamingServiceTemplate
 		case data.methodDesc.IsStreamingClient():
 			imports = append(imports, "errors")
-			tplate = connectgo.ClientStreamingTemplate
+			tplate = connectgo.StreamingClientTemplate
 		}
 	} else {
 		switch {
@@ -90,18 +90,18 @@ func (g *Generator) genTestFile(gen *protogen.Plugin, data methodData) *protogen
 
 	switch {
 	case data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer():
-		tplate = connectgo.TestBidirectionalStreamTemplate
+		tplate = connectgo.TestBiDirectionalStreamFileTemplate
 		imports = connectgo.TestBiDirectionalMethod
 		// imports connect go gRPC.
 		connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, data.Pkg+"connect")
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
 	case data.methodDesc.IsStreamingClient():
-		tplate = connectgo.TestClientStreamTemplate
+		tplate = connectgo.TestClientStreamFileTemplate
 		imports = connectgo.TestClientStreamMethod
 		connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, data.Pkg+"connect")
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
 	case data.methodDesc.IsStreamingServer():
-		tplate = connectgo.TestResponseStreamTemplate
+		tplate = connectgo.TestServerStreamFileTemplate
 		imports = connectgo.TestServerStreamMethod
 		connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, data.Pkg+"connect")
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})

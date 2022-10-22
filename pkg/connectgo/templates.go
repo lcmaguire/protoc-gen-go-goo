@@ -1,10 +1,9 @@
 package connectgo
 
-// Server stuff looks v different
-// sampled from https://connect.build/docs/go/getting-started
+// sampled from https://connect.build/docs/go/getting-started & demo connect repo
 
-// ConnectGoServerTemplate ...
-const ConnectGoServerTemplate = `
+// ServerTemplate template for a connect-go gRPC / HTTP server.
+const ServerTemplate = `
 
 func main() {
 	mux := http.NewServeMux()
@@ -22,13 +21,27 @@ func main() {
   
 `
 
-// ServiceHandleTemplate ...
+// TODO make this be  nicer
+
+// ServiceHandleTemplate template for getting gRPC handlers.
 const ServiceHandleTemplate = `
 
 mux.Handle(%sconnect.New%sHandler(&%s{}))
 `
 
-// MethodTemplate ...
+// ServiceTemplate template for the body of a file that creates a struct for your service handler + a constructor.
+const ServiceTemplate = `
+	// {{.ServiceName}} implements {{.FullName}}.
+	type {{.ServiceName}} struct { 
+		{{.Pkg}}.Unimplemented{{.ServiceName}}Handler
+	}
+		
+	func New{{.ServiceName}} () *{{.ServiceName}} {
+		return &{{.ServiceName}}{}
+	}
+	`
+
+// MethodTemplate template for an unimplemented unary connect-go gRPC method.
 const MethodTemplate = `
 // {{.MethodName}} implements {{.FullName}}.
 func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
@@ -38,7 +51,8 @@ func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connec
 
 `
 
-const ClientStreamingTemplate = `
+// StreamingClientTemplate template for a StreamingClient connect-go gRPC method.
+const StreamingClientTemplate = `
 // {{.MethodName}} implements {{.FullName}}.
 func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *connect_go.ClientStream[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	for stream.Receive() {
@@ -52,7 +66,8 @@ func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *con
   }
 `
 
-const ServerStreamingTemplate = `
+// StreamingServiceTemplate template for a StreamingServer connect-go gRPC method.
+const StreamingServiceTemplate = `
 // {{.MethodName}} implements {{.FullName}}.
 func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}], stream *connect_go.ServerStream[{{.ResponseType}}]) error {
 	ticker := time.NewTicker(time.Second) // You should set this via config.
@@ -73,6 +88,7 @@ func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connec
 }
 `
 
+// BiDirectionalStreamingTemplate template for a BiDirectional streaming connect-go gRPC method.
 const BiDirectionalStreamingTemplate = `
 // {{.MethodName}} implements {{.FullName}}.
 func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *connect_go.BidiStream[{{.RequestType}}, {{.ResponseType}}]) error {
@@ -95,6 +111,7 @@ func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *con
 }
 `
 
+// TestFileTemplate will create a test file for a unary gRPC server.
 const TestFileTemplate = `
 	func Test{{.MethodName}}(t *testing.T){
 		t.Parallel()
@@ -109,8 +126,8 @@ const TestFileTemplate = `
 	}
 	`
 
-// %sconnect.New%sHandler(&%s{})
-const TestBidirectionalStreamTemplate = `
+// TestClientStreamFileTemplate will create a test file with all boiler plate for testing a BiDirectional Streaming gRPC method.
+const TestBiDirectionalStreamFileTemplate = `
 func Test{{.MethodName}}(t *testing.T){
 	t.Parallel()
 	mux := http.NewServeMux()
@@ -167,7 +184,8 @@ func Test{{.MethodName}}(t *testing.T){
 }
 	`
 
-const TestClientStreamTemplate = `
+// TestClientStreamFileTemplate will create a test file with all boiler plate for testing a StreamingClient gRPC method.
+const TestClientStreamFileTemplate = `
 func Test{{.MethodName}}(t *testing.T) {	
 	t.Parallel()
 	mux := http.NewServeMux()
@@ -211,7 +229,8 @@ func Test{{.MethodName}}(t *testing.T) {
 }
 	`
 
-const TestResponseStreamTemplate = `
+// TestServerStreamFileTemplate will create a test file with all boiler plate for testing a StreamingServer gRPC method.
+const TestServerStreamFileTemplate = `
 func Test{{.MethodName}}(t *testing.T) {
 	t.Parallel()
 	mux := http.NewServeMux()
@@ -250,22 +269,3 @@ func Test{{.MethodName}}(t *testing.T) {
 		}
 	})
 }`
-
-const UnsportedTestFile = `
-func Test{{.MethodName}}(t *testing.T){
-	t.Parallel()
-	// tests for this type of RPC yet to be implemented.
-	assert.NotNil(t, &{{.RequestType}}{})
-	assert.NotNil(t, &{{.ResponseType}}{})
-}
-`
-const ServiceTemplate = `
-	// {{.ServiceName}} implements {{.FullName}}.
-	type {{.ServiceName}} struct { 
-		{{.Pkg}}.Unimplemented{{.ServiceName}}Handler
-	}
-		
-	func New{{.ServiceName}} () *{{.ServiceName}} {
-		return &{{.ServiceName}}{}
-	}
-	`

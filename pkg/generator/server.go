@@ -58,7 +58,7 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File, se
 	}
 
 	if g.ConnectGo {
-		f.P(fmt.Sprintf(connectgo.ConnectGoServerTemplate, resgisteredServices))
+		f.P(fmt.Sprintf(connectgo.ServerTemplate, resgisteredServices))
 		return
 	}
 	f.P(fmt.Sprintf(templates.ServerTemplate, resgisteredServices))
