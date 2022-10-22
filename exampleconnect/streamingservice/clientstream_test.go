@@ -2,25 +2,19 @@ package streamingservice
 
 import (
 	context "context"
-	fmt "fmt"
-	"net/http"
-	"net/http/httptest"
-	"sync"
-	testing "testing"
-
 	connect_go "github.com/bufbuild/connect-go"
 	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
 	assert "github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	require "github.com/stretchr/testify/require"
+	http "net/http"
+	httptest "net/http/httptest"
+	sync "sync"
+	testing "testing"
 )
 
 func TestClientStream(t *testing.T) {
 	t.Parallel()
-	// tests for this type of RPC yet to be implemented.
-	assert.NotNil(t, &sample.GreetRequest{})
-	assert.NotNil(t, &sample.GreetResponse{})
-
 	mux := http.NewServeMux()
 
 	mux.Handle(sampleconnect.NewStreamingServiceHandler(&StreamingService{}))
@@ -49,7 +43,8 @@ func TestClientStream(t *testing.T) {
 			defer wg.Done()
 			for _, sentence := range sendValues {
 				err := stream.Send(&sample.GreetRequest{})
-				require.Nil(t, err, fmt.Sprintf(`failed for string sentence: "%s"`, sentence))
+
+				require.Nil(t, err, sentence)
 			}
 		}()
 		wg.Wait()

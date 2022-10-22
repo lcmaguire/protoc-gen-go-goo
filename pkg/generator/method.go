@@ -96,8 +96,10 @@ func (g *Generator) genTestFile(gen *protogen.Plugin, data methodData) *protogen
 		connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, data.Pkg+"connect")
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
 	case data.methodDesc.IsStreamingClient():
-		tplate = connectgo.UnsportedTestFile // streaming types are hard to make tests for.
-		imports = []protogen.GoImportPath{"testing", "github.com/stretchr/testify/assert"}
+		tplate = connectgo.TestClientStreamTemplate // streaming types are hard to make tests for.
+		imports = connectgo.TestClientStreamMethod  // make seperate for clientStreaming.
+		connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, data.Pkg+"connect")
+		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
 	case data.methodDesc.IsStreamingServer():
 		tplate = connectgo.UnsportedTestFile // streaming types are hard to make tests for.
 		imports = []protogen.GoImportPath{"testing", "github.com/stretchr/testify/assert"}

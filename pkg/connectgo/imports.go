@@ -11,6 +11,8 @@ var TestImports = []protogen.GoImportPath{"context", "github.com/bufbuild/connec
 
 var TestBiDirectionalMethod = []protogen.GoImportPath{"testing", "context", "github.com/bufbuild/connect-go", "errors", "fmt", "io", "net/http", "net/http/httptest", "sync", "github.com/stretchr/testify/assert", "github.com/stretchr/testify/require"}
 
+var TestClientStreamMethod = []protogen.GoImportPath{"testing", "context", "github.com/bufbuild/connect-go", "net/http", "net/http/httptest", "sync", "github.com/stretchr/testify/assert", "github.com/stretchr/testify/require"}
+
 /*
 
 context "context"

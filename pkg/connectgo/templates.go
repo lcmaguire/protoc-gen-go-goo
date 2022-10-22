@@ -168,6 +168,7 @@ func Test{{.MethodName}}(t *testing.T){
 	`
 
 const TestClientStreamTemplate = `
+func TestClientStream(t *testing.T) {	
 	t.Parallel()
 	mux := http.NewServeMux()
 
@@ -207,6 +208,7 @@ const TestClientStreamTemplate = `
 		assert.Equal(t, connect_go.CodeUnimplemented, connect_go.CodeOf(err))
 		assert.Nil(t, res)
 	}
+}
 	`
 
 const UnsportedTestFile = `
