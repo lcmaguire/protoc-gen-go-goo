@@ -91,6 +91,10 @@ func (g *Generator) genTestFile(gen *protogen.Plugin, data methodData) *protogen
 		tplate = connectgo.UnsportedTestFile // streaming types are hard to make tests for.
 		imports = []protogen.GoImportPath{"testing", "github.com/stretchr/testify/assert"}
 	}
+	if data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer() {
+		tplate = connectgo.TestBidirectionalStreamTemplate // streaming types are hard to make tests for.
+		imports = connectgo.TestBiDirectionalMethod
+	}
 
 	for _, v := range data.Imports {
 		f.QualifiedGoIdent(v)
