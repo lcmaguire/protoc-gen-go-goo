@@ -180,6 +180,117 @@ func TestCreateExample(t *testing.T) {
 
 for connect go it also supports generating boiler plate code for streaming RPC endpoints you can view example generated code [here](./exampleconnect/streamingservice/).
 
+below is an example generated BiDirectional streaming RPC (also will gen boiler plate for ClientStreaming and ServerStreaming RPC's)
+
+```
+package streamingservice
+
+import (
+	context "context"
+	errors "errors"
+	fmt "fmt"
+	connect_go "github.com/bufbuild/connect-go"
+	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+	io "io"
+)
+
+// BiDirectionalStream implements tutorial.StreamingService.BiDirectionalStream.
+func (s *StreamingService) BiDirectionalStream(ctx context.Context, stream *connect_go.BidiStream[sample.GreetRequest, sample.GreetResponse]) error {
+	for {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		request, err := stream.Receive()
+		if err != nil && errors.Is(err, io.EOF) {
+			return nil
+		} else if err != nil {
+			return err
+		}
+		fmt.Println("incoming request ", request)
+		if err := stream.Send(&sample.GreetResponse{}); err != nil {
+			return err
+		}
+		connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
+	}
+}
+```
+
+and its test file 
+
+```
+package streamingservice
+
+import (
+	context "context"
+	errors "errors"
+	fmt "fmt"
+	connect_go "github.com/bufbuild/connect-go"
+	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
+	assert "github.com/stretchr/testify/assert"
+	require "github.com/stretchr/testify/require"
+	io "io"
+	http "net/http"
+	httptest "net/http/httptest"
+	sync "sync"
+	testing "testing"
+)
+
+func TestBiDirectionalStream(t *testing.T) {
+	t.Parallel()
+	mux := http.NewServeMux()
+
+	mux.Handle(sampleconnect.NewStreamingServiceHandler(&StreamingService{}))
+	server := httptest.NewUnstartedServer(mux)
+	server.EnableHTTP2 = true
+	server.StartTLS()
+	defer server.Close()
+
+	connectClient := sampleconnect.NewStreamingServiceClient(
+		server.Client(),
+		server.URL,
+	)
+	grpcClient := sampleconnect.NewStreamingServiceClient(
+		server.Client(),
+		server.URL,
+		connect_go.WithGRPC(),
+	)
+	clients := []sampleconnect.StreamingServiceClient{connectClient, grpcClient}
+
+	t.Run("bidirectionalTest", func(t *testing.T) {
+		for _, client := range clients {
+			sendValues := []string{"Hello!", "How are you doing?", "I have an issue with my bike", "bye"}
+			var receivedValues []string
+			stream := client.BiDirectionalStream(context.Background())
+			var wg sync.WaitGroup
+			wg.Add(2)
+			go func() {
+				defer wg.Done()
+				for _, sentence := range sendValues {
+					err := stream.Send(&sample.GreetRequest{})
+					require.Nil(t, err)
+					fmt.Println(sentence)
+				}
+				require.Nil(t, stream.CloseRequest())
+			}()
+			go func() {
+				defer wg.Done()
+				for {
+					_, err := stream.Receive()
+					if errors.Is(err, io.EOF) {
+						break
+					}
+					require.Nil(t, err)
+					receivedValues = append(receivedValues, "")
+				}
+				require.Nil(t, stream.CloseResponse())
+			}()
+			wg.Wait()
+			assert.Equal(t, len(receivedValues), len(sendValues))
+		}
+	})
+}
+```
 
 
 ## Options
