@@ -20,9 +20,9 @@ func main() {
 	}.Run(func(gen *protogen.Plugin) error {
 		g := &generator.Generator{
 			ConnectGo: *connectGo,
-			Server:    *tests,
+			Server:    *server,
 			GoModPath: *generatedGoModPath, // todo implement this so server gen doesn't need to be hardcoded.
-			Tests:     *server,
+			Tests:     *tests,
 		}
 		// todo have this be used in place of the Run func (if possible)
 		return g.Run(gen)
