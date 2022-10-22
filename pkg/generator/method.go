@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
@@ -87,13 +88,19 @@ func (g *Generator) genTestFile(gen *protogen.Plugin, data methodData) *protogen
 		tplate = connectgo.TestFileTemplate
 	}
 
-	if data.methodDesc.IsStreamingClient() || data.methodDesc.IsStreamingServer() {
-		tplate = connectgo.UnsportedTestFile // streaming types are hard to make tests for.
-		imports = []protogen.GoImportPath{"testing", "github.com/stretchr/testify/assert"}
-	}
-	if data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer() {
+	switch {
+	case data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer():
 		tplate = connectgo.TestBidirectionalStreamTemplate // streaming types are hard to make tests for.
 		imports = connectgo.TestBiDirectionalMethod
+		// imports connect go gRPC.
+		connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, data.Pkg+"connect")
+		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
+	case data.methodDesc.IsStreamingClient():
+		tplate = connectgo.UnsportedTestFile // streaming types are hard to make tests for.
+		imports = []protogen.GoImportPath{"testing", "github.com/stretchr/testify/assert"}
+	case data.methodDesc.IsStreamingServer():
+		tplate = connectgo.UnsportedTestFile // streaming types are hard to make tests for.
+		imports = []protogen.GoImportPath{"testing", "github.com/stretchr/testify/assert"}
 	}
 
 	for _, v := range data.Imports {

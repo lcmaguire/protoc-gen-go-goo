@@ -3,19 +3,17 @@ package streamingservice
 import (
 	context "context"
 	errors "errors"
-	"fmt"
-	io "io"
-	"net/http"
-	"net/http/httptest"
-	"sync"
-	testing "testing"
-
+	fmt "fmt"
 	connect_go "github.com/bufbuild/connect-go"
-
 	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
 	assert "github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	require "github.com/stretchr/testify/require"
+	io "io"
+	http "net/http"
+	httptest "net/http/httptest"
+	sync "sync"
+	testing "testing"
 )
 
 func TestBiDirectionalStream(t *testing.T) {
@@ -50,7 +48,8 @@ func TestBiDirectionalStream(t *testing.T) {
 				defer wg.Done()
 				for _, sentence := range sendValues {
 					err := stream.Send(&sample.GreetRequest{})
-					require.Nil(t, err, fmt.Sprintf(`failed for string sentence: "%s"`, sentence))
+					require.Nil(t, err)
+					fmt.Println(sentence)
 				}
 				require.Nil(t, stream.CloseRequest())
 			}()
@@ -62,7 +61,6 @@ func TestBiDirectionalStream(t *testing.T) {
 						break
 					}
 					require.Nil(t, err)
-					// assert.True(t, len(msg.Sentence) > 0)
 					receivedValues = append(receivedValues, "")
 				}
 				require.Nil(t, stream.CloseResponse())

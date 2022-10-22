@@ -111,6 +111,8 @@ const TestFileTemplate = `
 
 // %sconnect.New%sHandler(&%s{})
 const TestBidirectionalStreamTemplate = `
+func Test{{.MethodName}}(t *testing.T){
+	t.Parallel()
 	mux := http.NewServeMux()
 
 	mux.Handle({{.Pkg}}connect.New{{.ServiceName}}Handler(&{{.ServiceName}}{}))
@@ -139,9 +141,10 @@ const TestBidirectionalStreamTemplate = `
 			wg.Add(2)
 			go func() {
 				defer wg.Done()
-				for i := 0; i < , sentence := range sendValues {
+				for _, sentence := range sendValues {
 					err := stream.Send(&{{.RequestType}}{})
-					require.Nil(t, err, )
+					require.Nil(t, err )
+					fmt.Println(sentence)
 				}
 				require.Nil(t, stream.CloseRequest())
 			}()
@@ -161,6 +164,7 @@ const TestBidirectionalStreamTemplate = `
 			assert.Equal(t, len(receivedValues), len(sendValues))
 		}
 	})
+}
 	`
 
 const UnsportedTestFile = `
