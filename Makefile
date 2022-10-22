@@ -19,7 +19,7 @@ grpc-go-goo:
 	--go_opt=paths=source_relative \
 	example/*.proto 
 
-# generates grpc-go and go-proto code 
+# generates connect-go and go-proto code 
 connect-go-goo:
 	go install . && \
 	protoc -I=exampleconnect \
