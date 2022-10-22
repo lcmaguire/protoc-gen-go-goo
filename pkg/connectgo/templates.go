@@ -42,7 +42,7 @@ const ServiceTemplate = `
 // MethodTemplate template for an unimplemented unary connect-go gRPC method.
 const MethodTemplate = `
 // {{.MethodName}} implements {{.FullName}}.
-func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
+func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	res := connect_go.NewResponse(&{{.ResponseType}}{})
 	return res, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
 }
@@ -52,7 +52,7 @@ func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connec
 // StreamingClientTemplate template for a StreamingClient connect-go gRPC method.
 const StreamingClientTemplate = `
 // {{.MethodName}} implements {{.FullName}}.
-func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *connect_go.ClientStream[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
+func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, stream *connect_go.ClientStream[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	for stream.Receive() {
 		// implement logic here.
 	}
@@ -67,7 +67,7 @@ func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *con
 // StreamingServiceTemplate template for a StreamingServer connect-go gRPC method.
 const StreamingServiceTemplate = `
 // {{.MethodName}} implements {{.FullName}}.
-func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}], stream *connect_go.ServerStream[{{.ResponseType}}]) error {
+func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}], stream *connect_go.ServerStream[{{.ResponseType}}]) error {
 	ticker := time.NewTicker(time.Second) // You should set this via config.
 	defer ticker.Stop()
 	for i := 0; i < 5 ; i++ {
@@ -89,7 +89,7 @@ func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connec
 // BiDirectionalStreamingTemplate template for a BiDirectional streaming connect-go gRPC method.
 const BiDirectionalStreamingTemplate = `
 // {{.MethodName}} implements {{.FullName}}.
-func ({{.S1}}*{{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *connect_go.BidiStream[{{.RequestType}}, {{.ResponseType}}]) error {
+func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, stream *connect_go.BidiStream[{{.RequestType}}, {{.ResponseType}}]) error {
 	for {
 		if err := ctx.Err(); err != nil {
 			return err

@@ -59,53 +59,9 @@ const TestFileTemplate = `
 
 const MethodTemplate = `
 	// {{.MethodName}} implements {{.FullName}}.
-	func ({{.S1}}*{{.ServiceName}}) {{.MethodName}} (ctx context.Context, in *{{.RequestType}}) (out *{{.ResponseType}}, err error){
+	func ({{.MethodCaller}) {{.MethodName}} (ctx context.Context, in *{{.RequestType}}) (out *{{.ResponseType}}, err error){
 		return nil, status.Error(codes.Unimplemented, "yet to be implemented")
 	}
 `
-
-const ClientStreamingMethod = `
-	// {{.MethodName}} implements {{.FullName}}.
-	func ({{.S1}}*{{.ServiceName}}) {{.MethodName}} ( ) error{
-		return status.Error(codes.Unimplemented, "yet to be implemented")
-	}
-`
-
-/*
-func (s *StreamingService) ClientStream(stream example.StreamingService_ClientStreamServer) error {
-	return status.Error(codes.Unimplemented, "yet to be implemented")
-}
-*/
-
-const ServerStreamingMethod = `
-	// {{.MethodName}} implements {{.FullName}}.
-	func ({{.S1}}*{{.ServiceName}}) {{.MethodName}} (in *{{.RequestType}}, stream {{.ReqPkg}}.{{.ServiceName}}_{{.MethodName}}Server) error{
-
-		  return status.Error(codes.Unimplemented, "yet to be implemented")
-	}
-`
-
-//  {{ServiceName}}_{{MethodName}}Server
-
-/*
-func (s *StreamingService) ResponseStream(in *example.GreetRequest, stream example.StreamingService_ResponseStreamServer) error {
-	return status.Error(codes.Unimplemented, "yet to be implemented")
-}
-*/
-
-const BidirectionStreamingMethod = `
-	// {{.MethodName}} implements {{.FullName}}.
-	func ({{.S1}}*{{.ServiceName}}) {{.MethodName}} (stream example.StreamingService_BiDirectionalStreamServer) error {
-		return status.Error(codes.Unimplemented, "yet to be implemented")
-	}
-`
-
-/*
-
-func (s *StreamingService) BiDirectionalStream(stream example.StreamingService_BiDirectionalStreamServer) error {
-	return status.Error(codes.Unimplemented, "yet to be implemented")
-}
-
-*/
 
 const MethodCallerTemplate = `%s *%s`

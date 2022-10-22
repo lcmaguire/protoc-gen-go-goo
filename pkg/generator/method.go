@@ -11,7 +11,7 @@ import (
 )
 
 type methodData struct {
-	S1           string // its probably better to have method caller
+	MethodCaller string
 	ServiceName  string
 	MethodName   string
 	RequestType  string

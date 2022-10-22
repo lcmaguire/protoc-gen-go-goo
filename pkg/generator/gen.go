@@ -61,7 +61,7 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 		v.Input.Desc.FullName()
 		// v.Desc.IsStreamingClient()
 		mData := methodData{
-			S1:           strings.ToLower(service.GoName[0:1]),
+			MethodCaller: genMethodCaller(service.GoName),
 			ServiceName:  service.GoName,
 			MethodName:   v.GoName,
 			FullName:     string(v.Desc.FullName()),
