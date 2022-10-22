@@ -37,7 +37,7 @@ func (g *Generator) Run(gen *protogen.Plugin) error {
 }
 
 func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *protogen.Service, file *protogen.File) (outfiles []*protogen.GeneratedFile) {
-	serviceFile := g.generateServiceFile(gen, service, file) // may be better to keep info in struct calling this method.
+	serviceFile := g.generateServiceFile(gen, service, file) 
 	outfiles = append(outfiles, serviceFile)
 
 	// will create a method for all services
