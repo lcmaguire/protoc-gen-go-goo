@@ -167,6 +167,48 @@ func Test{{.MethodName}}(t *testing.T){
 }
 	`
 
+const TestClientStreamTemplate = `
+	t.Parallel()
+	mux := http.NewServeMux()
+
+	mux.Handle({{.Pkg}}connect.New{{.ServiceName}}Handler(&{{.ServiceName}}{}))
+	server := httptest.NewUnstartedServer(mux)
+	server.EnableHTTP2 = true
+	server.StartTLS()
+	defer server.Close()
+
+	connectClient := {{.Pkg}}connect.New{{.ServiceName}}Client(
+		server.Client(),
+		server.URL,
+	)
+	grpcClient := {{.Pkg}}connect.New{{.ServiceName}}Client(
+		server.Client(),
+		server.URL,
+		connect_go.WithGRPC(),
+	)
+	clients := []{{.Pkg}}connect.{{.ServiceName}}Client{connectClient, grpcClient}
+
+	for _, client := range clients {
+		sendValues := []string{"Hello!", "How are you doing?", "I have an issue with my bike", "bye"}
+		stream := client.{{.MethodName}}(context.Background())
+		var wg sync.WaitGroup
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for _, sentence := range sendValues {
+				err := stream.Send(&{{.RequestType}}{})
+				
+				require.Nil(t, err, sentence)
+			}
+		}()
+		wg.Wait()
+		res, err := stream.CloseAndReceive()
+		require.Error(t, err)
+		assert.Equal(t, connect_go.CodeUnimplemented, connect_go.CodeOf(err))
+		assert.Nil(t, res)
+	}
+	`
+
 const UnsportedTestFile = `
 func Test{{.MethodName}}(t *testing.T){
 	t.Parallel()
