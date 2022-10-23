@@ -33,7 +33,7 @@ func main() {
 		log.Fatalf("error initializing app: %v\n", err)
 	}
 
-	mux.Handle(sampleconnect.NewExampleServiceHandler(&exampleservice.ExampleService{}))
+	mux.Handle(sampleconnect.NewExampleServiceHandler(exampleservice.NewExampleService(auth, firestore)))
 
 	err = http.ListenAndServe(
 		"localhost:8080",
