@@ -72,7 +72,7 @@ curl-connect-get: # normal curl for connect service
 	curl \
     --header "Content-Type: application/json" \
 	--header "Authorization: Bearer asdfasdf" \
-    --data '{"name": "testCollection/BnWJCcAr7RYZ2yR9UTtn"}' \
+    --data '{"name": "testCollection/uCrDRXkFvBbjp93JURzz"}' \
     http://localhost:8080/tutorial.ExampleService/GetExample
 
 ## Streaming curls.

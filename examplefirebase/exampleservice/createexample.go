@@ -2,12 +2,14 @@ package exampleservice
 
 import (
 	context "context"
+	"encoding/json"
 	errors "errors"
 	"fmt"
 	"strings"
 
 	connect_go "github.com/bufbuild/connect-go"
 	sample "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // CreateExample implements tutorial.ExampleService.CreateExample.
@@ -23,9 +25,20 @@ func (e *ExampleService) CreateExample(ctx context.Context, req *connect_go.Requ
 		return nil, errors.New("no auth")
 	}
 
+	bytes, err := protojson.Marshal(req.Msg)
+	if err != nil {
+		return nil, errors.New("Unmarshall from proto")
+	}
+
+	dbType := map[string]interface{}{}
+
+	if err := json.Unmarshal(bytes, &dbType); err != nil {
+		return nil, errors.New("Unmarshall json")
+	}
+
 	// would need some mapping to DB (maybe)
 	testCollectionPath := "testCollection"
-	docRef, writeRes, err := e.firestore.Collection(testCollectionPath).Add(ctx, req)
+	docRef, writeRes, err := e.firestore.Collection(testCollectionPath).Add(ctx, dbType)
 	if err != nil {
 		connect_go.NewError(connect_go.CodeInternal, errors.New("asdsadf"))
 	}
