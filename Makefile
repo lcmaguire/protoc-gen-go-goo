@@ -68,11 +68,18 @@ curl-connect-create: # normal curl for connect service
     --data '{"name": "my name", "display_name": "displayName"}' \
     http://localhost:8080/tutorial.ExampleService/CreateExample
 
+curl-connect-update: # normal curl for connect service
+	curl \
+    --header "Content-Type: application/json" \
+	--header "Authorization: Bearer asdfasdf" \
+    --data '{"name": "testCollection/yHd1n6erFYL3ddGBHEby", "display_name": "displayName"}' \
+    http://localhost:8080/tutorial.ExampleService/CreateExample
+
 curl-connect-get: # normal curl for connect service
 	curl \
     --header "Content-Type: application/json" \
 	--header "Authorization: Bearer asdfasdf" \
-    --data '{"name": "testCollection/uCrDRXkFvBbjp93JURzz"}' \
+    --data '{"name": "testCollection/yHd1n6erFYL3ddGBHEby"}' \
     http://localhost:8080/tutorial.ExampleService/GetExample
 
 

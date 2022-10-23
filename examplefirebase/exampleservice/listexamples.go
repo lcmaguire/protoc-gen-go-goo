@@ -25,6 +25,7 @@ func (e *ExampleService) ListExamples(ctx context.Context, req *connect_go.Reque
 		if err := v.DataTo(res); err != nil {
 			return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("asdsadf"))
 		}
+		fmt.Println(v.Ref)
 		fmt.Println(res)
 	}
 
