@@ -83,6 +83,13 @@ curl-connect-delete: # normal curl for connect service
     --data '{"name": "testCollection/uCrDRXkFvBbjp93JURzz"}' \
     http://localhost:8080/tutorial.ExampleService/DeleteExample
 
+curl-connect-list: # normal curl for connect service
+	curl \
+    --header "Content-Type: application/json" \
+	--header "Authorization: Bearer asdfasdf" \
+    --data '{"name": "testCollection/uCrDRXkFvBbjp93JURzz"}' \
+    http://localhost:8080/tutorial.ExampleService/ListExamples
+
 ## Streaming curls.
 grpc-connect-streaming: # grpc curl for connect streaming service
 	grpcurl \
