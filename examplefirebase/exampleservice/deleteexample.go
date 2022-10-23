@@ -3,6 +3,7 @@ package exampleservice
 import (
 	context "context"
 	errors "errors"
+
 	connect_go "github.com/bufbuild/connect-go"
 	sample "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
@@ -10,6 +11,10 @@ import (
 
 // DeleteExample implements tutorial.ExampleService.DeleteExample.
 func (e *ExampleService) DeleteExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[emptypb.Empty], error) {
-	res := connect_go.NewResponse(&emptypb.Empty{})
-	return res, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
+	_, err := e.firestore.Doc(req.Msg.Name).Delete(ctx)
+	if err != nil {
+		connect_go.NewError(connect_go.CodeInternal, errors.New("asdsadf"))
+	}
+
+	return connect_go.NewResponse(&emptypb.Empty{}), nil
 }

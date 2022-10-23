@@ -13,7 +13,6 @@ import (
 
 // GetExample implements tutorial.ExampleService.GetExample.
 func (e *ExampleService) GetExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
-
 	docSnap, err := e.firestore.Doc(req.Msg.Name).Get(ctx)
 	if err != nil {
 		connect_go.NewError(connect_go.CodeInternal, errors.New("asdsadf"))
@@ -24,16 +23,6 @@ func (e *ExampleService) GetExample(ctx context.Context, req *connect_go.Request
 	}
 
 	data := docSnap.Data()
-	/*m, err := structpb.NewValue(data)
-	if err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("err structpb"))
-	}
-
-	res, valid := m.AsInterface().(*sample.SearchResponse)
-	if !valid {
-		return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("err marshal"))
-	} */
-
 	bytes, err := json.Marshal(data)
 	if err != nil {
 		return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("err marshal"))
