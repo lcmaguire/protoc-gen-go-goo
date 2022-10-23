@@ -12,8 +12,8 @@ protoc-gen-go-goo currently Supports
 
 |                     | gRPC-go | connect-go |
 |---------------------|---------|------------|
-| unary RPC file      |    :white_check_mark:       |      :white_check_mark:      |
-| unary RPC test      |   :white_check_mark:        |       :white_check_mark:       |
+| unary RPC files      |    :white_check_mark:       |      :white_check_mark:      |
+| unary RPC tests      |   :white_check_mark:        |       :white_check_mark:       |
 | streaming RPC files |         |       :white_check_mark:       |
 | streaming RPC tests |         |       :white_check_mark:        |
 | basic server gen    |     :white_check_mark:      |       :white_check_mark:       |
