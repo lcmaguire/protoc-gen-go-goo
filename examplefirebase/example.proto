@@ -21,4 +21,5 @@ message SearchRequest {
 
 message SearchResponse {
     string name = 1;
+    string display_name = 2;
 }
