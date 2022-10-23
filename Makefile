@@ -53,6 +53,21 @@ curl-connect: # normal curl for connect service
     --data '{}' \
     http://localhost:8080/tutorial.ExampleService/GetExample
 
+curl-connect: # normal curl for connect service
+	curl \
+    --header "Content-Type: application/json" \
+    --data '{}' \
+    http://localhost:8080/tutorial.ExampleService/GetExample
+
+
+
+curl-connect-create: # normal curl for connect service
+	curl \
+    --header "Content-Type: application/json" \
+	--header "Authorization: Bearer asdfasdf" \
+    --data '{name: "my name", displayName: "displayName"}' \
+    http://localhost:8080/tutorial.ExampleService.CreateExample
+
 ## Streaming curls.
 grpc-connect-streaming: # grpc curl for connect streaming service
 	grpcurl \
