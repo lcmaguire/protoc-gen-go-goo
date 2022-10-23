@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	connect_go "github.com/bufbuild/connect-go"
-	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+	sample "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"
 )
 
 // CreateExample implements tutorial.ExampleService.CreateExample.

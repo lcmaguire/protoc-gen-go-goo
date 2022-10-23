@@ -3,7 +3,7 @@ package exampleservice
 import (
 	"cloud.google.com/go/firestore"
 	"firebase.google.com/go/v4/auth"
-	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
+	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sampleconnect"
 )
 
 // ExampleService implements tutorial.ExampleService.

@@ -25,7 +25,7 @@ func main() {
 	// export FIRESTORE_EMULATOR_HOST="localhost:8080"
 
 	err := http.ListenAndServe(
-		"localhost:8080",
+		"localhost:8080", // auth host users 8080
 		// For gRPC clients, it's convenient to support HTTP/2 without TLS. You can
 		// avoid x/net/http2 by using http.ListenAndServeTLS.
 		h2c.NewHandler(mux, &http2.Server{}),
