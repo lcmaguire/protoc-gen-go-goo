@@ -7,19 +7,29 @@ option go_package = "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/samp
 
 // todo make AIP approved
 service ExampleService {
-    rpc CreateExample(SearchRequest) returns (SearchResponse);
-    rpc GetExample(SearchRequest) returns (SearchResponse);
-    rpc ListExamples(SearchRequest) returns (SearchResponse);
-    rpc UpdateExample(SearchRequest) returns (SearchResponse);
-    rpc DeleteExample(SearchRequest) returns (google.protobuf.Empty);
+    rpc CreateExample(Example) returns (Example);
+    rpc GetExample(GetExampleRequest) returns (Example);
+    rpc ListExamples(ListExampleRequest) returns (ListExampleResponse);
+    rpc UpdateExample(Example) returns (Example);
+    rpc DeleteExample(DeleteExampleRequest) returns (google.protobuf.Empty);
 }
 
-message SearchRequest {
+message Example {
     string name = 1;
     string display_name = 2;
 }
 
-message SearchResponse {
+message GetExampleRequest {
     string name = 1;
-    string display_name = 2;
+}
+
+message DeleteExampleRequest {
+    string name = 1;
+}
+
+message ListExampleRequest {
+}
+
+message ListExampleResponse {
+    repeated Example examples = 1;
 }
