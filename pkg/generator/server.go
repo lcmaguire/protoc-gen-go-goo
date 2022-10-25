@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
+	"github.com/lcmaguire/protoc-gen-go-goo/pkg/firebase"
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/templates"
 	"google.golang.org/protobuf/compiler/protogen"
 )
@@ -49,7 +50,14 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File, se
 	}
 
 	if g.ConnectGo {
-		f.P(templates.ExecuteTemplate(connectgo.ServerTemplate, serverData{Services: resgisteredServices}))
+		// f.P(templates.ExecuteTemplate(connectgo.ServerTemplate, serverData{Services: resgisteredServices}))
+		//firebase "firebase.google.com/go/v4"
+		// "google.golang.org/api/option"
+		f.QualifiedGoIdent(protogen.GoIdent{GoName: "", GoImportPath: protogen.GoImportPath("context")})
+		f.QualifiedGoIdent(protogen.GoIdent{GoName: "", GoImportPath: protogen.GoImportPath("google.golang.org/api/option")})
+		f.QualifiedGoIdent(protogen.GoIdent{GoName: "firebase", GoImportPath: protogen.GoImportPath("firebase.google.com/go/v4")})
+
+		f.P(templates.ExecuteTemplate(firebase.ServerTemplate, serverData{Services: resgisteredServices}))
 		return
 	}
 	f.P(fmt.Sprintf(templates.ServerTemplate, resgisteredServices))

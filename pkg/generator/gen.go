@@ -3,7 +3,7 @@ package generator
 import (
 	"strings"
 
-	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
+	"github.com/lcmaguire/protoc-gen-go-goo/pkg/firebase"
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/templates"
 	"google.golang.org/protobuf/compiler/protogen"
 )
@@ -37,7 +37,7 @@ func (g *Generator) Run(gen *protogen.Plugin) error {
 }
 
 func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *protogen.Service, file *protogen.File) (outfiles []*protogen.GeneratedFile) {
-	serviceFile := g.generateServiceFile(gen, service, file) 
+	serviceFile := g.generateServiceFile(gen, service, file)
 	outfiles = append(outfiles, serviceFile)
 
 	// will create a method for all services
@@ -80,8 +80,11 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 	tplate := templates.ServiceTemplate
 	if g.ConnectGo {
 		pkg += "connect"
-		tplate = connectgo.ServiceTemplate
+		// tplate = connectgo.ServiceTemplate
+		tplate = firebase.ServiceTemplate
 		rootGoIndent = protogen.GoIdent{GoImportPath: rootGoIndent.GoImportPath + "connect"}
+		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "cloud.google.com/go/firestore"}) //"firebase.google.com/go/v4/auth"
+		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "firebase.google.com/go/v4/auth"})
 	}
 	f.QualifiedGoIdent(rootGoIndent)
 

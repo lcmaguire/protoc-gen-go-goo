@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
+	"github.com/lcmaguire/protoc-gen-go-goo/pkg/firebase"
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/templates"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -32,6 +33,19 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 	if g.ConnectGo {
 		imports = connectgo.MethodImports
 		tplate = connectgo.MethodTemplate
+		switch {
+		case strings.HasPrefix(data.MethodName, "Create"):
+			tplate = firebase.CreateEndpointUpdate
+		case strings.HasPrefix(data.MethodName, "Update"):
+			tplate = firebase.UpdateEndpointTemplate
+		case strings.HasPrefix(data.MethodName, "Delete"):
+			tplate = firebase.DeleteEndpointTemplate
+		case strings.HasPrefix(data.MethodName, "Get"):
+			tplate = firebase.GetEndpointTemplate
+		case strings.HasPrefix(data.MethodName, "List"):
+			tplate = firebase.ListEndpointTemplate
+		}
+
 		switch {
 		case data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer():
 			imports = append(imports, "errors", "io", "fmt")

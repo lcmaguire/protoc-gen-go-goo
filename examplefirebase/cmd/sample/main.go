@@ -1,17 +1,15 @@
 package main
 
 import (
-	"context"
-	log "log"
-	http "net/http"
-
-	firebase "firebase.google.com/go/v4"
-	"google.golang.org/api/option"
-
+	context "context"
+	v4 "firebase.google.com/go/v4"
 	exampleservice "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/exampleservice"
 	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sampleconnect"
 	http2 "golang.org/x/net/http2"
 	h2c "golang.org/x/net/http2/h2c"
+	option "google.golang.org/api/option"
+	log "log"
+	http "net/http"
 )
 
 func main() {
@@ -33,7 +31,7 @@ func main() {
 	log.Fatalf("listen failed: " + err.Error())
 }
 
-func createNewService() *exampleservice.ExampleService {
+func createNewService() *exampleservice.Service {
 	opt := option.WithCredentialsFile("./test-firebase-service-account.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
@@ -49,5 +47,5 @@ func createNewService() *exampleservice.ExampleService {
 	if err != nil {
 		log.Fatalf("error initializing app: %v\n", err)
 	}
-	return exampleservice.NewExampleService(auth, firestore)
+	return exampleservice.NewService(auth, firestore)
 }

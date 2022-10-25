@@ -1,20 +1,20 @@
 package exampleservice
 
 import (
-	"cloud.google.com/go/firestore"
-	"firebase.google.com/go/v4/auth"
+	firestore "cloud.google.com/go/firestore"
+	auth "firebase.google.com/go/v4/auth"
 	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sampleconnect"
 )
 
-// ExampleService implements tutorial.ExampleService.
-type ExampleService struct {
+// Service implements tutorial.ExampleService.
+type Service struct {
 	sampleconnect.UnimplementedExampleServiceHandler
 	firestore *firestore.Client
 	auth      *auth.Client
 }
 
-func NewExampleService(auth *auth.Client, firestore *firestore.Client) *ExampleService {
-	return &ExampleService{
+func NewService(auth *auth.Client, firestore *firestore.Client) *Service {
+	return &Service{
 		auth:      auth,
 		firestore: firestore,
 	}

@@ -28,11 +28,11 @@ const (
 
 // ExampleServiceClient is a client for the tutorial.ExampleService service.
 type ExampleServiceClient interface {
-	CreateExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	GetExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	ListExamples(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	UpdateExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	DeleteExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[emptypb.Empty], error)
+	CreateExample(context.Context, *connect_go.Request[sample.Example]) (*connect_go.Response[sample.Example], error)
+	GetExample(context.Context, *connect_go.Request[sample.GetExampleRequest]) (*connect_go.Response[sample.Example], error)
+	ListExamples(context.Context, *connect_go.Request[sample.ListExampleRequest]) (*connect_go.Response[sample.ListExampleResponse], error)
+	UpdateExample(context.Context, *connect_go.Request[sample.Example]) (*connect_go.Response[sample.Example], error)
+	DeleteExample(context.Context, *connect_go.Request[sample.DeleteExampleRequest]) (*connect_go.Response[emptypb.Empty], error)
 }
 
 // NewExampleServiceClient constructs a client for the tutorial.ExampleService service. By default,
@@ -45,27 +45,27 @@ type ExampleServiceClient interface {
 func NewExampleServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) ExampleServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &exampleServiceClient{
-		createExample: connect_go.NewClient[sample.SearchRequest, sample.SearchResponse](
+		createExample: connect_go.NewClient[sample.Example, sample.Example](
 			httpClient,
 			baseURL+"/tutorial.ExampleService/CreateExample",
 			opts...,
 		),
-		getExample: connect_go.NewClient[sample.SearchRequest, sample.SearchResponse](
+		getExample: connect_go.NewClient[sample.GetExampleRequest, sample.Example](
 			httpClient,
 			baseURL+"/tutorial.ExampleService/GetExample",
 			opts...,
 		),
-		listExamples: connect_go.NewClient[sample.SearchRequest, sample.SearchResponse](
+		listExamples: connect_go.NewClient[sample.ListExampleRequest, sample.ListExampleResponse](
 			httpClient,
 			baseURL+"/tutorial.ExampleService/ListExamples",
 			opts...,
 		),
-		updateExample: connect_go.NewClient[sample.SearchRequest, sample.SearchResponse](
+		updateExample: connect_go.NewClient[sample.Example, sample.Example](
 			httpClient,
 			baseURL+"/tutorial.ExampleService/UpdateExample",
 			opts...,
 		),
-		deleteExample: connect_go.NewClient[sample.SearchRequest, emptypb.Empty](
+		deleteExample: connect_go.NewClient[sample.DeleteExampleRequest, emptypb.Empty](
 			httpClient,
 			baseURL+"/tutorial.ExampleService/DeleteExample",
 			opts...,
@@ -75,45 +75,45 @@ func NewExampleServiceClient(httpClient connect_go.HTTPClient, baseURL string, o
 
 // exampleServiceClient implements ExampleServiceClient.
 type exampleServiceClient struct {
-	createExample *connect_go.Client[sample.SearchRequest, sample.SearchResponse]
-	getExample    *connect_go.Client[sample.SearchRequest, sample.SearchResponse]
-	listExamples  *connect_go.Client[sample.SearchRequest, sample.SearchResponse]
-	updateExample *connect_go.Client[sample.SearchRequest, sample.SearchResponse]
-	deleteExample *connect_go.Client[sample.SearchRequest, emptypb.Empty]
+	createExample *connect_go.Client[sample.Example, sample.Example]
+	getExample    *connect_go.Client[sample.GetExampleRequest, sample.Example]
+	listExamples  *connect_go.Client[sample.ListExampleRequest, sample.ListExampleResponse]
+	updateExample *connect_go.Client[sample.Example, sample.Example]
+	deleteExample *connect_go.Client[sample.DeleteExampleRequest, emptypb.Empty]
 }
 
 // CreateExample calls tutorial.ExampleService.CreateExample.
-func (c *exampleServiceClient) CreateExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
+func (c *exampleServiceClient) CreateExample(ctx context.Context, req *connect_go.Request[sample.Example]) (*connect_go.Response[sample.Example], error) {
 	return c.createExample.CallUnary(ctx, req)
 }
 
 // GetExample calls tutorial.ExampleService.GetExample.
-func (c *exampleServiceClient) GetExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
+func (c *exampleServiceClient) GetExample(ctx context.Context, req *connect_go.Request[sample.GetExampleRequest]) (*connect_go.Response[sample.Example], error) {
 	return c.getExample.CallUnary(ctx, req)
 }
 
 // ListExamples calls tutorial.ExampleService.ListExamples.
-func (c *exampleServiceClient) ListExamples(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
+func (c *exampleServiceClient) ListExamples(ctx context.Context, req *connect_go.Request[sample.ListExampleRequest]) (*connect_go.Response[sample.ListExampleResponse], error) {
 	return c.listExamples.CallUnary(ctx, req)
 }
 
 // UpdateExample calls tutorial.ExampleService.UpdateExample.
-func (c *exampleServiceClient) UpdateExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
+func (c *exampleServiceClient) UpdateExample(ctx context.Context, req *connect_go.Request[sample.Example]) (*connect_go.Response[sample.Example], error) {
 	return c.updateExample.CallUnary(ctx, req)
 }
 
 // DeleteExample calls tutorial.ExampleService.DeleteExample.
-func (c *exampleServiceClient) DeleteExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[emptypb.Empty], error) {
+func (c *exampleServiceClient) DeleteExample(ctx context.Context, req *connect_go.Request[sample.DeleteExampleRequest]) (*connect_go.Response[emptypb.Empty], error) {
 	return c.deleteExample.CallUnary(ctx, req)
 }
 
 // ExampleServiceHandler is an implementation of the tutorial.ExampleService service.
 type ExampleServiceHandler interface {
-	CreateExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	GetExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	ListExamples(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	UpdateExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	DeleteExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[emptypb.Empty], error)
+	CreateExample(context.Context, *connect_go.Request[sample.Example]) (*connect_go.Response[sample.Example], error)
+	GetExample(context.Context, *connect_go.Request[sample.GetExampleRequest]) (*connect_go.Response[sample.Example], error)
+	ListExamples(context.Context, *connect_go.Request[sample.ListExampleRequest]) (*connect_go.Response[sample.ListExampleResponse], error)
+	UpdateExample(context.Context, *connect_go.Request[sample.Example]) (*connect_go.Response[sample.Example], error)
+	DeleteExample(context.Context, *connect_go.Request[sample.DeleteExampleRequest]) (*connect_go.Response[emptypb.Empty], error)
 }
 
 // NewExampleServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -154,22 +154,22 @@ func NewExampleServiceHandler(svc ExampleServiceHandler, opts ...connect_go.Hand
 // UnimplementedExampleServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedExampleServiceHandler struct{}
 
-func (UnimplementedExampleServiceHandler) CreateExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
+func (UnimplementedExampleServiceHandler) CreateExample(context.Context, *connect_go.Request[sample.Example]) (*connect_go.Response[sample.Example], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.ExampleService.CreateExample is not implemented"))
 }
 
-func (UnimplementedExampleServiceHandler) GetExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
+func (UnimplementedExampleServiceHandler) GetExample(context.Context, *connect_go.Request[sample.GetExampleRequest]) (*connect_go.Response[sample.Example], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.ExampleService.GetExample is not implemented"))
 }
 
-func (UnimplementedExampleServiceHandler) ListExamples(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
+func (UnimplementedExampleServiceHandler) ListExamples(context.Context, *connect_go.Request[sample.ListExampleRequest]) (*connect_go.Response[sample.ListExampleResponse], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.ExampleService.ListExamples is not implemented"))
 }
 
-func (UnimplementedExampleServiceHandler) UpdateExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
+func (UnimplementedExampleServiceHandler) UpdateExample(context.Context, *connect_go.Request[sample.Example]) (*connect_go.Response[sample.Example], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.ExampleService.UpdateExample is not implemented"))
 }
 
-func (UnimplementedExampleServiceHandler) DeleteExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[emptypb.Empty], error) {
+func (UnimplementedExampleServiceHandler) DeleteExample(context.Context, *connect_go.Request[sample.DeleteExampleRequest]) (*connect_go.Response[emptypb.Empty], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.ExampleService.DeleteExample is not implemented"))
 }
