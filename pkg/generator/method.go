@@ -21,6 +21,8 @@ type methodData struct {
 	Imports      []protogen.GoIdent
 	Pkg          string
 	MethodDesc   protoreflect.MethodDescriptor
+	MessageName  string
+	protoMethod  *protogen.Method
 }
 
 func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protogen.GeneratedFile {
@@ -44,7 +46,10 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 			tplate = firebase.GetEndpointTemplate
 		case strings.HasPrefix(data.MethodName, "List"):
 			tplate = firebase.ListEndpointTemplate
-			data.MethodDesc.Output().Fields().Get(0).Name()
+			data.MessageName = string(data.protoMethod.Output.Desc.Fields().Get(0).Name())
+			//data.MessageName = string(data.MethodDesc.Output().Fields().Get(0).FullName())
+			//data.MethodDesc.Output().
+			//data.MethodDesc.Output().Fields().Get(0).Name()
 		}
 
 		switch {
