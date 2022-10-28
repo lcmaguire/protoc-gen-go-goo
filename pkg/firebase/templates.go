@@ -125,7 +125,7 @@ func main() {
 
 func createNewService() *exampleservice.Service {
 	opt := option.WithCredentialsFile("./test-firebase-service-account.json")
-	app, err := firebase.NewApp(context.Background(), nil, opt)
+	app, err := v4.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Fatalf("error initializing app: %v\n", err)
 	}
