@@ -20,7 +20,7 @@ func (s *Service) ListExamples(ctx context.Context, req *connect_go.Request[samp
 		}
 
 		var data *sample.Example
-		if err := v.DataTo(data); err != nil {
+		if err := v.DataTo(&data); err != nil {
 			return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error unable to load response"))
 		}
 		arr = append(arr, data)

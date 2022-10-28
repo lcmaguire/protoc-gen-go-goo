@@ -14,7 +14,7 @@ func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{
 		}
 		
 		var data *{{.ProtoPkg}}.{{.MessageName}}
-		if err := v.DataTo(data); err != nil {
+		if err := v.DataTo(&data); err != nil {
 			return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error unable to load response"))
 		}
 		arr = append(arr, data)

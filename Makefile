@@ -94,7 +94,7 @@ curl-connect-list: # normal curl for connect service
 	curl \
     --header "Content-Type: application/json" \
 	--header "Authorization: Bearer asdfasdf" \
-    --data '{"name": "testCollection/uCrDRXkFvBbjp93JURzz"}' \
+    --data '{}' \
     http://localhost:8080/tutorial.ExampleService/ListExamples
 
 ## Streaming curls.
