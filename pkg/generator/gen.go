@@ -53,7 +53,7 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 			RequestType:  requestType,
 			ResponseType: responseType,
 			Imports:      []protogen.GoIdent{v.Input.GoIdent, v.Output.GoIdent, {GoImportPath: protogen.GoImportPath(service.GoName)}},
-			methodDesc:   v.Desc,
+			MethodDesc:   v.Desc,
 			Pkg:          getParamPKG(file.GoDescriptorIdent.GoImportPath.String()),
 		}
 		f := g.genRpcMethod(gen, mData)

@@ -20,7 +20,7 @@ type methodData struct {
 	FullName     string
 	Imports      []protogen.GoIdent
 	Pkg          string
-	methodDesc   protoreflect.MethodDescriptor
+	MethodDesc   protoreflect.MethodDescriptor
 }
 
 func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protogen.GeneratedFile {
@@ -44,16 +44,17 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 			tplate = firebase.GetEndpointTemplate
 		case strings.HasPrefix(data.MethodName, "List"):
 			tplate = firebase.ListEndpointTemplate
+			data.MethodDesc.Output().Fields().Get(0).Name()
 		}
 
 		switch {
-		case data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer():
+		case data.MethodDesc.IsStreamingClient() && data.MethodDesc.IsStreamingServer():
 			imports = append(imports, "errors", "io", "fmt")
 			tplate = connectgo.BiDirectionalStreamingTemplate
-		case data.methodDesc.IsStreamingServer():
+		case data.MethodDesc.IsStreamingServer():
 			imports = append(imports, "time")
 			tplate = connectgo.StreamingServiceTemplate
-		case data.methodDesc.IsStreamingClient():
+		case data.MethodDesc.IsStreamingClient():
 			imports = append(imports, "errors")
 			tplate = connectgo.StreamingClientTemplate
 		}
@@ -92,18 +93,18 @@ func (g *Generator) genTestFile(gen *protogen.Plugin, data methodData) *protogen
 		imports = connectgo.TestImports
 		tplate = connectgo.TestFileTemplate
 		switch {
-		case data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer():
+		case data.MethodDesc.IsStreamingClient() && data.MethodDesc.IsStreamingServer():
 			tplate = connectgo.TestBiDirectionalStreamFileTemplate
 			imports = connectgo.TestBiDirectionalMethod
 			// imports connect go gRPC.
 			connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, data.Pkg+"connect")
 			f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
-		case data.methodDesc.IsStreamingClient():
+		case data.MethodDesc.IsStreamingClient():
 			tplate = connectgo.TestClientStreamFileTemplate
 			imports = connectgo.TestClientStreamMethod
 			connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, data.Pkg+"connect")
 			f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
-		case data.methodDesc.IsStreamingServer():
+		case data.MethodDesc.IsStreamingServer():
 			tplate = connectgo.TestServerStreamFileTemplate
 			imports = connectgo.TestServerStreamMethod
 			connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, data.Pkg+"connect")
