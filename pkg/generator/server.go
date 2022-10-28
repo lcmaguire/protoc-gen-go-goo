@@ -9,16 +9,16 @@ import (
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
-// need pkg, services,
-func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File, services []string) {
-	fileName := strings.ToLower("cmd" + "/" + string(file.GoPackageName) + "/" + "main.go")
+func (g *Generator) generateServer(gen *protogen.Plugin, file FileInfo, services []string) {
+	fileName := strings.ToLower("cmd" + "/" + file.GoPackageName + "/" + "main.go")
 	f := gen.NewGeneratedFile(fileName, protogen.GoImportPath("."))
 
 	f.P("package main ")
 	imports := append(_serviceImports, protogen.GoImportPath(file.GoImportPath))
 	if g.ConnectGo {
 		imports = connectgo.ServiceImports
-		goPKGname := strings.ToLower(string(file.GoPackageName))
+		// gets connect go gRPC.
+		goPKGname := strings.ToLower(file.GoPackageName)
 		connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, goPKGname+"connect")
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
 	}
@@ -27,8 +27,8 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file *protogen.File, se
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v})
 	}
 
-	pkg := getParamPKG(file.GoDescriptorIdent.GoImportPath.String())
-
+	// imports proto.
+	pkg := file.Pkg
 	resgisteredServices := ""
 	for _, serviceName := range services {
 		// dir goModPath + serviceName
