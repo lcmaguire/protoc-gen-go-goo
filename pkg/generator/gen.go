@@ -73,7 +73,7 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 	return outfiles
 }
 
-func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.Service, file *protogen.File) *protogen.GeneratedFile { // consider returning []
+func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.Service, file *protogen.File) *protogen.GeneratedFile {
 	fileName := strings.ToLower(service.GoName + "/" + service.GoName + ".go") // todo format in snakecase
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{service.GoName}}.go
 	f := gen.NewGeneratedFile(fileName, protogen.GoImportPath(service.GoName))
