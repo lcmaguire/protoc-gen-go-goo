@@ -9,19 +9,16 @@ import (
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
-// map [PkgName][]Services
-
-// need pkg, services,
 func (g *Generator) generateServer(gen *protogen.Plugin, file FileInfo, services []string) {
-	fileName := strings.ToLower("cmd" + "/" + string(file.GoPackageName) + "/" + "main.go")
+	fileName := strings.ToLower("cmd" + "/" + file.GoPackageName + "/" + "main.go")
 	f := gen.NewGeneratedFile(fileName, protogen.GoImportPath("."))
 
 	f.P("package main ")
 	imports := append(_serviceImports, protogen.GoImportPath(file.GoImportPath))
 	if g.ConnectGo {
 		imports = connectgo.ServiceImports
-		// gets connectgo gRPC.
-		goPKGname := strings.ToLower(string(file.GoPackageName))
+		// gets connect go gRPC.
+		goPKGname := strings.ToLower(file.GoPackageName)
 		connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, goPKGname+"connect")
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
 	}
@@ -29,12 +26,6 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file FileInfo, services
 	for _, v := range imports {
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v})
 	}
-
-	// for each unique goPkgName
-	// create server
-	// get
-	// file.GoDescriptorIdent.GoImportPath.String()
-	// file.GoPackageName
 
 	// imports proto.
 	pkg := file.Pkg
