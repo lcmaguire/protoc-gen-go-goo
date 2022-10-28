@@ -11,6 +11,6 @@ func TestListExample(t *testing.T) {
 	t.Parallel()
 	res := &sample.ListExampleResponse{}
 
-	fmt.Println(res.ProtoReflect().Descriptor())
+	fmt.Println(res.ProtoReflect().Descriptor().Fields().Get(0).Message().FullName())
 	// Fields().Get(0).Name()
 }

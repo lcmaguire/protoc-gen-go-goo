@@ -7,26 +7,23 @@ func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{
 	if err != nil {
 		return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error loading response"))
 	}
-
-	res := &{{.ResponseType}}{}
-
-	// arr := []*pkg.{{MessageName}}{}
-	// {{.MessageName}}
-	// would want internal message.
+	arr := []*{{.ProtoPkg}}.{{.MessageName}}{}
 	for _, v := range docSnaps {
 		if v == nil || v.Data() == nil {
 			return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error loading response"))
 		}
 		
-		// var data *pkg.{{.MessageName}}
-		if err := v.DataTo(res); err != nil {
+		var data *{{.ProtoPkg}}.{{.MessageName}}
+		if err := v.DataTo(data); err != nil {
 			return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error unable to load response"))
 		}
-		// arr = append(res.{{.MessageName}}s, data)
+		arr = append(arr, data)
 	}
-	// res.{{MessageName}}s = arr
-
-	return connect_go.NewResponse(res), nil
+	return connect_go.NewResponse(
+		&{{.ResponseType}}{
+			{{.MessageName}}s: arr,
+		},
+	), nil
 }
 `
 

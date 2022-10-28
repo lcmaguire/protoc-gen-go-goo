@@ -13,21 +13,21 @@ func (s *Service) ListExamples(ctx context.Context, req *connect_go.Request[samp
 	if err != nil {
 		return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error loading response"))
 	}
-
-	res := &sample.ListExampleResponse{}
-	// examples
-	// would want internal message.
+	arr := []*sample.Example{}
 	for _, v := range docSnaps {
 		if v == nil || v.Data() == nil {
 			return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error loading response"))
 		}
 
-		// var data *pkg.examples
-		if err := v.DataTo(res); err != nil {
+		var data *sample.Example
+		if err := v.DataTo(data); err != nil {
 			return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error unable to load response"))
 		}
-		// res.exampless = append(res.exampless, data)
+		arr = append(arr, data)
 	}
-
-	return connect_go.NewResponse(res), nil
+	return connect_go.NewResponse(
+		&sample.ListExampleResponse{
+			Examples: arr,
+		},
+	), nil
 }

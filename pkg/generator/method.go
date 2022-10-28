@@ -19,7 +19,8 @@ type methodData struct {
 	ResponseType string
 	FullName     string
 	Imports      []protogen.GoIdent
-	Pkg          string
+	ProtoPkg     string // this is what goes before request type.
+	Pkg          string // ?? what is this for again?
 	MethodDesc   protoreflect.MethodDescriptor
 	MessageName  string
 	protoMethod  *protogen.Method
@@ -46,7 +47,8 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 			tplate = firebase.GetEndpointTemplate
 		case strings.HasPrefix(data.MethodName, "List"):
 			tplate = firebase.ListEndpointTemplate
-			data.MessageName = string(data.protoMethod.Output.Desc.Fields().Get(0).Name())
+			data.ProtoPkg = getParamPKG(data.protoMethod.Output.GoIdent.GoImportPath.String())
+			data.MessageName = getMessageNameFromPath(string(data.protoMethod.Output.Desc.Fields().Get(0).Message().FullName()))
 			//data.MessageName = string(data.MethodDesc.Output().Fields().Get(0).FullName())
 			//data.MethodDesc.Output().
 			//data.MethodDesc.Output().Fields().Get(0).Name()
