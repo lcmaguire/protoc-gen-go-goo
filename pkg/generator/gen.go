@@ -18,26 +18,33 @@ type Generator struct {
 }
 
 func (g *Generator) Run(gen *protogen.Plugin) error {
+	services := []string{}
+	fileInfoMap := make(map[string]FileInfo)
 	for _, f := range gen.Files {
 		if !f.Generate {
 			continue
 		}
-		services := []string{}
+
 		for _, v := range f.Services {
 			// list services here.
 			g.generateFilesForService(gen, v, f)
 			services = append(services, v.GoName)
 		}
 
-		if g.Server {
-			g.generateServer(gen, f, services)
+		fileInfoMap = collectFileData(f, fileInfoMap)
+	}
+
+	if g.Server {
+		for _, v := range fileInfoMap {
+			g.generateServer(gen, v, services)
 		}
 	}
+
 	return nil
 }
 
 func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *protogen.Service, file *protogen.File) (outfiles []*protogen.GeneratedFile) {
-	serviceFile := g.generateServiceFile(gen, service, file) 
+	serviceFile := g.generateServiceFile(gen, service, file)
 	outfiles = append(outfiles, serviceFile)
 
 	// will create a method for all services
@@ -101,4 +108,19 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 	f.P(data)
 	f.P()
 	return f
+}
+
+func collectFileData(f *protogen.File, fileInfoMap map[string]FileInfo) map[string]FileInfo {
+	goName := string(f.GoPackageName)
+	if _, exists := fileInfoMap[goName]; !exists {
+		fileInfoMap[goName] = FileInfo{Pkg: getParamPKG(f.GoDescriptorIdent.GoImportPath.String()), GoPackageName: string(f.GoPackageName), GoImportPath: string(f.GoImportPath)}
+	}
+
+	return fileInfoMap
+}
+
+type FileInfo struct {
+	Pkg           string
+	GoPackageName string
+	GoImportPath  string
 }
