@@ -35,6 +35,7 @@ func main() {
 	  )
 	
 	mux.Handle(grpcreflect.NewHandlerV1(reflector))
+	mux.Handle(grpcreflect.NewHandlerV1Alpha(reflector))
 
 	// The generated constructors return a path and a plain net/http
 	// handler.

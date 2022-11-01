@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
@@ -31,6 +32,7 @@ func main() {
 	)
 
 	mux.Handle(grpcreflect.NewHandlerV1(reflector))
+	mux.Handle(grpcreflect.NewHandlerV1Alpha(reflector))
 
 	// The generated constructors return a path and a plain net/http
 	// handler.
