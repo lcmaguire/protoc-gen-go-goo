@@ -16,7 +16,7 @@ import (
 	{{.ConnectGenImportPath}}
 
 	// your services
-	//{{.ServicePaths}}
+	{{.ServiceImports}}
 )
 
 

@@ -1,28 +1,34 @@
 package main
 
 import (
-	log "log"
-	http "net/http"
+	"log"
+	"net/http"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 
-	grpcreflect "github.com/bufbuild/connect-grpcreflect-go"
-	exampleservice "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/exampleservice"
-	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
-	streamingservice "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/streamingservice"
-	http2 "golang.org/x/net/http2"
-	h2c "golang.org/x/net/http2/h2c"
+	// your protoPathHere
+	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
+
+	// your services
+	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/exampleservice"
+	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/streamingservice"
 )
 
 func main() {
 	mux := http.NewServeMux()
+	/*
+		reflector := grpcreflect.NewStaticReflector(
+			"acme.user.v1.UserService", // todo pass in full.Name for all services here
+			"acme.group.v1.GroupService",
+			// protoc-gen-connect-go generates package-level constants
+			// for these fully-qualified protobuf service names, so you'd more likely
+			// reference userv1.UserServiceName and groupv1.GroupServiceName.
+		  )
+	*/
+	// mux.Handle(grpcreflect.NewHandlerV1(reflector))
+
 	// The generated constructors return a path and a plain net/http
 	// handler.
-	reflector := grpcreflect.NewStaticReflector(
-		"tutorial.ExampleService",   // change to be service.FullName()
-		"tutorial.StreamingService", // change to be service.FullName()
-	)
-
-	mux.Handle(grpcreflect.NewHandlerV1(reflector))
-	mux.Handle(grpcreflect.NewHandlerV1Alpha(reflector))
 
 	mux.Handle(sampleconnect.NewExampleServiceHandler(&exampleservice.ExampleService{}))
 
