@@ -8,51 +8,10 @@ import (
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
-/*
-func (g *Generator) generateServer(gen *protogen.Plugin, file FileInfo, services []string) {
-
+func (g *Generator) generateServer(gen *protogen.Plugin, file FileInfo, services []serviceT) {
 	fileName := strings.ToLower("cmd" + "/" + file.GoPackageName + "/" + "main.go")
 	f := gen.NewGeneratedFile(fileName, protogen.GoImportPath("."))
 
-	// f.P("package main ")
-	serverData := serverData{
-		GenImportPath: g.GoModPath,
-	}
-	imports := append(_serviceImports, protogen.GoImportPath(file.GoImportPath))
-
-	for _, v := range imports {
-		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v})
-	}
-
-	// imports proto.
-	pkg := file.Pkg
-	resgisteredServices := ""
-	for _, serviceName := range services {
-		// dir goModPath + serviceName
-		importPath := fmt.Sprintf("%s/%s", g.GoModPath, strings.ToLower(serviceName))
-		f.QualifiedGoIdent(protogen.GoIdent{GoName: "", GoImportPath: protogen.GoImportPath(importPath)})
-		resgisteredServices += fmt.Sprintf(
-			templates.RegisterServiceTemplate,
-			pkg,
-			serviceName,
-			strings.ToLower(serviceName)+"."+serviceName,
-		)
-
-	}
-
-	data := templates.ExecuteTemplate(connectgo.ServerTemplate, serverData)
-	f.P(data)
-}
-*/
-
-func (g *Generator) generateConnectServer(gen *protogen.Plugin, file FileInfo, services []serviceT) {
-	fileName := strings.ToLower("cmd" + "/" + file.GoPackageName + "/" + "main.go")
-	f := gen.NewGeneratedFile(fileName, protogen.GoImportPath("."))
-
-	//f.P("package main ")
-
-	//imports := connectgo.ServiceImports
-	// gets connect go gRPC.
 	genCodeImportPath := g.GoModPath
 	if g.ConnectGo { // maybe this should be handled prior or by the incoming g.GoModPath or template.
 		goPKGname := strings.ToLower(file.GoPackageName)
@@ -66,7 +25,7 @@ func (g *Generator) generateConnectServer(gen *protogen.Plugin, file FileInfo, s
 	for _, serviceName := range services {
 		// dir goModPath + serviceName
 		importPath := fmt.Sprintf("%s/%s", g.GoModPath, strings.ToLower(serviceName.ServiceName))
-		servicePaths += "\"" + importPath + "\"\n" // todo make func.
+		servicePaths += "\"" + importPath + "\"\n" // todo make func for getting servicePaths + fullNames.
 		fullNames += fmt.Sprintf("\"%s\",\n", serviceName.FullName)
 		resgisteredServices += templates.ExecuteTemplate(g.RegisterServerTemplate, serviceHandleData{Pkg: pkg, ServiceName: serviceName.ServiceName, ServiceStruct: strings.ToLower(serviceName.ServiceName) + "." + serviceName.ServiceName})
 	}
