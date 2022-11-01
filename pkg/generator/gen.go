@@ -19,6 +19,7 @@ type Generator struct {
 // Run will generate RPC methods for your files.
 func (g *Generator) Run(gen *protogen.Plugin) error {
 	services := []string{}
+	servicesData := []serviceT{}
 	fileInfoMap := make(map[string]FileInfo)
 	for _, f := range gen.Files {
 		if !f.Generate {
@@ -28,6 +29,8 @@ func (g *Generator) Run(gen *protogen.Plugin) error {
 		for _, v := range f.Services {
 			g.generateFilesForService(gen, v, f)
 			services = append(services, v.GoName)
+			servicesData = append(servicesData, serviceT{ServiceName: string(v.Desc.Name()), FullName: string(f.Desc.FullName())}) // todo see if v.GoName is equal
+
 		}
 
 		fileInfoMap = collectFileData(f, fileInfoMap)
@@ -35,6 +38,10 @@ func (g *Generator) Run(gen *protogen.Plugin) error {
 
 	if g.Server {
 		for _, v := range fileInfoMap {
+			if g.ConnectGo { // todo go down one path.
+				g.generateConnectServer(gen, v, servicesData)
+				continue
+			}
 			g.generateServer(gen, v, services)
 		}
 	}

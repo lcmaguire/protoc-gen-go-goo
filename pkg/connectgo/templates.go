@@ -12,6 +12,8 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	grpcreflect "github.com/bufbuild/connect-grpcreflect-go"
+
 	// your protoPathHere
 	{{.ConnectGenImportPath}}
 
@@ -22,16 +24,17 @@ import (
 
 func main() {
 	mux := http.NewServeMux()
-	/*
+	
 	reflector := grpcreflect.NewStaticReflector(
-		"acme.user.v1.UserService", // todo pass in full.Name for all services here
-		"acme.group.v1.GroupService",
+		{{.FullName}}
+		//"acme.user.v1.UserService", // todo pass in full.Name for all services here
+		//"acme.group.v1.GroupService",
 		// protoc-gen-connect-go generates package-level constants
 		// for these fully-qualified protobuf service names, so you'd more likely
 		// reference userv1.UserServiceName and groupv1.GroupServiceName.
 	  )
-	*/
-	// mux.Handle(grpcreflect.NewHandlerV1(reflector))
+	
+	mux.Handle(grpcreflect.NewHandlerV1(reflector))
 
 	// The generated constructors return a path and a plain net/http
 	// handler.
