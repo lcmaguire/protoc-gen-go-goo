@@ -13,6 +13,22 @@ func New{{.ServiceName}} () *{{.ServiceName}} {
 
 // add in reflection api
 const ServerTemplate = `
+package main
+
+import (
+	grpc "google.golang.org/grpc"
+	reflection "google.golang.org/grpc/reflection"
+	log "log"
+	net "net"
+)
+
+	// your protoPathHere
+	"{{.GenImportPath}}connect"
+
+	// your services
+	{{.ServiceImports}}
+)
+
 func main() {
     if err := run(); err != nil {
         log.Fatal(err)
@@ -21,14 +37,14 @@ func main() {
 
 func run() error {
     listenOn := "127.0.0.1:8080" // this should be passed in via config
-    listener, err := net.Listen("tcp", listenOn) // this too
+    listener, err := net.Listen("tcp", listenOn) 
     if err != nil {
         return  err 
     }
 
     server := grpc.NewServer()
 	// services in your protoFile
-    %s
+    {{.Services}}
 	log.Println("Listening on", listenOn)
     if err := server.Serve(listener); err != nil {
         return err 
