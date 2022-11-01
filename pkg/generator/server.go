@@ -57,7 +57,7 @@ func (g *Generator) generateConnectServer(gen *protogen.Plugin, file FileInfo, s
 	//imports := connectgo.ServiceImports
 	// gets connect go gRPC.
 	goPKGname := strings.ToLower(file.GoPackageName)
-	connectGenImportPath := fmt.Sprintf("\"%s/%s\"", g.GoModPath, goPKGname+"connect") // template could just be {{path}}connectgo"
+	connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, goPKGname) // template could just be {{path}}connectgo"
 
 	pkg := file.Pkg
 	resgisteredServices := ""
