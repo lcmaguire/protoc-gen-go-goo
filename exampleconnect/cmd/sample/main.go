@@ -20,7 +20,9 @@ func main() {
 	mux := http.NewServeMux()
 
 	reflector := grpcreflect.NewStaticReflector(
-		"tutorial", "tutorial",
+		"tutorial.ExampleService",
+		"tutorial.StreamingService",
+
 		//"acme.user.v1.UserService", // todo pass in full.Name for all services here
 		//"acme.group.v1.GroupService",
 		// protoc-gen-connect-go generates package-level constants

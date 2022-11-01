@@ -29,7 +29,7 @@ func (g *Generator) Run(gen *protogen.Plugin) error {
 		for _, v := range f.Services {
 			g.generateFilesForService(gen, v, f)
 			services = append(services, v.GoName)
-			servicesData = append(servicesData, serviceT{ServiceName: string(v.Desc.Name()), FullName: string(f.Desc.FullName())}) // todo see if v.GoName is equal
+			servicesData = append(servicesData, serviceT{ServiceName: string(v.Desc.Name()), FullName: string(v.Desc.FullName())}) // todo see if v.GoName is equal
 
 		}
 

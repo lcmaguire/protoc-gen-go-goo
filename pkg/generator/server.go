@@ -67,7 +67,7 @@ func (g *Generator) generateConnectServer(gen *protogen.Plugin, file FileInfo, s
 		// dir goModPath + serviceName
 		importPath := fmt.Sprintf("%s/%s", g.GoModPath, strings.ToLower(serviceName.ServiceName))
 		servicePaths += "\"" + importPath + "\"\n" // todo make func.
-		fullNames += fmt.Sprintf("\"%s\",", serviceName.FullName)
+		fullNames += fmt.Sprintf("\"%s\",\n", serviceName.FullName)
 		resgisteredServices += templates.ExecuteTemplate(connectgo.ServiceHandleTemplate, serviceHandleData{Pkg: pkg, ServiceName: serviceName.ServiceName, ServiceStruct: strings.ToLower(serviceName.ServiceName) + "." + serviceName.ServiceName})
 	}
 
