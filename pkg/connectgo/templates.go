@@ -51,7 +51,7 @@ func main() {
   
 `
 
-// TODO add in reflection + health.
+// TODO add in health. (or try using for loops within templates)
 const ServiceHandleTemplate = `
 
 mux.Handle({{.Pkg}}connect.New{{.ServiceName}}Handler(&{{.ServiceStruct}}{}))

@@ -20,10 +20,10 @@ import (
 	reflection "google.golang.org/grpc/reflection"
 	log "log"
 	net "net"
-)
+
 
 	// your protoPathHere
-	"{{.GenImportPath}}connect"
+	"{{.GenImportPath}}"
 
 	// your services
 	{{.ServiceImports}}
@@ -56,7 +56,7 @@ func run() error {
 `
 
 const RegisterServiceTemplate = `
-%s.Register%sServer(server, &%s{})
+{{.Pkg}}.Register{{.ServiceName}}Server(server, &{{.ServiceStruct}}{})
 reflection.Register(server) // this should perhaps be optional
 
 `

@@ -14,6 +14,10 @@ type Generator struct {
 	ConnectGo bool   // if true will generate connectGo compatable code default is false.
 	Server    bool   // if true will generate a server for the services and methods generated default is false.
 	GoModPath string // the path of your generated code, Required for server to correctly import newly generated code.
+
+	// this is temporary
+	ServerTemplate         string
+	RegisterServerTemplate string
 }
 
 // Run will generate RPC methods for your files.
@@ -37,12 +41,16 @@ func (g *Generator) Run(gen *protogen.Plugin) error {
 	}
 
 	if g.Server {
+		g.ServerTemplate = templates.ServerTemplate
+		g.RegisterServerTemplate = templates.RegisterServiceTemplate
+		if g.ConnectGo {
+			g.ServerTemplate = connectgo.ServerTemplate
+			g.RegisterServerTemplate = connectgo.ServiceHandleTemplate
+		}
+
 		for _, v := range fileInfoMap {
-			if g.ConnectGo { // todo go down one path.
-				g.generateConnectServer(gen, v, servicesData)
-				continue
-			}
-			g.generateServer(gen, v, services)
+
+			g.generateConnectServer(gen, v, servicesData)
 		}
 	}
 
