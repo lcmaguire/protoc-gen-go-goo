@@ -13,7 +13,10 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file FileInfo, services
 	fileName := strings.ToLower("cmd" + "/" + file.GoPackageName + "/" + "main.go")
 	f := gen.NewGeneratedFile(fileName, protogen.GoImportPath("."))
 
-	f.P("package main ")
+	// f.P("package main ")
+	serverData := serverData{
+		GenImportPath: g.GoModPath,
+	}
 	imports := append(_serviceImports, protogen.GoImportPath(file.GoImportPath))
 
 	for _, v := range imports {
@@ -27,25 +30,17 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file FileInfo, services
 		// dir goModPath + serviceName
 		importPath := fmt.Sprintf("%s/%s", g.GoModPath, strings.ToLower(serviceName))
 		f.QualifiedGoIdent(protogen.GoIdent{GoName: "", GoImportPath: protogen.GoImportPath(importPath)})
+		resgisteredServices += fmt.Sprintf(
+			templates.RegisterServiceTemplate,
+			pkg,
+			serviceName,
+			strings.ToLower(serviceName)+"."+serviceName,
+		)
 
-		// will probably need to be an interface or variable funcs
-		if g.ConnectGo {
-			resgisteredServices += templates.ExecuteTemplate(connectgo.ServiceHandleTemplate, serviceHandleData{Pkg: pkg, ServiceName: serviceName, ServiceStruct: strings.ToLower(serviceName) + "." + serviceName})
-		} else {
-			resgisteredServices += fmt.Sprintf(
-				templates.RegisterServiceTemplate,
-				pkg,
-				serviceName,
-				strings.ToLower(serviceName)+"."+serviceName,
-			)
-		}
 	}
 
-	if g.ConnectGo {
-		f.P(templates.ExecuteTemplate(connectgo.ServerTemplate, serverData{Services: resgisteredServices}))
-		return
-	}
-	f.P(fmt.Sprintf(templates.ServerTemplate, resgisteredServices))
+	data := templates.ExecuteTemplate(connectgo.ServerTemplate, serverData)
+	f.P(data)
 }
 
 func (g *Generator) generateConnectServer(gen *protogen.Plugin, file FileInfo, services []serviceT) {
@@ -71,18 +66,20 @@ func (g *Generator) generateConnectServer(gen *protogen.Plugin, file FileInfo, s
 		resgisteredServices += templates.ExecuteTemplate(connectgo.ServiceHandleTemplate, serviceHandleData{Pkg: pkg, ServiceName: serviceName.ServiceName, ServiceStruct: strings.ToLower(serviceName.ServiceName) + "." + serviceName.ServiceName})
 	}
 
-	f.P(templates.ExecuteTemplate(connectgo.ServerTemplate, serverData{Services: resgisteredServices, ConnectGenImportPath: connectGenImportPath, ServiceImports: servicePaths, FullName: fullNames}))
+	f.P(templates.ExecuteTemplate(connectgo.ServerTemplate, serverData{Services: resgisteredServices, GenImportPath: connectGenImportPath, ServiceImports: servicePaths, FullName: fullNames}))
 }
 
+// serverData for registering specific services
 type serviceHandleData struct {
 	Pkg           string
 	ServiceName   string
 	ServiceStruct string
 }
 
+// serverData for the server you will be generating.
 type serverData struct {
-	Services             string
-	ConnectGenImportPath string
-	ServiceImports       string
-	FullName             string // used for reflection
+	Services       string // the services being registered.
+	GenImportPath  string // import path for the service.
+	ServiceImports string // what is imported by the func
+	FullName       string // used for reflection
 }

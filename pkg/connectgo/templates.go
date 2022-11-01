@@ -15,7 +15,7 @@ import (
 	grpcreflect "github.com/bufbuild/connect-grpcreflect-go"
 
 	// your protoPathHere
-	"{{.ConnectGenImportPath}}connect"
+	"{{.GenImportPath}}connect"
 
 	// your services
 	{{.ServiceImports}}
