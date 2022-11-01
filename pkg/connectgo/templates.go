@@ -4,9 +4,35 @@ package connectgo
 
 // ServerTemplate template for a connect-go gRPC / HTTP server.
 const ServerTemplate = `
+package main 
+
+import (
+	"log" 
+	"net/http"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
+
+	// your protoPathHere
+	{{.ConnectGenImportPath}}
+
+	// your services
+	//{{.ServicePaths}}
+)
+
 
 func main() {
 	mux := http.NewServeMux()
+	/*
+	reflector := grpcreflect.NewStaticReflector(
+		"acme.user.v1.UserService", // todo pass in full.Name for all services here
+		"acme.group.v1.GroupService",
+		// protoc-gen-connect-go generates package-level constants
+		// for these fully-qualified protobuf service names, so you'd more likely
+		// reference userv1.UserServiceName and groupv1.GroupServiceName.
+	  )
+	*/
+	// mux.Handle(grpcreflect.NewHandlerV1(reflector))
+
 	// The generated constructors return a path and a plain net/http
 	// handler.
 	{{.Services}}
