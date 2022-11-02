@@ -10,18 +10,20 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
+// methodData contains data for generating Methods via a template.
 type methodData struct {
+	template         string
 	MethodCaller     string
 	ServiceName      string
 	MethodName       string
-	RequestType      string
+	RequestType      string // input param.
 	ResponseType     string
 	FullName         string
-	Imports          []protogen.GoIdent
-	ProtoImportPaths map[string]any // consider a Import Alias approach (to handle multiple imports wiwth same end.)
-	Pkg              string
-	GoPkgName        string // name for pkg. Same as ServiceName but lower case.
-	methodDesc       protoreflect.MethodDescriptor
+	Imports          []protogen.GoIdent            // this should be deleted.
+	ProtoImportPaths map[string]any                // consider a Import Alias approach (to handle multiple imports wiwth same end.)
+	Pkg              string                        // proto pkg
+	GoPkgName        string                        // name for pkg. Same as ServiceName but lower case.
+	methodDesc       protoreflect.MethodDescriptor // for extra data from methodDescriptor.
 }
 
 /*
@@ -38,22 +40,6 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 	f := gen.NewGeneratedFile(filename, protogen.GoImportPath(data.ServiceName))
 
 	//imports := _methodImports
-	tplate := templates.MethodTemplate
-	if g.ConnectGo {
-		//imports = connectgo.MethodImports
-		tplate = connectgo.MethodTemplate
-		/*switch {
-		case data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer():
-			imports = append(imports, "errors", "io", "fmt")
-			tplate = connectgo.BiDirectionalStreamingTemplate
-		case data.methodDesc.IsStreamingServer():
-			imports = append(imports, "time")
-			tplate = connectgo.StreamingServiceTemplate
-		case data.methodDesc.IsStreamingClient():
-			imports = append(imports, "errors")
-			tplate = connectgo.StreamingClientTemplate
-		}*/
-	}
 
 	// these are always imported.
 	// perhaps it should be moved it be in a diff func.
@@ -70,7 +56,7 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v})
 	}*/
 
-	rpcfunc := templates.ExecuteTemplate(tplate, data)
+	rpcfunc := templates.ExecuteTemplate(data.template, data)
 
 	f.P()
 	//f.P("package ", strings.ToLower(data.ServiceName))

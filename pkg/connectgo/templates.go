@@ -93,6 +93,16 @@ func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, req *connect_go.Re
 
 // StreamingClientTemplate template for a StreamingClient connect-go gRPC method.
 const StreamingClientTemplate = `
+package {{.GoPkgName}}
+
+import (
+	context "context"
+	errors "errors"
+	connect_go "github.com/bufbuild/connect-go"
+
+	{{.Pkg}}
+)
+
 // {{.MethodName}} implements {{.FullName}}.
 func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, stream *connect_go.ClientStream[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	for stream.Receive() {
@@ -103,11 +113,22 @@ func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, stream *connect_go
 	}
 	res := connect_go.NewResponse(&{{.ResponseType}}{})
 	return res, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented")) 
-  }
+  }  
 `
 
 // StreamingServiceTemplate template for a StreamingServer connect-go gRPC method.
 const StreamingServiceTemplate = `
+package {{.GoPkgName}}
+
+import (
+	context "context"
+	errors "errors"
+	connect_go "github.com/bufbuild/connect-go"
+	time "time"
+
+	{{.Pkg}}
+)
+
 // {{.MethodName}} implements {{.FullName}}.
 func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}], stream *connect_go.ServerStream[{{.ResponseType}}]) error {
 	ticker := time.NewTicker(time.Second) // You should set this via config.
@@ -130,6 +151,18 @@ func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, req *connect_go.Re
 
 // BiDirectionalStreamingTemplate template for a BiDirectional streaming connect-go gRPC method.
 const BiDirectionalStreamingTemplate = `
+package {{.GoPkgName}}
+
+import (
+	context "context"
+	errors "errors"
+	fmt "fmt"
+	connect_go "github.com/bufbuild/connect-go"
+	io "io"
+
+	{{.Pkg}}
+)
+
 // {{.MethodName}} implements {{.FullName}}.
 func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, stream *connect_go.BidiStream[{{.RequestType}}, {{.ResponseType}}]) error {
 	for {

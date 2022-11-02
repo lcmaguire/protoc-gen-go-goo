@@ -6,6 +6,7 @@ import (
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/templates"
 	"google.golang.org/protobuf/compiler/protogen"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 // Generator holds config for determining what code is generated
@@ -69,6 +70,7 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 		mData := methodData{
 			MethodCaller: genMethodCaller(service.GoName),
 			ServiceName:  service.GoName,
+			template:     g.getMethodTemplate(v.Desc),
 			// add in import paths. (done nicely)
 			// add in Pkg name done nicely
 			ProtoImportPaths: map[string]any{string(v.Input.GoIdent.GoImportPath): nil, string(v.Output.GoIdent.GoImportPath): nil}, // assumption being that one of the following will import protos.
@@ -143,4 +145,20 @@ func collectFileData(f *protogen.File, fileInfoMap map[string]FileInfo) map[stri
 	}
 
 	return fileInfoMap
+}
+
+func (g *Generator) getMethodTemplate(methodDesc protoreflect.MethodDescriptor) string {
+	if !g.ConnectGo {
+		return templates.MethodTemplate
+	}
+	switch {
+	case methodDesc.IsStreamingClient() && methodDesc.IsStreamingServer():
+		return connectgo.BiDirectionalStreamingTemplate
+	case methodDesc.IsStreamingServer():
+		return connectgo.StreamingServiceTemplate
+	case methodDesc.IsStreamingClient():
+		return connectgo.StreamingClientTemplate
+	default:
+		return connectgo.MethodTemplate
+	}
 }
