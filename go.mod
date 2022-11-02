@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/bufbuild/connect-go v1.0.0
+	github.com/bufbuild/connect-grpcreflect-go v1.0.0
 	github.com/golang/protobuf v1.5.2
 	github.com/stretchr/testify v1.8.0
 	golang.org/x/net v0.0.0-20221004154528-8021a29435af
@@ -12,7 +13,6 @@ require (
 )
 
 require (
-	github.com/bufbuild/connect-grpcreflect-go v1.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8 // indirect
