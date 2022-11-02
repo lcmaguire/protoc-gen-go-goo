@@ -18,11 +18,19 @@ type methodData struct {
 	ResponseType     string
 	FullName         string
 	Imports          []protogen.GoIdent
-	ProtoImportPaths map[string]any
+	ProtoImportPaths map[string]any // consider a Import Alias approach (to handle multiple imports wiwth same end.)
 	Pkg              string
 	GoPkgName        string // name for pkg. Same as ServiceName but lower case.
 	methodDesc       protoreflect.MethodDescriptor
 }
+
+/*
+	TODO:
+	have template determined prior to genRPC method.
+	support streaming + tests
+	support non connect.
+
+*/
 
 func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protogen.GeneratedFile {
 	filename := strings.ToLower(data.ServiceName + "/" + data.MethodName + ".go")
