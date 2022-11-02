@@ -74,20 +74,20 @@ const TestFileTemplate = `
 	`
 
 const MethodTemplate = `
-package exampleservice
+package {{.GoPkgName}}
 
-	import (
-		context "context"
-		codes "google.golang.org/grpc/codes"
-		status "google.golang.org/grpc/status"
+import (
+	context "context"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 
-		{{.Pkg}}
-	)
+	{{.Pkg}}
+)
 
-	// {{.MethodName}} implements {{.FullName}}.
-	func ({{.MethodCaller}}) {{.MethodName}} (ctx context.Context, in *{{.RequestType}}) (out *{{.ResponseType}}, err error){
-		return nil, status.Error(codes.Unimplemented, "yet to be implemented")
-	}
+// {{.MethodName}} implements {{.FullName}}.
+func ({{.MethodCaller}}) {{.MethodName}} (ctx context.Context, in *{{.RequestType}}) (out *{{.ResponseType}}, err error){
+	return nil, status.Error(codes.Unimplemented, "yet to be implemented")
+}
 `
 
 const MethodCallerTemplate = `%s *%s`
