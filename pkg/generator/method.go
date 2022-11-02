@@ -27,12 +27,12 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{method.GoName}}.go
 	f := gen.NewGeneratedFile(filename, protogen.GoImportPath(data.ServiceName))
 
-	imports := _methodImports
+	//imports := _methodImports
 	tplate := templates.MethodTemplate
 	if g.ConnectGo {
-		imports = connectgo.MethodImports
+		//imports = connectgo.MethodImports
 		tplate = connectgo.MethodTemplate
-		switch {
+		/*switch {
 		case data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer():
 			imports = append(imports, "errors", "io", "fmt")
 			tplate = connectgo.BiDirectionalStreamingTemplate
@@ -42,16 +42,19 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 		case data.methodDesc.IsStreamingClient():
 			imports = append(imports, "errors")
 			tplate = connectgo.StreamingClientTemplate
-		}
+		}*/
 	}
 
 	// these are always imported.
+	// perhaps it should be moved it be in a diff func.
 	for _, v := range data.Imports {
 		f.QualifiedGoIdent(v)
 	}
-	for _, v := range imports {
+
+	// can be removed.
+	/*for _, v := range imports {
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v})
-	}
+	}*/
 
 	rpcfunc := templates.ExecuteTemplate(tplate, data)
 

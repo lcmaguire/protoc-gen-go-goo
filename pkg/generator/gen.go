@@ -100,7 +100,7 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 	pkg := getParamPKG(rootGoIndent.GoImportPath.String())
 	tplate := templates.ServiceTemplate
 	if g.ConnectGo {
-		pkg += "connect"
+		pkg += "connect" // if used in this manner multiple times, tell user to make pass in correct path OR handle in templates when possible
 		tplate = connectgo.ServiceTemplate
 		rootGoIndent = protogen.GoIdent{GoImportPath: rootGoIndent.GoImportPath + "connect"}
 	}
