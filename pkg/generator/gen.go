@@ -69,13 +69,17 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 		mData := methodData{
 			MethodCaller: genMethodCaller(service.GoName),
 			ServiceName:  service.GoName,
-			MethodName:   v.GoName,
-			FullName:     string(v.Desc.FullName()),
-			RequestType:  requestType,
-			ResponseType: responseType,
-			Imports:      []protogen.GoIdent{v.Input.GoIdent, v.Output.GoIdent, {GoImportPath: protogen.GoImportPath(service.GoName)}},
-			methodDesc:   v.Desc,
-			Pkg:          getParamPKG(file.GoDescriptorIdent.GoImportPath.String()),
+			// add in import paths. (done nicely)
+			// add in Pkg name done nicely
+			ProtoImportPaths: map[string]any{string(v.Input.GoIdent.GoImportPath): nil, string(v.Output.GoIdent.GoImportPath): nil}, // assumption being that one of the following will import protos.
+			MethodName:       v.GoName,
+			FullName:         string(v.Desc.FullName()),
+			RequestType:      requestType,
+			ResponseType:     responseType,
+			Imports:          []protogen.GoIdent{v.Input.GoIdent, v.Output.GoIdent, {GoImportPath: protogen.GoImportPath(service.GoName)}},
+			methodDesc:       v.Desc,
+			Pkg:              getParamPKG(file.GoDescriptorIdent.GoImportPath.String()),
+			GoPkgName:        strings.ToLower(service.GoName),
 		}
 		f := g.genRpcMethod(gen, mData)
 		outfiles = append(outfiles, f)

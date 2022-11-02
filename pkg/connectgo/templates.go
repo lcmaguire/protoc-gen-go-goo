@@ -72,13 +72,14 @@ const ServiceTemplate = `
 // MethodTemplate template for an unimplemented unary connect-go gRPC method.
 const MethodTemplate = `
 
-package {{.Pkg}}
+package {{.GoPkgName}}
 
 import (
 	"context"
 	"errors"
 	connect_go "github.com/bufbuild/connect-go"
-	// sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+
+	{{.Pkg}}
 	
 )
 

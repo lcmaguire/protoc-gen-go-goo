@@ -11,15 +11,17 @@ import (
 )
 
 type methodData struct {
-	MethodCaller string
-	ServiceName  string
-	MethodName   string
-	RequestType  string
-	ResponseType string
-	FullName     string
-	Imports      []protogen.GoIdent
-	Pkg          string
-	methodDesc   protoreflect.MethodDescriptor
+	MethodCaller     string
+	ServiceName      string
+	MethodName       string
+	RequestType      string
+	ResponseType     string
+	FullName         string
+	Imports          []protogen.GoIdent
+	ProtoImportPaths map[string]any
+	Pkg              string
+	GoPkgName        string // name for pkg. Same as ServiceName but lower case.
+	methodDesc       protoreflect.MethodDescriptor
 }
 
 func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protogen.GeneratedFile {
@@ -47,10 +49,14 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 
 	// these are always imported.
 	// perhaps it should be moved it be in a diff func.
-	for _, v := range data.Imports {
-		f.QualifiedGoIdent(v)
+	data.Pkg = ""
+	for k := range data.ProtoImportPaths {
+		// this is a gross hack
+		data.Pkg += fmt.Sprintf("\"%s\"\n", k)
+		//f.QualifiedGoIdent(v)
 	}
 
+	// pkg
 	// can be removed.
 	/*for _, v := range imports {
 		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v})
@@ -59,7 +65,7 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 	rpcfunc := templates.ExecuteTemplate(tplate, data)
 
 	f.P()
-	f.P("package ", strings.ToLower(data.ServiceName))
+	//f.P("package ", strings.ToLower(data.ServiceName))
 	f.P()
 	f.P(rpcfunc)
 
