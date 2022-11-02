@@ -186,6 +186,18 @@ func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, stream *connect_go
 
 // TestFileTemplate will create a test file for a unary gRPC server.
 const TestFileTemplate = `
+package {{.GoPkgName}}
+
+import (
+	context "context"
+	connect_go "github.com/bufbuild/connect-go"
+	proto "github.com/golang/protobuf/proto"
+	assert "github.com/stretchr/testify/assert"
+	testing "testing"
+
+	{{.Pkg}}
+)
+
 	func Test{{.MethodName}}(t *testing.T){
 		t.Parallel()
 		service := &{{.ServiceName}}{}
@@ -201,6 +213,24 @@ const TestFileTemplate = `
 
 // TestClientStreamFileTemplate will create a test file with all boiler plate for testing a BiDirectional Streaming gRPC method.
 const TestBiDirectionalStreamFileTemplate = `
+package streamingservice
+
+import (
+	context "context"
+	errors "errors"
+	fmt "fmt"
+	connect_go "github.com/bufbuild/connect-go"
+	assert "github.com/stretchr/testify/assert"
+	require "github.com/stretchr/testify/require"
+	io "io"
+	http "net/http"
+	httptest "net/http/httptest"
+	sync "sync"
+	testing "testing"
+
+	{{.Pkg}}
+)
+
 func Test{{.MethodName}}(t *testing.T){
 	t.Parallel()
 	mux := http.NewServeMux()
@@ -259,6 +289,21 @@ func Test{{.MethodName}}(t *testing.T){
 
 // TestClientStreamFileTemplate will create a test file with all boiler plate for testing a StreamingClient gRPC method.
 const TestClientStreamFileTemplate = `
+package {{.GoPkgName}}
+
+import (
+	context "context"
+	connect_go "github.com/bufbuild/connect-go"
+	assert "github.com/stretchr/testify/assert"
+	require "github.com/stretchr/testify/require"
+	http "net/http"
+	httptest "net/http/httptest"
+	sync "sync"
+	testing "testing"
+
+	{{.Pkg}}
+)
+
 func Test{{.MethodName}}(t *testing.T) {	
 	t.Parallel()
 	mux := http.NewServeMux()
@@ -304,6 +349,20 @@ func Test{{.MethodName}}(t *testing.T) {
 
 // TestServerStreamFileTemplate will create a test file with all boiler plate for testing a StreamingServer gRPC method.
 const TestServerStreamFileTemplate = `
+package {{.GoPkgName}}
+
+import (
+	context "context"
+	connect_go "github.com/bufbuild/connect-go"
+	assert "github.com/stretchr/testify/assert"
+	http "net/http"
+	httptest "net/http/httptest"
+	testing "testing"
+
+	{{.Pkg}}
+)
+
+
 func Test{{.MethodName}}(t *testing.T) {
 	t.Parallel()
 	mux := http.NewServeMux()

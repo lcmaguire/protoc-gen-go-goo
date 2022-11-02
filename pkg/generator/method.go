@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/templates"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -13,6 +12,7 @@ import (
 // methodData contains data for generating Methods via a template.
 type methodData struct {
 	template         string
+	testTemplate     string
 	MethodCaller     string
 	ServiceName      string
 	MethodName       string
@@ -56,48 +56,21 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 	return f
 }
 
+// maybe Data + testFile Param.
+
 func (g *Generator) genTestFile(gen *protogen.Plugin, data methodData) *protogen.GeneratedFile {
 	filename := strings.ToLower(data.ServiceName + "/" + data.MethodName + "_test.go")
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{method.GoName}}.go
 	f := gen.NewGeneratedFile(filename, protogen.GoImportPath(data.ServiceName))
 
-	f.P()
-	f.P("package ", strings.ToLower(data.ServiceName))
-	f.P()
-
-	imports := _testImports
-	tplate := templates.TestFileTemplate
-	if g.ConnectGo {
-		imports = connectgo.TestImports
-		tplate = connectgo.TestFileTemplate
-		switch {
-		case data.methodDesc.IsStreamingClient() && data.methodDesc.IsStreamingServer():
-			tplate = connectgo.TestBiDirectionalStreamFileTemplate
-			imports = connectgo.TestBiDirectionalMethod
-			// imports connect go gRPC.
-			connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, data.Pkg+"connect")
-			f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
-		case data.methodDesc.IsStreamingClient():
-			tplate = connectgo.TestClientStreamFileTemplate
-			imports = connectgo.TestClientStreamMethod
-			connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, data.Pkg+"connect")
-			f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
-		case data.methodDesc.IsStreamingServer():
-			tplate = connectgo.TestServerStreamFileTemplate
-			imports = connectgo.TestServerStreamMethod
-			connectGenImportPath := fmt.Sprintf("%s/%s", g.GoModPath, data.Pkg+"connect")
-			f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: protogen.GoImportPath(connectGenImportPath)})
-		}
+	data.Pkg = ""
+	for k := range data.ProtoImportPaths {
+		// this is a gross hack
+		data.Pkg += fmt.Sprintf("\"%s\"\n", k)
+		//f.QualifiedGoIdent(v)
 	}
 
-	// move below to funcs.
-	for _, v := range data.Imports {
-		f.QualifiedGoIdent(v)
-	}
-	for _, v := range imports {
-		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v})
-	}
-	testFile := templates.ExecuteTemplate(tplate, data)
+	testFile := templates.ExecuteTemplate(data.testTemplate, data)
 	f.P(testFile)
 	return f
 }

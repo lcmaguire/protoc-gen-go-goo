@@ -71,6 +71,7 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 			MethodCaller: genMethodCaller(service.GoName),
 			ServiceName:  service.GoName,
 			template:     g.getMethodTemplate(v.Desc),
+			testTemplate: g.getTestMethodTemplate(v.Desc),
 			// add in import paths. (done nicely)
 			// add in Pkg name done nicely
 			ProtoImportPaths: map[string]any{string(v.Input.GoIdent.GoImportPath): nil, string(v.Output.GoIdent.GoImportPath): nil}, // assumption being that one of the following will import protos.
@@ -160,5 +161,21 @@ func (g *Generator) getMethodTemplate(methodDesc protoreflect.MethodDescriptor) 
 		return connectgo.StreamingClientTemplate
 	default:
 		return connectgo.MethodTemplate
+	}
+}
+
+func (g *Generator) getTestMethodTemplate(methodDesc protoreflect.MethodDescriptor) string {
+	if !g.ConnectGo {
+		return templates.TestFileTemplate
+	}
+	switch {
+	case methodDesc.IsStreamingClient() && methodDesc.IsStreamingServer():
+		return connectgo.TestBiDirectionalStreamFileTemplate
+	case methodDesc.IsStreamingServer():
+		return connectgo.TestServerStreamFileTemplate
+	case methodDesc.IsStreamingClient():
+		return connectgo.TestServerStreamFileTemplate
+	default:
+		return connectgo.TestFileTemplate
 	}
 }
