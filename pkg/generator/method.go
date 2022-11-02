@@ -39,9 +39,6 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{method.GoName}}.go
 	f := gen.NewGeneratedFile(filename, protogen.GoImportPath(data.ServiceName))
 
-	//imports := _methodImports
-
-	// these are always imported.
 	// perhaps it should be moved it be in a diff func.
 	data.Pkg = ""
 	for k := range data.ProtoImportPaths {
@@ -50,17 +47,10 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 		//f.QualifiedGoIdent(v)
 	}
 
-	// pkg
-	// can be removed.
-	/*for _, v := range imports {
-		f.QualifiedGoIdent(protogen.GoIdent{GoImportPath: v})
-	}*/
-
+	// passes data into template
 	rpcfunc := templates.ExecuteTemplate(data.template, data)
 
-	f.P()
-	//f.P("package ", strings.ToLower(data.ServiceName))
-	f.P()
+	// will write filled in template with data.
 	f.P(rpcfunc)
 
 	return f
