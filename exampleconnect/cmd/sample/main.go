@@ -1,17 +1,32 @@
 package main
 
 import (
-	exampleservice "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/exampleservice"
-	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
-	streamingservice "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/streamingservice"
-	http2 "golang.org/x/net/http2"
-	h2c "golang.org/x/net/http2/h2c"
-	log "log"
-	http "net/http"
+	"log"
+	"net/http"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
+
+	grpcreflect "github.com/bufbuild/connect-grpcreflect-go"
+
+	// your protoPathHere
+	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
+
+	// your services
+	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/exampleservice"
+	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/streamingservice"
 )
 
 func main() {
 	mux := http.NewServeMux()
+
+	reflector := grpcreflect.NewStaticReflector(
+		"tutorial.ExampleService",
+		"tutorial.StreamingService",
+	)
+
+	mux.Handle(grpcreflect.NewHandlerV1(reflector))
+	mux.Handle(grpcreflect.NewHandlerV1Alpha(reflector))
+
 	// The generated constructors return a path and a plain net/http
 	// handler.
 

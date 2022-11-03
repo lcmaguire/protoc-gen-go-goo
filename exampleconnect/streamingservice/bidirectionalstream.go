@@ -1,12 +1,13 @@
 package streamingservice
 
 import (
-	context "context"
-	errors "errors"
-	fmt "fmt"
+	"context"
+	"errors"
+	"fmt"
 	connect_go "github.com/bufbuild/connect-go"
-	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
-	io "io"
+	"io"
+
+	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 )
 
 // BiDirectionalStream implements tutorial.StreamingService.BiDirectionalStream.

@@ -1,12 +1,14 @@
 package main
 
 import (
-	example "github.com/lcmaguire/protoc-gen-go-goo/example"
-	exampleservice "github.com/lcmaguire/protoc-gen-go-goo/example/exampleservice"
-	grpc "google.golang.org/grpc"
-	reflection "google.golang.org/grpc/reflection"
-	log "log"
-	net "net"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+	"log"
+	"net"
+
+	"github.com/lcmaguire/protoc-gen-go-goo/example"
+
+	"github.com/lcmaguire/protoc-gen-go-goo/example/exampleservice"
 )
 
 func main() {
@@ -16,8 +18,8 @@ func main() {
 }
 
 func run() error {
-	listenOn := "127.0.0.1:8080"                 // this should be passed in via config
-	listener, err := net.Listen("tcp", listenOn) // this too
+	listenOn := "127.0.0.1:8080" // this should be passed in via config
+	listener, err := net.Listen("tcp", listenOn)
 	if err != nil {
 		return err
 	}

@@ -1,11 +1,12 @@
 package streamingservice
 
 import (
-	context "context"
-	errors "errors"
+	"context"
+	"errors"
 	connect_go "github.com/bufbuild/connect-go"
-	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
-	time "time"
+	"time"
+
+	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 )
 
 // ResponseStream implements tutorial.StreamingService.ResponseStream.

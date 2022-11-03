@@ -1,10 +1,11 @@
 package exampleservice
 
 import (
-	context "context"
-	errors "errors"
+	"context"
+	"errors"
 	connect_go "github.com/bufbuild/connect-go"
-	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+
+	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 )
 
 // UpdateExample implements tutorial.ExampleService.UpdateExample.

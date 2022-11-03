@@ -1,14 +1,15 @@
 package exampleservice
 
 import (
-	context "context"
-	proto "github.com/golang/protobuf/proto"
-	example "github.com/lcmaguire/protoc-gen-go-goo/example"
-	assert "github.com/stretchr/testify/assert"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	testing "testing"
+	"context"
+	"github.com/golang/protobuf/proto"
+	"github.com/stretchr/testify/assert"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"testing"
+
+	"github.com/lcmaguire/protoc-gen-go-goo/example"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func TestDeleteExample(t *testing.T) {

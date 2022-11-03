@@ -4,9 +4,34 @@ package connectgo
 
 // ServerTemplate template for a connect-go gRPC / HTTP server.
 const ServerTemplate = `
+package main 
+
+import (
+	"log" 
+	"net/http"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
+
+	grpcreflect "github.com/bufbuild/connect-grpcreflect-go"
+
+	// your protoPathHere
+	"{{.GenImportPath}}connect"
+
+	// your services
+	{{.ServiceImports}}
+)
+
 
 func main() {
 	mux := http.NewServeMux()
+	
+	reflector := grpcreflect.NewStaticReflector(
+		{{.FullName}}
+	  )
+	
+	mux.Handle(grpcreflect.NewHandlerV1(reflector))
+	mux.Handle(grpcreflect.NewHandlerV1Alpha(reflector))
+
 	// The generated constructors return a path and a plain net/http
 	// handler.
 	{{.Services}}
@@ -21,7 +46,7 @@ func main() {
   
 `
 
-// TODO add in reflection + health.
+// TODO add in health. (or try using for loops within templates)
 const ServiceHandleTemplate = `
 
 mux.Handle({{.Pkg}}connect.New{{.ServiceName}}Handler(&{{.ServiceStruct}}{}))
@@ -29,18 +54,35 @@ mux.Handle({{.Pkg}}connect.New{{.ServiceName}}Handler(&{{.ServiceStruct}}{}))
 
 // ServiceTemplate template for the body of a file that creates a struct for your service handler + a constructor.
 const ServiceTemplate = `
-	// {{.ServiceName}} implements {{.FullName}}.
-	type {{.ServiceName}} struct { 
-		{{.Pkg}}.Unimplemented{{.ServiceName}}Handler
-	}
+package {{.GoPkgName}}
+
+import (
+	{{.Imports}}
+)
+
+// {{.ServiceName}} implements {{.FullName}}.
+type {{.ServiceName}} struct { 
+	{{.Pkg}}.Unimplemented{{.ServiceName}}Handler
+}
 		
-	func New{{.ServiceName}} () *{{.ServiceName}} {
-		return &{{.ServiceName}}{}
-	}
-	`
+func New{{.ServiceName}} () *{{.ServiceName}} {
+	return &{{.ServiceName}}{}
+}
+`
 
 // MethodTemplate template for an unimplemented unary connect-go gRPC method.
 const MethodTemplate = `
+
+package {{.GoPkgName}}
+
+import (
+	"context"
+	"errors"
+	connect_go "github.com/bufbuild/connect-go"
+
+	{{.Imports}}
+)
+
 // {{.MethodName}} implements {{.FullName}}.
 func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	res := connect_go.NewResponse(&{{.ResponseType}}{})
@@ -51,6 +93,16 @@ func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, req *connect_go.Re
 
 // StreamingClientTemplate template for a StreamingClient connect-go gRPC method.
 const StreamingClientTemplate = `
+package {{.GoPkgName}}
+
+import (
+	"context"
+	"errors"
+	connect_go "github.com/bufbuild/connect-go"
+
+	{{.Imports}}
+)
+
 // {{.MethodName}} implements {{.FullName}}.
 func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, stream *connect_go.ClientStream[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	for stream.Receive() {
@@ -61,11 +113,22 @@ func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, stream *connect_go
 	}
 	res := connect_go.NewResponse(&{{.ResponseType}}{})
 	return res, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented")) 
-  }
+  }  
 `
 
 // StreamingServiceTemplate template for a StreamingServer connect-go gRPC method.
 const StreamingServiceTemplate = `
+package {{.GoPkgName}}
+
+import (
+	"context"
+	"errors"
+	connect_go "github.com/bufbuild/connect-go"
+	"time"
+
+	{{.Imports}}
+)
+
 // {{.MethodName}} implements {{.FullName}}.
 func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}], stream *connect_go.ServerStream[{{.ResponseType}}]) error {
 	ticker := time.NewTicker(time.Second) // You should set this via config.
@@ -88,6 +151,18 @@ func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, req *connect_go.Re
 
 // BiDirectionalStreamingTemplate template for a BiDirectional streaming connect-go gRPC method.
 const BiDirectionalStreamingTemplate = `
+package {{.GoPkgName}}
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	connect_go "github.com/bufbuild/connect-go"
+	"io"
+
+	{{.Imports}}
+)
+
 // {{.MethodName}} implements {{.FullName}}.
 func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, stream *connect_go.BidiStream[{{.RequestType}}, {{.ResponseType}}]) error {
 	for {
@@ -111,6 +186,18 @@ func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, stream *connect_go
 
 // TestFileTemplate will create a test file for a unary gRPC server.
 const TestFileTemplate = `
+package {{.GoPkgName}}
+
+import (
+	"context"
+	connect_go "github.com/bufbuild/connect-go"
+	"github.com/golang/protobuf/proto"
+	"github.com/stretchr/testify/assert"
+	"testing"
+
+	{{.Imports}}
+)
+
 	func Test{{.MethodName}}(t *testing.T){
 		t.Parallel()
 		service := &{{.ServiceName}}{}
@@ -126,6 +213,24 @@ const TestFileTemplate = `
 
 // TestClientStreamFileTemplate will create a test file with all boiler plate for testing a BiDirectional Streaming gRPC method.
 const TestBiDirectionalStreamFileTemplate = `
+package streamingservice
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	connect_go "github.com/bufbuild/connect-go"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"sync"
+	"testing"
+
+	{{.Imports}}
+)
+
 func Test{{.MethodName}}(t *testing.T){
 	t.Parallel()
 	mux := http.NewServeMux()
@@ -184,6 +289,21 @@ func Test{{.MethodName}}(t *testing.T){
 
 // TestClientStreamFileTemplate will create a test file with all boiler plate for testing a StreamingClient gRPC method.
 const TestClientStreamFileTemplate = `
+package {{.GoPkgName}}
+
+import (
+	"context"
+	connect_go "github.com/bufbuild/connect-go"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"net/http"
+	"net/http/httptest"
+	"sync"
+	"testing"
+
+	{{.Imports}}
+)
+
 func Test{{.MethodName}}(t *testing.T) {	
 	t.Parallel()
 	mux := http.NewServeMux()
@@ -229,6 +349,20 @@ func Test{{.MethodName}}(t *testing.T) {
 
 // TestServerStreamFileTemplate will create a test file with all boiler plate for testing a StreamingServer gRPC method.
 const TestServerStreamFileTemplate = `
+package {{.GoPkgName}}
+
+import (
+	"context"
+	connect_go "github.com/bufbuild/connect-go"
+	"github.com/stretchr/testify/assert"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	{{.Imports}}
+)
+
+
 func Test{{.MethodName}}(t *testing.T) {
 	t.Parallel()
 	mux := http.NewServeMux()
