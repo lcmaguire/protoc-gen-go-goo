@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/connectgo"
@@ -67,6 +68,15 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 		requestType := getParamPKG(v.Input.GoIdent.GoImportPath.String()) + "." + v.Input.GoIdent.GoName
 		responseType := getParamPKG(v.Output.GoIdent.GoImportPath.String()) + "." + v.Output.GoIdent.GoName
 
+		mapImports := map[string]any{string(v.Input.GoIdent.GoImportPath): nil, string(v.Output.GoIdent.GoImportPath): nil}
+		imports := ""
+		for k := range mapImports {
+			// this is a gross hack
+			// make new field. or use for loop
+			imports += fmt.Sprintf("\"%s\"\n", k)
+			//f.QualifiedGoIdent(v)
+		}
+
 		mData := methodData{
 			MethodCaller: genMethodCaller(service.GoName),
 			ServiceName:  service.GoName,
@@ -74,19 +84,24 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 			testTemplate: g.getTestMethodTemplate(v.Desc),
 			// add in import paths. (done nicely)
 			// add in Pkg name done nicely
-			ProtoImportPaths: map[string]any{string(v.Input.GoIdent.GoImportPath): nil, string(v.Output.GoIdent.GoImportPath): nil}, // assumption being that one of the following will import protos.
-			MethodName:       v.GoName,
-			FullName:         string(v.Desc.FullName()),
-			RequestType:      requestType,
-			ResponseType:     responseType,
-			Imports:          []protogen.GoIdent{v.Input.GoIdent, v.Output.GoIdent, {GoImportPath: protogen.GoImportPath(service.GoName)}},
-			methodDesc:       v.Desc,
-			Pkg:              getParamPKG(file.GoDescriptorIdent.GoImportPath.String()),
-			GoPkgName:        strings.ToLower(service.GoName),
+			MethodName:   v.GoName,
+			FullName:     string(v.Desc.FullName()),
+			RequestType:  requestType,
+			ResponseType: responseType,
+			Imports:      imports,
+			methodDesc:   v.Desc,
+			Pkg:          getParamPKG(file.GoDescriptorIdent.GoImportPath.String()),
+			GoPkgName:    strings.ToLower(service.GoName),
 		}
 		f := g.genRpcMethod(gen, mData)
 		outfiles = append(outfiles, f)
 		if g.Tests {
+
+			// this is a hack
+			if v.Desc.IsStreamingClient() || v.Desc.IsStreamingServer() {
+				mData.Imports += protogen.GoIdent{GoImportPath: file.GoDescriptorIdent.GoImportPath + "connect"}.GoImportPath.String()
+			}
+
 			f := g.genTestFile(gen, mData)
 			outfiles = append(outfiles, f)
 		}
@@ -174,7 +189,7 @@ func (g *Generator) getTestMethodTemplate(methodDesc protoreflect.MethodDescript
 	case methodDesc.IsStreamingServer():
 		return connectgo.TestServerStreamFileTemplate
 	case methodDesc.IsStreamingClient():
-		return connectgo.TestServerStreamFileTemplate
+		return connectgo.TestClientStreamFileTemplate
 	default:
 		return connectgo.TestFileTemplate
 	}

@@ -3,14 +3,15 @@ package streamingservice
 import (
 	context "context"
 	connect_go "github.com/bufbuild/connect-go"
-	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
-	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
 	http "net/http"
 	httptest "net/http/httptest"
 	sync "sync"
 	testing "testing"
+
+	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
 )
 
 func TestClientStream(t *testing.T) {

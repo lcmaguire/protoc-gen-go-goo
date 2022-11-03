@@ -79,8 +79,7 @@ import (
 	"errors"
 	connect_go "github.com/bufbuild/connect-go"
 
-	{{.Pkg}}
-	
+	{{.Imports}}
 )
 
 // {{.MethodName}} implements {{.FullName}}.
@@ -100,7 +99,7 @@ import (
 	errors "errors"
 	connect_go "github.com/bufbuild/connect-go"
 
-	{{.Pkg}}
+	{{.Imports}}
 )
 
 // {{.MethodName}} implements {{.FullName}}.
@@ -126,7 +125,7 @@ import (
 	connect_go "github.com/bufbuild/connect-go"
 	time "time"
 
-	{{.Pkg}}
+	{{.Imports}}
 )
 
 // {{.MethodName}} implements {{.FullName}}.
@@ -160,7 +159,7 @@ import (
 	connect_go "github.com/bufbuild/connect-go"
 	io "io"
 
-	{{.Pkg}}
+	{{.Imports}}
 )
 
 // {{.MethodName}} implements {{.FullName}}.
@@ -195,7 +194,7 @@ import (
 	assert "github.com/stretchr/testify/assert"
 	testing "testing"
 
-	{{.Pkg}}
+	{{.Imports}}
 )
 
 	func Test{{.MethodName}}(t *testing.T){
@@ -228,7 +227,7 @@ import (
 	sync "sync"
 	testing "testing"
 
-	{{.Pkg}}
+	{{.Imports}}
 )
 
 func Test{{.MethodName}}(t *testing.T){
@@ -301,7 +300,7 @@ import (
 	sync "sync"
 	testing "testing"
 
-	{{.Pkg}}
+	{{.Imports}}
 )
 
 func Test{{.MethodName}}(t *testing.T) {	
@@ -359,7 +358,7 @@ import (
 	httptest "net/http/httptest"
 	testing "testing"
 
-	{{.Pkg}}
+	{{.Imports}}
 )
 
 

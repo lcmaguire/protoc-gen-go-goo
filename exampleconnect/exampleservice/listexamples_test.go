@@ -4,9 +4,10 @@ import (
 	context "context"
 	connect_go "github.com/bufbuild/connect-go"
 	proto "github.com/golang/protobuf/proto"
-	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 	assert "github.com/stretchr/testify/assert"
 	testing "testing"
+
+	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 )
 
 func TestListExamples(t *testing.T) {
