@@ -1,9 +1,9 @@
 package exampleservice
 
 import (
-	context "context"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
+	"context"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/example"
 )

@@ -1,11 +1,11 @@
 package exampleservice
 
 import (
-	context "context"
+	"context"
 	connect_go "github.com/bufbuild/connect-go"
-	proto "github.com/golang/protobuf/proto"
-	assert "github.com/stretchr/testify/assert"
-	testing "testing"
+	"github.com/golang/protobuf/proto"
+	"github.com/stretchr/testify/assert"
+	"testing"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 )

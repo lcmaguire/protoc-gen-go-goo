@@ -1,12 +1,12 @@
 package streamingservice
 
 import (
-	context "context"
+	"context"
 	connect_go "github.com/bufbuild/connect-go"
-	assert "github.com/stretchr/testify/assert"
-	http "net/http"
-	httptest "net/http/httptest"
-	testing "testing"
+	"github.com/stretchr/testify/assert"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"

@@ -1,15 +1,13 @@
 package main
 
 import (
-	grpc "google.golang.org/grpc"
-	reflection "google.golang.org/grpc/reflection"
-	log "log"
-	net "net"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+	"log"
+	"net"
 
-	// your protoPathHere
 	"github.com/lcmaguire/protoc-gen-go-goo/example"
 
-	// your services
 	"github.com/lcmaguire/protoc-gen-go-goo/example/exampleservice"
 )
 

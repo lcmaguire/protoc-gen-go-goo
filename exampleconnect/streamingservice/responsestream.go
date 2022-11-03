@@ -1,10 +1,10 @@
 package streamingservice
 
 import (
-	context "context"
-	errors "errors"
+	"context"
+	"errors"
 	connect_go "github.com/bufbuild/connect-go"
-	time "time"
+	"time"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 )
