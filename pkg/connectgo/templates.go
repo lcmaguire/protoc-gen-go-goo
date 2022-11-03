@@ -27,11 +27,6 @@ func main() {
 	
 	reflector := grpcreflect.NewStaticReflector(
 		{{.FullName}}
-		//"acme.user.v1.UserService", // todo pass in full.Name for all services here
-		//"acme.group.v1.GroupService",
-		// protoc-gen-connect-go generates package-level constants
-		// for these fully-qualified protobuf service names, so you'd more likely
-		// reference userv1.UserServiceName and groupv1.GroupServiceName.
 	  )
 	
 	mux.Handle(grpcreflect.NewHandlerV1(reflector))

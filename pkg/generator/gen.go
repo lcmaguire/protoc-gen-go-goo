@@ -68,7 +68,7 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 		requestType := getParamPKG(v.Input.GoIdent.GoImportPath.String()) + "." + v.Input.GoIdent.GoName
 		responseType := getParamPKG(v.Output.GoIdent.GoImportPath.String()) + "." + v.Output.GoIdent.GoName
 
-		// get all unique imports.
+		// get all unique imports. NOTE this will not be ordered as it is a map so file changes may appear due to imports being in different orders.
 		mapImports := map[string]any{string(v.Input.GoIdent.GoImportPath): nil, string(v.Output.GoIdent.GoImportPath): nil}
 		imports := ""
 		for k := range mapImports {
