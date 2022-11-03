@@ -62,16 +62,29 @@ reflection.Register(server) // this should perhaps be optional
 `
 
 const TestFileTemplate = `
-	func Test{{.MethodName}}(t *testing.T){
-		t.Parallel()
-		service := &{{.ServiceName}}{}
-		req := &{{.RequestType}}{}
-		res, err := service.{{.MethodName}}(context.Background(), req)
-		assert.Error(t, err)
-		assert.Equal(t, codes.Unimplemented, status.Code(err))
-		proto.Equal(res, &{{.ResponseType}}{})
-	}
-	`
+package {{.GoPkgName}}
+
+import (
+	"context"
+	"github.com/golang/protobuf/proto"
+	"github.com/stretchr/testify/assert"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"testing"
+
+	{{.Imports}}
+)
+
+func Test{{.MethodName}}(t *testing.T){
+	t.Parallel()
+	service := &{{.ServiceName}}{}
+	req := &{{.RequestType}}{}
+	res, err := service.{{.MethodName}}(context.Background(), req)
+	assert.Error(t, err)
+	assert.Equal(t, codes.Unimplemented, status.Code(err))
+	proto.Equal(res, &{{.ResponseType}}{})
+}
+`
 
 const MethodTemplate = `
 package {{.GoPkgName}}
@@ -81,7 +94,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 
-	{{.Pkg}}
+	{{.Imports}}
 )
 
 // {{.MethodName}} implements {{.FullName}}.

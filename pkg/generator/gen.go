@@ -68,13 +68,11 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 		requestType := getParamPKG(v.Input.GoIdent.GoImportPath.String()) + "." + v.Input.GoIdent.GoName
 		responseType := getParamPKG(v.Output.GoIdent.GoImportPath.String()) + "." + v.Output.GoIdent.GoName
 
+		// get all unique imports.
 		mapImports := map[string]any{string(v.Input.GoIdent.GoImportPath): nil, string(v.Output.GoIdent.GoImportPath): nil}
 		imports := ""
 		for k := range mapImports {
-			// this is a gross hack
-			// make new field. or use for loop
 			imports += fmt.Sprintf("\"%s\"\n", k)
-			//f.QualifiedGoIdent(v)
 		}
 
 		mData := methodData{
