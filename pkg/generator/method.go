@@ -8,6 +8,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
+// todo figure our what can be removed from this struct
 // methodData contains data for generating Methods via a template.
 type methodData struct {
 	template     string
@@ -24,14 +25,6 @@ type methodData struct {
 	methodDesc   protoreflect.MethodDescriptor // for extra data from methodDescriptor.
 }
 
-/*
-	TODO:
-	have template determined prior to genRPC method.
-	support streaming + tests
-	support non connect.
-
-*/
-
 func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protogen.GeneratedFile {
 	filename := strings.ToLower(data.ServiceName + "/" + data.MethodName + ".go")
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{method.GoName}}.go
@@ -40,8 +33,6 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 	f.P(rpcfunc)
 	return f
 }
-
-// maybe Data + testFile Param.
 
 func (g *Generator) genTestFile(gen *protogen.Plugin, data methodData) *protogen.GeneratedFile {
 	filename := strings.ToLower(data.ServiceName + "/" + data.MethodName + "_test.go")

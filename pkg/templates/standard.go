@@ -18,21 +18,19 @@ func New{{.ServiceName}} () *{{.ServiceName}} {
 }
 `
 
-// add in reflection api
+// ServerTemplate template for a gRPC server that runs your service.
 const ServerTemplate = `
 package main
 
 import (
-	grpc "google.golang.org/grpc"
-	reflection "google.golang.org/grpc/reflection"
-	log "log"
-	net "net"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+	"log"
+	"net"
 
 
-	// your protoPathHere
 	"{{.GenImportPath}}"
 
-	// your services
 	{{.ServiceImports}}
 )
 
@@ -62,6 +60,7 @@ func run() error {
 
 `
 
+// RegisterServiceTemplate handles registering your service + reflection for that endpoint.
 const RegisterServiceTemplate = `
 {{.Pkg}}.Register{{.ServiceName}}Server(server, &{{.ServiceStruct}}{})
 reflection.Register(server) // this should perhaps be optional
@@ -97,9 +96,9 @@ const MethodTemplate = `
 package {{.GoPkgName}}
 
 import (
-	context "context"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
+	"context"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	{{.Imports}}
 )

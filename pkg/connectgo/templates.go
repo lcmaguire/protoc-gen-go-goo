@@ -101,8 +101,8 @@ const StreamingClientTemplate = `
 package {{.GoPkgName}}
 
 import (
-	context "context"
-	errors "errors"
+	"context"
+	"errors"
 	connect_go "github.com/bufbuild/connect-go"
 
 	{{.Imports}}
@@ -126,10 +126,10 @@ const StreamingServiceTemplate = `
 package {{.GoPkgName}}
 
 import (
-	context "context"
-	errors "errors"
+	"context"
+	"errors"
 	connect_go "github.com/bufbuild/connect-go"
-	time "time"
+	"time"
 
 	{{.Imports}}
 )
@@ -159,11 +159,11 @@ const BiDirectionalStreamingTemplate = `
 package {{.GoPkgName}}
 
 import (
-	context "context"
-	errors "errors"
-	fmt "fmt"
+	"context"
+	"errors"
+	"fmt"
 	connect_go "github.com/bufbuild/connect-go"
-	io "io"
+	"io"
 
 	{{.Imports}}
 )
@@ -194,11 +194,11 @@ const TestFileTemplate = `
 package {{.GoPkgName}}
 
 import (
-	context "context"
+	"context"
 	connect_go "github.com/bufbuild/connect-go"
-	proto "github.com/golang/protobuf/proto"
-	assert "github.com/stretchr/testify/assert"
-	testing "testing"
+	"github.com/golang/protobuf/proto"
+	"github.com/stretchr/testify/assert"
+	"testing"
 
 	{{.Imports}}
 )
@@ -221,17 +221,17 @@ const TestBiDirectionalStreamFileTemplate = `
 package streamingservice
 
 import (
-	context "context"
-	errors "errors"
-	fmt "fmt"
+	"context"
+	"errors"
+	"fmt"
 	connect_go "github.com/bufbuild/connect-go"
-	assert "github.com/stretchr/testify/assert"
-	require "github.com/stretchr/testify/require"
-	io "io"
-	http "net/http"
-	httptest "net/http/httptest"
-	sync "sync"
-	testing "testing"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"sync"
+	"testing"
 
 	{{.Imports}}
 )
@@ -297,14 +297,14 @@ const TestClientStreamFileTemplate = `
 package {{.GoPkgName}}
 
 import (
-	context "context"
+	"context"
 	connect_go "github.com/bufbuild/connect-go"
-	assert "github.com/stretchr/testify/assert"
-	require "github.com/stretchr/testify/require"
-	http "net/http"
-	httptest "net/http/httptest"
-	sync "sync"
-	testing "testing"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"net/http"
+	"net/http/httptest"
+	"sync"
+	"testing"
 
 	{{.Imports}}
 )
@@ -357,12 +357,12 @@ const TestServerStreamFileTemplate = `
 package {{.GoPkgName}}
 
 import (
-	context "context"
+	"context"
 	connect_go "github.com/bufbuild/connect-go"
-	assert "github.com/stretchr/testify/assert"
-	http "net/http"
-	httptest "net/http/httptest"
-	testing "testing"
+	"github.com/stretchr/testify/assert"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 
 	{{.Imports}}
 )
