@@ -2,7 +2,7 @@ package templates
 
 const ServiceTemplate = `
 
-package {{.GoPkg}}
+package {{.GoPkgName}}
 
 import (
 	{{.Imports}}

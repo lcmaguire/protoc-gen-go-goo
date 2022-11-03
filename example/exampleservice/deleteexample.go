@@ -5,8 +5,8 @@ import (
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 
-	"google.golang.org/protobuf/types/known/emptypb"
 	"github.com/lcmaguire/protoc-gen-go-goo/example"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // DeleteExample implements tutorial.ExampleService.DeleteExample.
