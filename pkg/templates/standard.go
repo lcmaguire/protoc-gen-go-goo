@@ -1,6 +1,13 @@
 package templates
 
 const ServiceTemplate = `
+
+package {{.GoPkg}}
+
+import (
+	{{.Imports}}
+)
+
 // {{.ServiceName}} implements {{.FullName}}.
 type {{.ServiceName}} struct { 
 	{{.Pkg}}.Unimplemented{{.ServiceName}}Server

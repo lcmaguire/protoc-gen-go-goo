@@ -113,9 +113,6 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 	fileName := strings.ToLower(service.GoName + "/" + service.GoName + ".go") // todo format in snakecase
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{service.GoName}}.go
 	f := gen.NewGeneratedFile(fileName, protogen.GoImportPath(service.GoName))
-	f.P()
-	f.P("package ", strings.ToLower(service.GoName))
-	f.P()
 
 	rootGoIndent := file.GoDescriptorIdent
 	pkg := getParamPKG(rootGoIndent.GoImportPath.String())
@@ -125,8 +122,10 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 		tplate = connectgo.ServiceTemplate
 		rootGoIndent = protogen.GoIdent{GoImportPath: rootGoIndent.GoImportPath + "connect"}
 	}
-	f.QualifiedGoIdent(rootGoIndent)
+
 	s := serviceT{
+		GoPkgName:   strings.ToLower(string(service.Desc.Name())),
+		Imports:     rootGoIndent.GoImportPath.String(), // when called via string() it has no ""
 		ServiceName: string(service.Desc.Name()),
 		Pkg:         pkg,
 		FullName:    string(service.Desc.FullName()),
@@ -134,15 +133,16 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 
 	data := templates.ExecuteTemplate(tplate, s)
 	f.P(data)
-	f.P()
 	return f
 }
 
 // todo think harder about this (where should this data be kept)
 type serviceT struct {
+	GoPkgName   string
 	ServiceName string
 	Pkg         string
 	FullName    string
+	Imports     string
 }
 
 // FileInfo contains info from proto files needed to import generated proto to create a server

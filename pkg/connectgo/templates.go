@@ -59,15 +59,21 @@ mux.Handle({{.Pkg}}connect.New{{.ServiceName}}Handler(&{{.ServiceStruct}}{}))
 
 // ServiceTemplate template for the body of a file that creates a struct for your service handler + a constructor.
 const ServiceTemplate = `
-	// {{.ServiceName}} implements {{.FullName}}.
-	type {{.ServiceName}} struct { 
-		{{.Pkg}}.Unimplemented{{.ServiceName}}Handler
-	}
+package {{.GoPkgName}}
+
+import (
+	{{.Imports}}
+)
+
+// {{.ServiceName}} implements {{.FullName}}.
+type {{.ServiceName}} struct { 
+	{{.Pkg}}.Unimplemented{{.ServiceName}}Handler
+}
 		
-	func New{{.ServiceName}} () *{{.ServiceName}} {
-		return &{{.ServiceName}}{}
-	}
-	`
+func New{{.ServiceName}} () *{{.ServiceName}} {
+	return &{{.ServiceName}}{}
+}
+`
 
 // MethodTemplate template for an unimplemented unary connect-go gRPC method.
 const MethodTemplate = `
