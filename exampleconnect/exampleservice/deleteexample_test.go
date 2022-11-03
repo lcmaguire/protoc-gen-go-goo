@@ -7,8 +7,8 @@ import (
 	assert "github.com/stretchr/testify/assert"
 	testing "testing"
 
-	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 )
 
 func TestDeleteExample(t *testing.T) {
