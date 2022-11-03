@@ -97,8 +97,9 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 		outfiles = append(outfiles, f)
 		if g.Tests {
 
-			// this is a hack
+			// todo handle this earlier
 			if v.Desc.IsStreamingClient() || v.Desc.IsStreamingServer() {
+				// imports connect-go gRPC code. Could not include the connect part here but rather in the template.
 				mData.Imports += protogen.GoIdent{GoImportPath: file.GoDescriptorIdent.GoImportPath + "connect"}.GoImportPath.String()
 			}
 
