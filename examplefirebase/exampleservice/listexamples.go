@@ -1,8 +1,7 @@
 package exampleservice
 
 import (
-	context "context"
-	errors "errors"
+	"context"
 	connect_go "github.com/bufbuild/connect-go"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"
@@ -12,17 +11,17 @@ import (
 func (s *Service) ListExamples(ctx context.Context, req *connect_go.Request[sample.ListExampleRequest]) (*connect_go.Response[sample.ListExampleResponse], error) {
 	docSnaps, err := s.firestore.Collection("testCollection").Documents(ctx).GetAll() // todo get uid from request.
 	if err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error loading response"))
+		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 	arr := []*sample.Example{}
 	for _, v := range docSnaps {
 		if v == nil || v.Data() == nil {
-			return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error loading response"))
+			return nil, connect_go.NewError(connect_go.CodeInternal, err)
 		}
 
 		var data *sample.Example
 		if err := v.DataTo(&data); err != nil {
-			return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error unable to load response"))
+			return nil, connect_go.NewError(connect_go.CodeInternal, err)
 		}
 		arr = append(arr, data)
 	}

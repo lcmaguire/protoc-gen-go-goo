@@ -1,8 +1,7 @@
 package exampleservice
 
 import (
-	context "context"
-
+	"context"
 	connect_go "github.com/bufbuild/connect-go"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"

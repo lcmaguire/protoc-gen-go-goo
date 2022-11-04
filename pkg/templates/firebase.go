@@ -77,8 +77,7 @@ const FirebaseCreateMethod = `
 package {{.GoPkgName}}
 
 import (
-	context "context"
-	errors "errors"
+	"context"
 	connect_go "github.com/bufbuild/connect-go"
 
 	{{.Imports}}
@@ -88,7 +87,7 @@ import (
 func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	_, err := s.firestore.Doc(req.Msg.Name).Create(ctx, req.Msg)
 	if err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error loading response"))
+		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 
 	res := connect_go.NewResponse(req.Msg) // hard coding for now assuming req and res are same and Write is always successful.
@@ -100,8 +99,7 @@ const FirebaseUpdateMethod = `
 package {{.GoPkgName}}
 
 import (
-	context "context"
-	errors "errors"
+	"context"
 	connect_go "github.com/bufbuild/connect-go"
 
 	{{.Imports}}
@@ -111,7 +109,7 @@ import (
 func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	_, err := s.firestore.Doc(req.Msg.Name).Set(ctx, req.Msg) // .Update may be useful with FieldMask.
 	if err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error loading response"))
+		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 
 	res := connect_go.NewResponse(req.Msg) // hard coding for now assuming req and res are same and Write is always successful.
@@ -124,8 +122,7 @@ const FirebaseDeleteMethod = `
 package {{.GoPkgName}}
 
 import (
-	context "context"
-	errors "errors"
+	"context"
 	connect_go "github.com/bufbuild/connect-go"
 
 	{{.Imports}}
@@ -135,7 +132,7 @@ import (
 func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	_, err := s.firestore.Doc(req.Msg.Name).Delete(ctx)
 	if err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error loading response"))
+		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 
 	// Should be &emptypb.Empty{}
@@ -147,8 +144,7 @@ const FirebaseGetMethod = `
 package {{.GoPkgName}}
 
 import (
-	context "context"
-	errors "errors"
+	"context"
 	connect_go "github.com/bufbuild/connect-go"
 	
 	{{.Imports}}
@@ -158,16 +154,16 @@ import (
 func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	docSnap, err := s.firestore.Doc(req.Msg.Name).Get(ctx)
 	if err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error loading response"))
+		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 
 	if docSnap == nil || docSnap.Data() == nil {
-		return nil, connect_go.NewError(connect_go.CodeNotFound, errors.New("err not found"))
+		return nil, connect_go.NewError(connect_go.CodeNotFound, err)
 	}
 
 	res := &{{.ResponseType}}{}
 	if err := docSnap.DataTo(res); err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error loading response"))
+		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 	return connect_go.NewResponse(res), nil
 }
@@ -178,8 +174,7 @@ const FirebaseListMethod = `
 package {{.GoPkgName}}
 
 import (
-	context "context"
-	errors "errors"
+	"context"
 	connect_go "github.com/bufbuild/connect-go"
 	
 	{{.Imports}}
@@ -189,17 +184,17 @@ import (
 func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	docSnaps, err := s.firestore.Collection("testCollection").Documents(ctx).GetAll() // todo get uid from request.
 	if err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error loading response"))
+		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 	arr := []*{{.ProtoPkg}}.{{.MessageName}}{}
 	for _, v := range docSnaps {
 		if v == nil || v.Data() == nil {
-			return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error loading response"))
+			return nil, connect_go.NewError(connect_go.CodeInternal, err)
 		}
 
 		var data *{{.ProtoPkg}}.{{.MessageName}}
 		if err := v.DataTo(&data); err != nil {
-			return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error unable to load response"))
+			return nil, connect_go.NewError(connect_go.CodeInternal, err)
 		}
 		arr = append(arr, data)
 	}
