@@ -43,7 +43,8 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 			data.template = templates.FirebaseGetMethod
 		case strings.HasPrefix(data.MethodName, "List"):
 			data.template = templates.FirebaseListMethod
-			data.ProtoPkg = getParamPKG(string(data.methodDesc.Output().Fields().Get(0).FullName()))
+			//data.ProtoPkg = getParamPKG(string(data.methodDesc.Output().Fields().Get(0).FullName()))
+			data.ProtoPkg = data.Pkg
 			//data.MessageName = getMessageNameFromPath(string(data.protoMethod.Output.Desc.Fields().Get(0).Message().FullName()))
 			data.MessageName = "Example" // hard coding for now.
 		}

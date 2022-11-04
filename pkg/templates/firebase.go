@@ -50,7 +50,7 @@ func createNewService() *exampleservice.Service {
 `
 
 const FirebaseService = `
-package {{.GoPkgName}}}
+package {{.GoPkgName}}
 
 import (
 	firestore "cloud.google.com/go/firestore"
@@ -74,13 +74,14 @@ func NewService(auth *auth.Client, firestore *firestore.Client) *Service {
 `
 
 const FirebaseCreateMethod = `
-package {{.GoPkgName}}}
+package {{.GoPkgName}}
 
 import (
 	context "context"
 	errors "errors"
 	connect_go "github.com/bufbuild/connect-go"
-	sample "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"
+
+	{{.Imports}}
 )
 
 // {{.MethodName}} implements {{.FullName}}.
@@ -96,6 +97,16 @@ func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{
 `
 
 const FirebaseUpdateMethod = `
+package {{.GoPkgName}}
+
+import (
+	context "context"
+	errors "errors"
+	connect_go "github.com/bufbuild/connect-go"
+
+	{{.Imports}}
+)
+
 // {{.MethodName}} implements {{.FullName}}.
 func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	_, err := s.firestore.Doc(req.Msg.Name).Set(ctx, req.Msg) // .Update may be useful with FieldMask.
@@ -110,14 +121,14 @@ func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{
 `
 
 const FirebaseDeleteMethod = `
-package {{.GoPkgName}}}
+package {{.GoPkgName}}
 
 import (
 	context "context"
 	errors "errors"
 	connect_go "github.com/bufbuild/connect-go"
-	sample "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
+
+	{{.Imports}}
 )
 
 // {{.MethodName}} implements {{.FullName}}.
@@ -133,13 +144,14 @@ func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{
 `
 
 const FirebaseGetMethod = `
-package {{.GoPkgName}}}
+package {{.GoPkgName}}
 
 import (
 	context "context"
 	errors "errors"
 	connect_go "github.com/bufbuild/connect-go"
-	sample "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"
+	
+	{{.Imports}}
 )
 
 // {{.MethodName}} implements {{.FullName}}.
@@ -153,7 +165,7 @@ func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{
 		return nil, connect_go.NewError(connect_go.CodeNotFound, errors.New("err not found"))
 	}
 
-	res := &{{.ProtoPkg}}.{{.MessageName}}{}
+	res := &{{.ResponseType}}{}
 	if err := docSnap.DataTo(res); err != nil {
 		return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error loading response"))
 	}
@@ -163,13 +175,14 @@ func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{
 `
 
 const FirebaseListMethod = `
-package {{.GoPkgName}}}
+package {{.GoPkgName}}
 
 import (
 	context "context"
 	errors "errors"
 	connect_go "github.com/bufbuild/connect-go"
-	sample "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"
+	
+	{{.Imports}}
 )
 
 // {{.MethodName}} implements {{.FullName}}.
