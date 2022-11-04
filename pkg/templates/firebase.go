@@ -34,6 +34,8 @@ func main() {
 	)
 	log.Fatalf("listen failed: " + err.Error())
 }
+
+// createNewService creates a new Service, exampleservice pkg is hard coded for now
 func createNewService() *exampleservice.Service {
 	opt := option.WithCredentialsFile("./test-firebase-service-account.json")
 	app, err := v4.NewApp(context.Background(), nil, opt)
@@ -62,9 +64,9 @@ import (
 	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sampleconnect"
 )
 
-// Service implements tutorial.ExampleService.
+// Service implements {{.FullName}}.
 type Service struct {
-	sampleconnect.UnimplementedExampleServiceHandler
+	{{.Pkg}}.Unimplemented{{.ServiceName}}Handler
 	firestore *firestore.Client
 	auth      *auth.Client
 }

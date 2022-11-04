@@ -31,6 +31,8 @@ func main() {
 	)
 	log.Fatalf("listen failed: " + err.Error())
 }
+
+// createNewService creates a new Service, exampleservice pkg is hard coded for now
 func createNewService() *exampleservice.Service {
 	opt := option.WithCredentialsFile("./test-firebase-service-account.json")
 	app, err := v4.NewApp(context.Background(), nil, opt)
