@@ -1,0 +1,35 @@
+syntax = "proto3";
+package tutorial; // todo rename and re gen to be different package
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample";
+
+// todo make AIP approved
+service ExampleService {
+    rpc CreateExample(Example) returns (Example);
+    rpc GetExample(GetExampleRequest) returns (Example);
+    rpc ListExamples(ListExampleRequest) returns (ListExampleResponse);
+    rpc UpdateExample(Example) returns (Example);
+    rpc DeleteExample(DeleteExampleRequest) returns (google.protobuf.Empty);
+}
+
+message Example {
+    string name = 1;
+    string display_name = 2;
+}
+
+message GetExampleRequest {
+    string name = 1;
+}
+
+message DeleteExampleRequest {
+    string name = 1;
+}
+
+message ListExampleRequest {
+}
+
+message ListExampleResponse {
+    repeated Example examples = 1;
+}

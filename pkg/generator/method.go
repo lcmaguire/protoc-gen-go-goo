@@ -23,11 +23,35 @@ type methodData struct {
 	Pkg          string                        // proto pkg
 	GoPkgName    string                        // name for pkg. Same as ServiceName but lower case.
 	methodDesc   protoreflect.MethodDescriptor // for extra data from methodDescriptor.
+	// for firebase trial
+	ProtoPkg    string
+	MessageName string
 }
 
 func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protogen.GeneratedFile {
 	filename := strings.ToLower(data.ServiceName + "/" + data.MethodName + ".go")
 	// will be in format /{{goo_out_path}}/{{service.GoName}}/{{method.GoName}}.go
+	if g.Firebase {
+		switch {
+		case strings.HasPrefix(data.MethodName, "Create"):
+			data.template = templates.FirebaseCreateMethod
+		case strings.HasPrefix(data.MethodName, "Update"):
+			data.template = templates.FirebaseUpdateMethod
+		case strings.HasPrefix(data.MethodName, "Delete"):
+			data.template = templates.FirebaseDeleteMethod
+		case strings.HasPrefix(data.MethodName, "Get"):
+			data.template = templates.FirebaseGetMethod
+		case strings.HasPrefix(data.MethodName, "List"):
+			data.template = templates.FirebaseListMethod
+			data.ProtoPkg = getParamPKG(string(data.methodDesc.Output().Fields().Get(0).FullName()))
+			//data.MessageName = getMessageNameFromPath(string(data.protoMethod.Output.Desc.Fields().Get(0).Message().FullName()))
+			data.MessageName = "Example" // hard coding for now.
+		}
+		//data.MessageName = string(data.MethodDesc.Output().Fields().Get(0).FullName())
+		//data.MethodDesc.Output().
+		//data.MethodDesc.Output().Fields().Get(0).Name()
+	}
+
 	f := gen.NewGeneratedFile(filename, protogen.GoImportPath(data.ServiceName))
 	rpcfunc := templates.ExecuteTemplate(data.template, data)
 	f.P(rpcfunc)
