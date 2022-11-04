@@ -4,15 +4,19 @@ const FirebaseServer = `
 package main
 
 import (
-	context "context"
+	"context"
 	v4 "firebase.google.com/go/v4"
-	exampleservice "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/exampleservice"
-	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sampleconnect"
-	http2 "golang.org/x/net/http2"
-	h2c "golang.org/x/net/http2/h2c"
-	option "google.golang.org/api/option"
-	log "log"
-	http "net/http"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
+	"google.golang.org/api/option"
+	"log"
+	"net/http"
+
+	// your protoPathHere
+	"{{.GenImportPath}}connect"
+
+	// your services
+	{{.ServiceImports}}
 )
 
 func main() {
@@ -90,7 +94,7 @@ func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{
 		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 
-	res := connect_go.NewResponse(req.Msg) // hard coding for now assuming req and res are same and Write is always successful.
+	res := connect_go.NewResponse(req.Msg) // hard coding for now assuming req and res type are same and Write is always successful.
 	return res, nil
 }
 `
@@ -112,7 +116,7 @@ func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{
 		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 
-	res := connect_go.NewResponse(req.Msg) // hard coding for now assuming req and res are same and Write is always successful.
+	res := connect_go.NewResponse(req.Msg) // hard coding for now assuming req and res type are same and Write is always successful.
 	return res, nil
 }
 
@@ -135,8 +139,7 @@ func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{
 		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 
-	// Should be &emptypb.Empty{}
-	return connect_go.NewResponse(&emptypb.Empty{}), nil
+	return connect_go.NewResponse(&{{.ResponseType}}{}), nil
 }
 `
 
@@ -182,7 +185,7 @@ import (
 
 // {{.MethodName}} implements {{.FullName}}.
 func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
-	docSnaps, err := s.firestore.Collection("testCollection").Documents(ctx).GetAll() // todo get uid from request.
+	docSnaps, err := s.firestore.Collection("testCollection").Documents(ctx).GetAll() // hardcoding collection for now. Should probably be MessageName plural.
 	if err != nil {
 		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}

@@ -14,6 +14,6 @@ func (s *Service) UpdateExample(ctx context.Context, req *connect_go.Request[sam
 		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 
-	res := connect_go.NewResponse(req.Msg) // hard coding for now assuming req and res are same and Write is always successful.
+	res := connect_go.NewResponse(req.Msg) // hard coding for now assuming req and res type are same and Write is always successful.
 	return res, nil
 }

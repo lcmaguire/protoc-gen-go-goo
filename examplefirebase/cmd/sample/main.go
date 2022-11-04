@@ -1,15 +1,19 @@
 package main
 
 import (
-	context "context"
+	"context"
 	v4 "firebase.google.com/go/v4"
-	exampleservice "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/exampleservice"
-	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sampleconnect"
-	http2 "golang.org/x/net/http2"
-	h2c "golang.org/x/net/http2/h2c"
-	option "google.golang.org/api/option"
-	log "log"
-	http "net/http"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
+	"google.golang.org/api/option"
+	"log"
+	"net/http"
+
+	// your protoPathHere
+	"github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sampleconnect"
+
+	// your services
+	"github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/exampleservice"
 )
 
 func main() {

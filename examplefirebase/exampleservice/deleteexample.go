@@ -15,6 +15,5 @@ func (s *Service) DeleteExample(ctx context.Context, req *connect_go.Request[sam
 		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 
-	// Should be &emptypb.Empty{}
 	return connect_go.NewResponse(&emptypb.Empty{}), nil
 }

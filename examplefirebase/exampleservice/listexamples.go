@@ -9,7 +9,7 @@ import (
 
 // ListExamples implements tutorial.ExampleService.ListExamples.
 func (s *Service) ListExamples(ctx context.Context, req *connect_go.Request[sample.ListExampleRequest]) (*connect_go.Response[sample.ListExampleResponse], error) {
-	docSnaps, err := s.firestore.Collection("testCollection").Documents(ctx).GetAll() // todo get uid from request.
+	docSnaps, err := s.firestore.Collection("testCollection").Documents(ctx).GetAll() // hardcoding collection for now. Should probably be MessageName plural.
 	if err != nil {
 		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
