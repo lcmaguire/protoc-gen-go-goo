@@ -2,7 +2,7 @@ package exampleservice
 
 import (
 	context "context"
-	errors "errors"
+
 	connect_go "github.com/bufbuild/connect-go"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"
@@ -12,7 +12,7 @@ import (
 func (s *Service) CreateExample(ctx context.Context, req *connect_go.Request[sample.Example]) (*connect_go.Response[sample.Example], error) {
 	_, err := s.firestore.Doc(req.Msg.Name).Create(ctx, req.Msg)
 	if err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, errors.New("error loading response"))
+		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 
 	res := connect_go.NewResponse(req.Msg) // hard coding for now assuming req and res are same and Write is always successful.

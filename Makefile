@@ -59,3 +59,73 @@ grpc-connect-streaming: # grpc curl for connect streaming service
     -import-path ./exampleconnect -proto example.proto -plaintext \
     -d '{}' \
     localhost:8080 tutorial.StreamingService/ResponseStream
+
+
+## firebase grpcurls
+
+grpc-firebase-create: 
+	grpcurl \
+    -import-path ./examplefirebase -proto firebase.proto -plaintext \
+    -d '{"name": "testCollection/myname", "display_name": "displayName"}' \
+    localhost:8080 tutorial.ExampleService/CreateExample
+
+grpc-firebase-get:
+	grpcurl \
+    -import-path ./examplefirebase -proto firebase.proto -plaintext \
+    -d '{"name": "testCollection/myname"}' \
+    localhost:8080 tutorial.ExampleService/GetExample
+
+grpc-firebase-list: 
+	grpcurl \
+    -import-path ./examplefirebase -proto firebase.proto -plaintext \
+    -d '{ }' \
+    localhost:8080 tutorial.ExampleService/ListExamples
+
+grpc-firebase-update: 
+	grpcurl \
+    -import-path ./examplefirebase -proto firebase.proto -plaintext \
+    -d '{"name": "testCollection/myname", "display_name": "updated display name"}' \
+    localhost:8080 tutorial.ExampleService/UpdateExample
+
+grpc-firebase-delete:
+	grpcurl \
+    -import-path ./examplefirebase -proto firebase.proto -plaintext \
+    -d '{"name": "testCollection/myname"}' \
+    localhost:8080 tutorial.ExampleService/DeleteExample
+
+## normal curls for firebase
+
+curl-firebase-create: # normal curl for connect service
+	curl \
+    --header "Content-Type: application/json" \
+	--header "Authorization: Bearer asdfasdf" \
+    --data '{"name": "testCollection/myname", "display_name": "displayName"}' \
+    http://localhost:8080/tutorial.ExampleService/CreateExample
+
+curl-firebase-get: # normal curl for connect service
+	curl \
+    --header "Content-Type: application/json" \
+	--header "Authorization: Bearer asdfasdf" \
+    --data '{"name": "testCollection/myname"}' \
+    http://localhost:8080/tutorial.ExampleService/GetExample
+
+curl-firebase-update: # normal curl for connect service
+	curl \
+    --header "Content-Type: application/json" \
+	--header "Authorization: Bearer asdfasdf" \
+    --data '{"name": "testCollection/myname", "display_name": "updated curl example"}' \
+    http://localhost:8080/tutorial.ExampleService/UpdateExample
+
+curl-firebase-delete: # normal curl for connect service
+	curl \
+    --header "Content-Type: application/json" \
+	--header "Authorization: Bearer asdfasdf" \
+    --data '{"name": "testCollection/myname"}' \
+    http://localhost:8080/tutorial.ExampleService/DeleteExample
+
+curl-firebase-list: # normal curl for connect service
+	curl \
+    --header "Content-Type: application/json" \
+	--header "Authorization: Bearer asdfasdf" \
+    --data '{}' \
+    http://localhost:8080/tutorial.ExampleService/ListExamples
