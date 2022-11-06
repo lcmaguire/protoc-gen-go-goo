@@ -50,6 +50,7 @@ func run() error {
     server := grpc.NewServer()
 	// services in your protoFile
     {{.Services}}
+	reflection.Register(server) // this should perhaps be optional
 	log.Println("Listening on", listenOn)
     if err := server.Serve(listener); err != nil {
         return err 
@@ -63,8 +64,6 @@ func run() error {
 // RegisterServiceTemplate handles registering your service + reflection for that endpoint.
 const RegisterServiceTemplate = `
 {{.Pkg}}.Register{{.ServiceName}}Server(server, &{{.ServiceStruct}}{})
-reflection.Register(server) // this should perhaps be optional
-
 `
 
 const TestFileTemplate = `
