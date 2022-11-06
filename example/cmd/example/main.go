@@ -1,11 +1,10 @@
 package main
 
 import (
-	"log"
-	"net"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"log"
+	"net"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/example"
 
@@ -30,11 +29,10 @@ func run() error {
 	// services in your protoFile
 
 	example.RegisterExampleServiceServer(server, &exampleservice.ExampleService{})
-	//reflection.Register(server) // this should perhaps be optional
 
 	example.RegisterStreamingServiceServer(server, &streamingservice.StreamingService{})
-	reflection.Register(server) // this should perhaps be optional
 
+	reflection.Register(server) // this should perhaps be optional
 	log.Println("Listening on", listenOn)
 	if err := server.Serve(listener); err != nil {
 		return err

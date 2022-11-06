@@ -183,7 +183,7 @@ func ({{.MethodCaller}}) {{.MethodName}}(req *{{.RequestType}}, stream example.S
 			case <-ticker.C:
 			}
 		}
-		if err := stream.Send(&{{.ResponseType}}); err != nil {
+		if err := stream.Send(&{{.ResponseType}}{}); err != nil {
 			return err
 		}
 	}

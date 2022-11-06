@@ -8,16 +8,9 @@ import (
 	"github.com/lcmaguire/protoc-gen-go-goo/example"
 )
 
-// BiDirectionalStream implements tutorial.StreamingService.BiDirectionalStream.
-/*
-func (s *StreamingService) BiDirectionalStream(ctx context.Context, in *example.GreetRequest) (out *example.GreetResponse, err error) {
-	return nil, status.Error(codes.Unimplemented, "yet to be implemented")
-}*/
-
+// BiDirectionalStream implements tutorial.StreamingService.BiDirectionalStream. // TODO get example.StreamingService_BiDirectionalStreamServer from proto.
 func (s *StreamingService) BiDirectionalStream(bidi example.StreamingService_BiDirectionalStreamServer) error {
-
 	ctx := bidi.Context()
-
 	for {
 
 		// exit if context is done
@@ -45,6 +38,4 @@ func (s *StreamingService) BiDirectionalStream(bidi example.StreamingService_BiD
 			log.Printf("send error %v", err)
 		}
 	}
-
-	// return nil, status.Error(codes.Unimplemented, "yet to be implemented")
 }
