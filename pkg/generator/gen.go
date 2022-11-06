@@ -166,7 +166,18 @@ func collectFileData(f *protogen.File, fileInfoMap map[string]FileInfo) map[stri
 
 func (g *Generator) getMethodTemplate(methodDesc protoreflect.MethodDescriptor) string {
 	if !g.ConnectGo {
-		return templates.MethodTemplate
+		switch {
+		case methodDesc.IsStreamingClient() && methodDesc.IsStreamingServer():
+			return templates.BiDirectionalStream
+		case methodDesc.IsStreamingServer():
+			return templates.ServerStream
+		case methodDesc.IsStreamingClient():
+			return templates.ClientStream
+		default:
+			return templates.MethodTemplate
+		}
+
+		// return templates.MethodTemplate
 	}
 	switch {
 	case methodDesc.IsStreamingClient() && methodDesc.IsStreamingServer():
