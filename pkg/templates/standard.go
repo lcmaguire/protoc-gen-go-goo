@@ -152,7 +152,6 @@ func ({{.MethodCaller}}) {{.MethodName}}(bidi example.StreamingService_BiDirecti
 			log.Printf("send error %v", err)
 		}
 	}
-
 }
 
 `

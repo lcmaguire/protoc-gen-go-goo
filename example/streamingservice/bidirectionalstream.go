@@ -39,5 +39,4 @@ func (s *StreamingService) BiDirectionalStream(bidi example.StreamingService_BiD
 		}
 	}
 
-	// return status.Error(codes.Unimplemented, "yet to be implemented")
 }
