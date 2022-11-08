@@ -4,6 +4,7 @@ import (
 	"flag"
 
 	"google.golang.org/protobuf/compiler/protogen"
+	"google.golang.org/protobuf/types/pluginpb"
 
 	"github.com/lcmaguire/protoc-gen-go-goo/pkg/generator"
 )
@@ -24,6 +25,8 @@ func main() {
 			GoModPath: *generatedGoModPath, // todo implement this so server gen doesn't need to be hardcoded.
 			Tests:     *tests,
 		}
+		// this enables optional fields to be supported.
+		gen.SupportedFeatures = uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
 		// todo have this be used in place of the Run func (if possible)
 		return g.Run(gen)
 	})
