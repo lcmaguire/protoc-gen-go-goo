@@ -1,3 +1,4 @@
 version: v1
 directories:
-  - exampleconnect
+  #- exampleconnect
+  - examplefirebase

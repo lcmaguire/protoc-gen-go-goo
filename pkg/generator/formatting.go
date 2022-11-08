@@ -16,3 +16,8 @@ func getParamPKG(in string) string {
 	arr := strings.Split(in, "/")
 	return strings.Trim(arr[len(arr)-1], `"`)
 }
+
+func getMessageNameFromPath(in string) string {
+	arr := strings.Split(in, ".")
+	return strings.Trim(arr[len(arr)-1], `"`)
+}

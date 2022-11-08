@@ -16,6 +16,8 @@ func main() {
 	server := flags.Bool("server", false, "will generate a basic server that implements your services.")
 	generatedGoModPath := flags.String("generatedPath", "", "GoModPath + generated code path so that server will import correctly.")
 
+	firebase := flags.Bool("firebase", false, "to generate with firebase db for your service")
+
 	protogen.Options{
 		ParamFunc: flags.Set,
 	}.Run(func(gen *protogen.Plugin) error {
@@ -24,6 +26,7 @@ func main() {
 			Server:    *server,
 			GoModPath: *generatedGoModPath, // todo implement this so server gen doesn't need to be hardcoded.
 			Tests:     *tests,
+			Firebase:  *firebase, // firebase trial
 		}
 		// this enables optional fields to be supported.
 		gen.SupportedFeatures = uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)

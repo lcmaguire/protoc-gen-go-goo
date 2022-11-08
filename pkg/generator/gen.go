@@ -17,6 +17,9 @@ type Generator struct {
 	Server    bool   // if true will generate a server for the services and methods generated default is false.
 	GoModPath string // the path of your generated code, Required for server to correctly import newly generated code.
 
+	// firebase trial
+	Firebase bool
+
 	// this is temporary
 	ServerTemplate         string
 	RegisterServerTemplate string
@@ -123,6 +126,10 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 		pkg += "connect" // if used in this manner multiple times, tell user to make pass in correct path OR handle in templates when possible
 		tplate = connectgo.ServiceTemplate
 		rootGoIndent = protogen.GoIdent{GoImportPath: rootGoIndent.GoImportPath + "connect"}
+	}
+
+	if g.Firebase {
+		tplate = templates.FirebaseService
 	}
 
 	s := serviceT{
