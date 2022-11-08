@@ -97,6 +97,9 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 
 			// todo handle this earlier
 			if v.Desc.IsStreamingClient() || v.Desc.IsStreamingServer() {
+				if !g.ConnectGo {
+					continue
+				}
 				// imports connect-go gRPC code. Could not include the connect part here but rather in the template.
 				// probably should be a field in methodData gRPC import.
 				mData.Imports += protogen.GoIdent{GoImportPath: file.GoDescriptorIdent.GoImportPath + "connect"}.GoImportPath.String()
@@ -176,8 +179,6 @@ func (g *Generator) getMethodTemplate(methodDesc protoreflect.MethodDescriptor) 
 		default:
 			return templates.MethodTemplate
 		}
-
-		// return templates.MethodTemplate
 	}
 	switch {
 	case methodDesc.IsStreamingClient() && methodDesc.IsStreamingServer():
