@@ -153,7 +153,6 @@ func ({{.MethodCaller}}) {{.MethodName}}(bidi example.StreamingService_BiDirecti
 		}
 	}
 
-	// return status.Error(codes.Unimplemented, "yet to be implemented")
 }
 
 `
