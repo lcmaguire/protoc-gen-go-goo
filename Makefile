@@ -59,3 +59,9 @@ grpc-connect-streaming: # grpc curl for connect streaming service
     -import-path ./exampleconnect -proto example.proto -plaintext \
     -d '{}' \
     localhost:8080 tutorial.StreamingService/ResponseStream
+
+grpc-response-streaming: # grpc curl for connect streaming service
+	grpcurl \
+    -import-path ./example -proto streaming.proto -plaintext \
+    -d '{}' \
+    localhost:8080 tutorial.StreamingService/ResponseStream

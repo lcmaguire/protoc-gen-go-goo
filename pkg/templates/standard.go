@@ -50,6 +50,7 @@ func run() error {
     server := grpc.NewServer()
 	// services in your protoFile
     {{.Services}}
+	reflection.Register(server) // this should perhaps be optional
 	log.Println("Listening on", listenOn)
     if err := server.Serve(listener); err != nil {
         return err 
@@ -63,8 +64,6 @@ func run() error {
 // RegisterServiceTemplate handles registering your service + reflection for that endpoint.
 const RegisterServiceTemplate = `
 {{.Pkg}}.Register{{.ServiceName}}Server(server, &{{.ServiceStruct}}{})
-reflection.Register(server) // this should perhaps be optional
-
 `
 
 const TestFileTemplate = `
@@ -110,3 +109,112 @@ func ({{.MethodCaller}}) {{.MethodName}} (ctx context.Context, in *{{.RequestTyp
 `
 
 const MethodCallerTemplate = `%s *%s`
+
+// todo get streaming server from proto gen.
+const BiDirectionalStream = `
+package {{.GoPkgName}}
+
+import (
+	"fmt"
+	"io"
+	"log"
+
+	{{.Imports}}
+)
+
+// {{.MethodName}} implements {{.FullName}}. // TODO get example.StreamingService_BiDirectionalStreamServer from proto.
+func ({{.MethodCaller}}) {{.MethodName}}(bidi example.StreamingService_BiDirectionalStreamServer) error {
+	ctx := bidi.Context()
+	for {
+
+		// exit if context is done
+		// or continue
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
+		req, err := bidi.Recv()
+		if err == io.EOF {
+			// return will close stream from server side
+			log.Println("exit")
+			return nil
+		}
+		if err != nil {
+			log.Printf("receive error %v", err)
+			continue
+		}
+		fmt.Println(req)
+
+		resp := &{{.ResponseType}}{}
+		if err := bidi.Send(resp); err != nil {
+			log.Printf("send error %v", err)
+		}
+	}
+}
+
+`
+
+const ServerStream = `
+package {{.GoPkgName}}
+
+import (
+	"time"
+	
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
+	{{.Imports}}
+)
+
+// {{.MethodName}} implements {{.FullName}}. // todo get ResponseStreamServer pkg.ServiceName_MethodNameServer?
+func ({{.MethodCaller}}) {{.MethodName}}(req *{{.RequestType}}, stream example.StreamingService_ResponseStreamServer) error {
+	ctx := stream.Context()
+	ticker := time.NewTicker(time.Second) // You should set this via config.
+	defer ticker.Stop()
+	for i := 0; i < 5; i++ {
+		if ticker != nil {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-ticker.C:
+			}
+		}
+		if err := stream.Send(&{{.ResponseType}}{}); err != nil {
+			return err
+		}
+	}
+	return status.Error(codes.Unimplemented, "yet to be implemented.")
+}
+
+`
+
+const ClientStream = `
+package {{.GoPkgName}}
+
+import (
+	"io"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
+	{{.Imports}}
+)
+
+// {{.MethodName}} implements {{.FullName}}. // todo get clientStream pkg.ServiceName_MethodNameServer?
+func ({{.MethodCaller}}) {{.MethodName}}(stream example.StreamingService_ClientStreamServer) error {
+	// ctx := stream.Context()
+	// var req *{{.RequestType}}
+	for {
+		_, err := stream.Recv()
+		if err == io.EOF {
+			return status.Error(codes.Unimplemented, stream.SendAndClose(&{{.ResponseType}}{}).Error())
+		}
+		if err != nil {
+			return err
+		}
+	}
+}
+
+`
