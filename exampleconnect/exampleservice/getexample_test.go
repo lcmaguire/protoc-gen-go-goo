@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"testing"
 
-	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 )
 
 func TestGetExample(t *testing.T) {

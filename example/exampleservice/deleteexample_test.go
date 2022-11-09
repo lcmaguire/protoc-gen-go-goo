@@ -8,8 +8,8 @@ import (
 	"google.golang.org/grpc/status"
 	"testing"
 
-	"github.com/lcmaguire/protoc-gen-go-goo/example"
-	"google.golang.org/protobuf/types/known/emptypb"
+	example "github.com/lcmaguire/protoc-gen-go-goo/example"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 func TestDeleteExample(t *testing.T) {

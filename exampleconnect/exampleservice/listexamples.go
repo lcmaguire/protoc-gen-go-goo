@@ -5,7 +5,7 @@ import (
 	"errors"
 	connect_go "github.com/bufbuild/connect-go"
 
-	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 )
 
 // ListExamples implements tutorial.ExampleService.ListExamples.

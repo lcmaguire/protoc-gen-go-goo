@@ -5,7 +5,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/lcmaguire/protoc-gen-go-goo/example"
+	example "github.com/lcmaguire/protoc-gen-go-goo/example"
 )
 
 // GetExample implements tutorial.ExampleService.GetExample.

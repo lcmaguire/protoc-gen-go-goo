@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/status"
 	"testing"
 
-	"github.com/lcmaguire/protoc-gen-go-goo/example"
+	example "github.com/lcmaguire/protoc-gen-go-goo/example"
 )
 
 func TestUpdateExample(t *testing.T) {

@@ -7,7 +7,7 @@ import (
 	connect_go "github.com/bufbuild/connect-go"
 	"io"
 
-	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 )
 
 // BiDirectionalStream implements tutorial.StreamingService.BiDirectionalStream.

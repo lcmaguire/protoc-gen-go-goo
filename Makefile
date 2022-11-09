@@ -56,6 +56,6 @@ curl-connect: # normal curl for connect service
 ## Streaming curls.
 grpc-connect-streaming: # grpc curl for connect streaming service
 	grpcurl \
-    -import-path ./exampleconnect -proto example.proto -plaintext \
+    -import-path ./exampleconnect -proto streaming.proto -plaintext \
     -d '{}' \
     localhost:8080 tutorial.StreamingService/ResponseStream
