@@ -1,7 +1,7 @@
 package exampleservice
 
 import (
-	"github.com/lcmaguire/protoc-gen-go-goo/example"
+	example "github.com/lcmaguire/protoc-gen-go-goo/example"
 )
 
 // ExampleService implements tutorial.ExampleService.

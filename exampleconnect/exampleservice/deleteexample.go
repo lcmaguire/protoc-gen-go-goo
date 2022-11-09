@@ -5,8 +5,8 @@ import (
 	"errors"
 	connect_go "github.com/bufbuild/connect-go"
 
-	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
-	"google.golang.org/protobuf/types/known/emptypb"
+	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // DeleteExample implements tutorial.ExampleService.DeleteExample.

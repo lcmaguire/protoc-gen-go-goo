@@ -13,7 +13,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
 )
 

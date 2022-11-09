@@ -1,7 +1,7 @@
 package streamingservice
 
 import (
-	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
+	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sampleconnect"
 )
 
 // StreamingService implements tutorial.StreamingService.

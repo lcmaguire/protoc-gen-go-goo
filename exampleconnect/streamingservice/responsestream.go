@@ -6,7 +6,7 @@ import (
 	connect_go "github.com/bufbuild/connect-go"
 	"time"
 
-	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
 )
 
 // ResponseStream implements tutorial.StreamingService.ResponseStream.

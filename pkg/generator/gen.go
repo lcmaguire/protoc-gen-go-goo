@@ -69,10 +69,10 @@ func (g *Generator) generateFilesForService(gen *protogen.Plugin, service *proto
 		responseType := getParamPKG(v.Output.GoIdent.GoImportPath.String()) + "." + v.Output.GoIdent.GoName
 
 		// get all unique imports. NOTE this will not be ordered as it is a map so file changes may appear due to imports being in different orders.
-		mapImports := map[string]any{string(v.Input.GoIdent.GoImportPath): nil, string(v.Output.GoIdent.GoImportPath): nil}
+		mapImports := map[string]string{string(v.Input.GoIdent.GoImportPath): getParamPKG(v.Input.GoIdent.GoImportPath.String()), string(v.Output.GoIdent.GoImportPath): getParamPKG(v.Output.GoIdent.GoImportPath.String())}
 		imports := ""
-		for k := range mapImports {
-			imports += fmt.Sprintf("\"%s\"\n", k)
+		for k, v := range mapImports {
+			imports += fmt.Sprintf("%s\"%s\"\n", v, k)
 		}
 
 		mData := methodData{
@@ -125,9 +125,11 @@ func (g *Generator) generateServiceFile(gen *protogen.Plugin, service *protogen.
 		rootGoIndent = protogen.GoIdent{GoImportPath: rootGoIndent.GoImportPath + "connect"}
 	}
 
+	imports := fmt.Sprintf("%s %s", pkg, rootGoIndent.GoImportPath.String())
+
 	s := serviceT{
 		GoPkgName:   strings.ToLower(string(service.Desc.Name())),
-		Imports:     rootGoIndent.GoImportPath.String(), // when called via string() it has no ""
+		Imports:     imports, // when called via string() it has no ""
 		ServiceName: string(service.Desc.Name()),
 		Pkg:         pkg,
 		FullName:    string(service.Desc.FullName()),
