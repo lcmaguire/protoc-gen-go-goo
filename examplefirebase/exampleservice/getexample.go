@@ -3,7 +3,6 @@ package exampleservice
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strings"
 
 	connect_go "github.com/bufbuild/connect-go"
@@ -16,20 +15,15 @@ import (
 // GetExample implements tutorial.ExampleService.GetExample.
 func (s *Service) GetExample(ctx context.Context, req *connect_go.Request[sample.GetExampleRequest]) (*connect_go.Response[sample.Example], error) {
 	authUnstripped := req.Header().Get("Authorization")
-	fmt.Println("req recieved")
-	fmt.Println(authUnstripped)
-
 	reqJWT := strings.Split(authUnstripped, "Bearer ")
 	if len(reqJWT) < 2 {
 		return nil, connect_go.NewError(connect_go.CodeUnauthenticated, errors.New("err"))
 	}
 
-	auth, err := s.auth.VerifyIDToken(ctx, reqJWT[1])
+	_, err := s.auth.VerifyIDToken(ctx, reqJWT[1])
 	if err != nil {
 		return nil, connect_go.NewError(connect_go.CodeUnauthenticated, err)
 	}
-	fmt.Println(auth.UID)
-	// s.auth.VerifyIDTokenAndCheckRevoked()
 
 	docSnap, err := s.firestore.Doc(req.Msg.Name).Get(ctx)
 	if err != nil {
