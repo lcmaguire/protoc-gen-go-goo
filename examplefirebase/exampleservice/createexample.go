@@ -28,12 +28,6 @@ func (s *Service) CreateExample(ctx context.Context, req *connect_go.Request[sam
 }
 
 // https://www.mongodb.com/docs/drivers/go/current/quick-start/
-func mongoManiac() (*mongo.Client, error) {
-
-	// mongodb://root:example@mongo:27017/
-
-	return mongo.NewClient(options.Client().ApplyURI("mongodb://root:example@mongo:27017/"))
-}
 
 func mongito() {
 	// uri := "mongodb://root:example@mongo:27017/"
@@ -45,7 +39,16 @@ func mongito() {
 	*/
 	fmt.Println("aqui")
 	fmt.Println(os.Getenv("MONGODB_URI"))
-	uri := "mongodb://root:example@mongo:27017/"
+	//uri := "mongodb://root:example@mongo:27017"
+	//uri := "mongodb://root:example@mongo"
+	uri := "mongodb://localhost:27017"
+	fmt.Println(uri)
+	//mongodb: //localhost:27017
+	//uri := "mongodb://root:example@mongo:127.0.0.1:27017"
+	/*
+		try old without / at end
+		try just mongo suffix
+	*/
 	// mongodb://root:example@127.0.0.1
 	cli, err := mongo.Connect(context.Background(), options.Client().ApplyURI(uri))
 	if err != nil {
@@ -56,25 +59,25 @@ func mongito() {
 	if err != nil {
 		panic(err)
 	}
-	/*
-		db := cli.Database("local")
-		err = db.CreateCollection(context.Background(), "colly")
-		if err != nil {
-			panic(err)
-		}
 
-		res, err := db.Collection("colly").InsertOne(context.Background(), sample.Example{
-			Name:        "nombre",
-			DisplayName: "dippy",
-		})
-		if err != nil {
-			panic(err)
-		}
+	db := cli.Database("local")
+	err = db.CreateCollection(context.Background(), "colly")
+	if err != nil {
+		fmt.Println(err)
+	}
 
-		fmt.Println(res)
+	res, err := db.Collection("colly").InsertOne(context.Background(), sample.Example{
+		Name:        "nombre",
+		DisplayName: "dippy",
+	})
+	if err != nil {
+		panic(err)
+	}
 
-		sing := db.Collection("colly").FindOne(context.Background(), res.InsertedID)
-		fmt.Println(sing)
-		// cli.ListDatabases()
-	*/
+	fmt.Println(res)
+
+	sing := db.Collection("colly").FindOne(context.Background(), res.InsertedID)
+	fmt.Println(sing)
+	// cli.ListDatabases()
+
 }
