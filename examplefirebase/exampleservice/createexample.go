@@ -45,8 +45,9 @@ func mongito() {
 	*/
 	fmt.Println("aqui")
 	fmt.Println(os.Getenv("MONGODB_URI"))
-
-	cli, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://root:example@127.0.0.1"))
+	uri := "mongodb://root:example@mongo:27017/"
+	// mongodb://root:example@127.0.0.1
+	cli, err := mongo.Connect(context.Background(), options.Client().ApplyURI(uri))
 	if err != nil {
 		panic(err)
 	}
