@@ -106,7 +106,7 @@ curl-firebase-create: # normal curl for connect service
 	curl \
     --header "Content-Type: application/json" \
 	--header "Authorization: Bearer asdfasdf" \
-    --data '{"name": "testCollection/myname", "display_name": "displayName"}' \
+    --data '{"name": "testCollection/moinaaayme", "display_name": "dispy"}' \
     http://localhost:8080/tutorial.ExampleService/CreateExample
 
 curl-firebase-get: # normal curl for connect service
@@ -136,3 +136,7 @@ curl-firebase-list: # normal curl for connect service
 	--header "Authorization: Bearer asdfasdf" \
     --data '{}' \
     http://localhost:8080/tutorial.ExampleService/ListExamples
+
+
+start-firebase-server:
+	go run ./examplefirebase/cmd/sample/main.go

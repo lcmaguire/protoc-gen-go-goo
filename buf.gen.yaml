@@ -6,6 +6,6 @@ plugins:
   - name: connect-go
     out: examplefirebase
     opt: paths=source_relative
-  - name: go-goo
-    out: examplefirebase
-    opt: tests=false,firebase=true,server=true,connectGo=true,generatedPath=github.com/lcmaguire/protoc-gen-go-goo/examplefirebase
+  #- name: go-goo
+  #  out: examplefirebase
+  #  opt: tests=false,firebase=true,server=true,connectGo=true,generatedPath=github.com/lcmaguire/protoc-gen-go-goo/examplefirebase
