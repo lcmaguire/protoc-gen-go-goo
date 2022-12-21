@@ -41,7 +41,7 @@ func mongito() {
 	fmt.Println(os.Getenv("MONGODB_URI"))
 	//uri := "mongodb://root:example@mongo:27017"
 	//uri := "mongodb://root:example@mongo"
-	uri := "mongodb://localhost:27017"
+	uri := "mongodb://root:example@localhost:27017"
 	fmt.Println(uri)
 	//mongodb: //localhost:27017
 	//uri := "mongodb://root:example@mongo:127.0.0.1:27017"
