@@ -2,6 +2,10 @@ package exampleservice
 
 import (
 	"context"
+	"fmt"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	connect_go "github.com/bufbuild/connect-go"
 
@@ -20,22 +24,44 @@ func (s *Service) CreateExample(ctx context.Context, req *connect_go.Request[sam
 	// create collection if it doesnt exist.
 
 	// todo handle database creation elsewhere.
+	// need to set _id to resource name, or filter from resource, name
 	mongoInsert, err := s.mongo.Database("local").Collection("colly").InsertOne(context.Background(), sample.Example{
 		Name:        "nombre",
 		DisplayName: "dippy",
 	})
 	if err != nil {
+		fmt.Println("write err.")
 		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 
-	sing := s.mongo.Database("local").Collection("colly").FindOne(context.Background(), mongoInsert.InsertedID)
-	if sing != nil {
+	/*
+		bsonProto, err := bson.Marshal(&sample.Example{})
+		if err != nil {
+			return nil, err
+		}
+	*/
+	//projection := &options.FindOneOptions{Projection: bsonProto}
+
+	//opts := options.Find().SetProjection(bson.D{{"_id", ""}})
+
+	projection := options.FindOne().SetProjection(bson.D{{"_id", ""}})
+	sing := s.mongo.Database("local").Collection("colly").FindOne(context.Background(), mongoInsert.InsertedID, projection)
+	if sing == nil {
 		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
+	if sing.Err() != nil {
+		fmt.Println("singerr")
+		return nil, sing.Err()
+	}
+	fmt.Println(sing)
+	var protoRes *sample.Example
+	// https://www.mongodb.com/docs/manual/reference/operator/projection/ specifies fields to return
+	// https://www.mongodb.com/docs/manual/reference/operator/
 
-	protoRes := &sample.Example{}
-	if err := sing.Decode(protoRes); err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, err)
+	err = sing.Decode(protoRes)
+	if err != nil {
+		fmt.Println("decodyBytes")
+		return nil, err
 	}
 
 	res := connect_go.NewResponse(protoRes) // hard coding for now assuming req and res type are same and Write is always successful.
