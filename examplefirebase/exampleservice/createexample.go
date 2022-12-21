@@ -44,6 +44,12 @@ func (s *Service) CreateExample(ctx context.Context, req *connect_go.Request[sam
 
 	//opts := options.Find().SetProjection(bson.D{{"_id", ""}})
 
+	type mongMessage struct {
+		_id         primative.ObjectID `bson:"_id" json:"id"`
+		name        string
+		DisplayName string
+	}
+
 	projection := options.FindOne().SetProjection(bson.D{{"_id", ""}})
 	sing := s.mongo.Database("local").Collection("colly").FindOne(context.Background(), mongoInsert.InsertedID, projection)
 	if sing == nil {
