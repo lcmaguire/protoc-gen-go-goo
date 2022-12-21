@@ -8,6 +8,8 @@ import (
 
 	v4 "firebase.google.com/go/v4"
 	"github.com/rs/cors"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/api/option"
@@ -52,9 +54,17 @@ func createNewService() *exampleservice.Service {
 	if err != nil {
 		log.Fatalf("error initializing app: %v\n", err)
 	}
-	return exampleservice.NewService(auth, firestore)
+
+	uri := "mongodb://root:example@localhost:27017"
+	cli, err := mongo.Connect(context.Background(), options.Client().ApplyURI(uri))
+	if err != nil {
+		panic(err)
+	}
+
+	return exampleservice.NewService(auth, firestore, cli)
 }
 
+// used to run locally.
 func newCORS() *cors.Cors {
 	// To let web developers play with the demo service from browsers, we need a
 	// very permissive CORS setup.
