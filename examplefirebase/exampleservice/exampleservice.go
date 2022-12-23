@@ -2,6 +2,7 @@ package exampleservice
 
 import (
 	"context"
+	"fmt"
 
 	firestore "cloud.google.com/go/firestore"
 	auth "firebase.google.com/go/v4/auth"
@@ -43,15 +44,20 @@ type FirestoreDb[T proto.Message] struct {
 func (f *FirestoreDb[T]) Get(ctx context.Context, name string) (res T, err error) {
 	docSnap, err := f.firestore.Doc(name).Get(ctx)
 	if err != nil {
+		fmt.Println("aqui")
 		return res, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 
 	if docSnap == nil || docSnap.Data() == nil {
+		fmt.Println("no doc")
 		return res, connect_go.NewError(connect_go.CodeNotFound, err)
 	}
-
-	if err := docSnap.DataTo(res); err != nil {
+	var out T
+	if err := docSnap.DataTo(&out); err != nil {
+		fmt.Println("unable to parse")
+		fmt.Println(out)
+		fmt.Println(docSnap)
 		return res, connect_go.NewError(connect_go.CodeInternal, err)
 	}
-	return res, err
+	return out, err
 }

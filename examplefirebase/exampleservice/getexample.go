@@ -2,6 +2,7 @@ package exampleservice
 
 import (
 	"context"
+	"fmt"
 
 	connect_go "github.com/bufbuild/connect-go"
 
@@ -39,6 +40,8 @@ func (s *Service) GetExample(ctx context.Context, req *connect_go.Request[sample
 
 	res, err := s.db.Get(ctx, req.Msg.Name)
 	if err != nil {
+		fmt.Println("asi")
+		fmt.Println(res)
 		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 

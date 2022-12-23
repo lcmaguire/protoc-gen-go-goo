@@ -141,3 +141,6 @@ curl-firebase-list: # normal curl for connect service
 start-with-emulator:
 	export FIRESTORE_EMULATOR_HOST=localhost:8090 
 	go run examplefirebase/cmd/sample/main.go 
+
+start:
+	go run examplefirebase/cmd/sample/main.go 
