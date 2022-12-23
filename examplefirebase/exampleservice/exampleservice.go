@@ -5,6 +5,7 @@ import (
 
 	firestore "cloud.google.com/go/firestore"
 	auth "firebase.google.com/go/v4/auth"
+	connect_go "github.com/bufbuild/connect-go"
 	"github.com/golang/protobuf/proto"
 	"github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"
 	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sampleconnect"
@@ -15,12 +16,14 @@ type Service struct {
 	sampleconnect.UnimplementedExampleServiceHandler
 	firestore *firestore.Client
 	auth      *auth.Client
+	db        Database
 }
 
 func NewService(auth *auth.Client, firestore *firestore.Client) *Service {
 	return &Service{
 		auth:      auth,
 		firestore: firestore,
+		db:        &FirestoreDb{firestore: firestore},
 	}
 }
 
@@ -37,9 +40,9 @@ type FirestoreDb struct {
 	firestore *firestore.Client
 }
 
-func (f *FirestoreDb) Get(ctx context.Context, name string) sample.Example {
+func (f *FirestoreDb) Get(ctx context.Context, name string) (proto.Message, error) {
 	//
-	docSnap, err := s.firestore.Doc(req.Msg.Name).Get(ctx)
+	docSnap, err := f.firestore.Doc(name).Get(ctx)
 	if err != nil {
 		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}

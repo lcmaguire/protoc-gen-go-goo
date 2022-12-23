@@ -23,21 +23,25 @@ func (s *Service) GetExample(ctx context.Context, req *connect_go.Request[sample
 		return nil, connect_go.NewError(connect_go.CodeUnauthenticated, err)
 	} */
 
-	/*
-		docSnap, err := s.firestore.Doc(req.Msg.Name).Get(ctx)
-		if err != nil {
-			return nil, connect_go.NewError(connect_go.CodeInternal, err)
-		}
+	/*docSnap, err := s.firestore.Doc(req.Msg.Name).Get(ctx)
+	if err != nil {
+		return nil, connect_go.NewError(connect_go.CodeInternal, err)
+	}
 
-		if docSnap == nil || docSnap.Data() == nil {
-			return nil, connect_go.NewError(connect_go.CodeNotFound, err)
-		}
+	if docSnap == nil || docSnap.Data() == nil {
+		return nil, connect_go.NewError(connect_go.CodeNotFound, err)
+	}
 
-		res := &sample.Example{}
-		if err := docSnap.DataTo(res); err != nil {
-			return nil, connect_go.NewError(connect_go.CodeInternal, err)
-		}
-	*/
+	res := &sample.Example{}
+	if err := docSnap.DataTo(res); err != nil {
+		return nil, connect_go.NewError(connect_go.CodeInternal, err)
+	}*/
+
+	res, err := s.db.Get(ctx, req.Msg.Name)
+	if err != nil {
+		return nil, connect_go.NewError(connect_go.CodeInternal, err)
+	}
+
 	return connect_go.NewResponse(res), nil
 }
 
