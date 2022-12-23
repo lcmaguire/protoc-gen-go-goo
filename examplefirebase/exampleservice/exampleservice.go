@@ -30,7 +30,7 @@ func NewService(auth *auth.Client, firestore *firestore.Client) *Service {
 
 type Database[T proto.Message] interface {
 	Get(ctx context.Context, name string) (T, error)
-	List(ctx context.Context) ([]T, error) // todo opts
+	List(ctx context.Context) (T, error) // todo opts, this is going to be a pain to to golang not recognising []interface as interface
 	Delete(ctx context.Context, name string) (T, error)
 	Create(ctx context.Context, msg T) (T, error)
 	Update(ctx context.Context, msg T) (T, error) // todo fieldmask
@@ -52,12 +52,13 @@ func (f *FirestoreDb[T]) Get(ctx context.Context, name string) (res T, err error
 		fmt.Println("no doc")
 		return res, connect_go.NewError(connect_go.CodeNotFound, err)
 	}
-	var out T
-	if err := docSnap.DataTo(&out); err != nil {
-		fmt.Println("unable to parse")
-		fmt.Println(out)
-		fmt.Println(docSnap)
+
+	if err := docSnap.DataTo(&res); err != nil {
 		return res, connect_go.NewError(connect_go.CodeInternal, err)
 	}
-	return out, err
+	return res, err
+}
+
+func (f *FirestoreDb[T]) Create(ctx context.Context, in T) (res T, err error) {
+	return res, connect_go.NewError(connect_go.CodeInternal, err)
 }
