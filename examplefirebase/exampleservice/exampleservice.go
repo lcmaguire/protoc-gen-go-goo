@@ -32,7 +32,7 @@ type Database[T proto.Message] interface {
 	Get(ctx context.Context, name string) (T, error)
 	List(ctx context.Context) (T, error) // todo opts, this is going to be a pain to to golang not recognising []interface as interface
 	Delete(ctx context.Context, name string) (T, error)
-	Create(ctx context.Context, msg T) (T, error)
+	Create(ctx context.Context, name string, msg T) (T, error)
 	Update(ctx context.Context, msg T) (T, error) // todo fieldmask
 }
 
@@ -59,6 +59,10 @@ func (f *FirestoreDb[T]) Get(ctx context.Context, name string) (res T, err error
 	return res, err
 }
 
-func (f *FirestoreDb[T]) Create(ctx context.Context, in T) (res T, err error) {
-	return res, connect_go.NewError(connect_go.CodeInternal, err)
+func (f *FirestoreDb[T]) Create(ctx context.Context, name string, in T) (res T, err error) {
+	_, err = f.firestore.Doc(name).Create(ctx, in)
+	if err != nil {
+		return res, connect_go.NewError(connect_go.CodeInternal, err)
+	}
+	return res, nil
 }
