@@ -59,6 +59,26 @@ func (f *FirestoreDb[T]) Get(ctx context.Context, name string) (res T, err error
 	return res, err
 }
 
+func (f *FirestoreDb[T]) List(ctx context.Context) (res []T, err error) {
+	// collection path should be const
+	docSnaps, err := f.firestore.Collection("testCollection").Documents(ctx).GetAll() // hardcoding collection for now. Should probably be MessageName plural.
+	if err != nil {
+		return nil, connect_go.NewError(connect_go.CodeInternal, err)
+	}
+	for _, v := range docSnaps {
+		if v == nil || v.Data() == nil {
+			return nil, connect_go.NewError(connect_go.CodeInternal, err)
+		}
+
+		var data T
+		if err := v.DataTo(&data); err != nil {
+			return nil, connect_go.NewError(connect_go.CodeInternal, err)
+		}
+		res = append(res, data)
+	}
+	return res, nil
+}
+
 func (f *FirestoreDb[T]) Create(ctx context.Context, name string, in T) (res T, err error) {
 	_, err = f.firestore.Doc(name).Create(ctx, in)
 	if err != nil {
