@@ -136,3 +136,8 @@ curl-firebase-list: # normal curl for connect service
 	--header "Authorization: Bearer asdfasdf" \
     --data '{}' \
     http://localhost:8080/tutorial.ExampleService/ListExamples
+
+
+start-with-emulator:
+	export FIRESTORE_EMULATOR_HOST=localhost:8090 
+	go run examplefirebase/cmd/sample/main.go 

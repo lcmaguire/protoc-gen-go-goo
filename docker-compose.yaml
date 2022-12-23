@@ -1,0 +1,10 @@
+version: "3.2"
+services:
+  firestore_emulator:
+    image: mtlynch/firestore-emulator
+    environment:
+      - FIRESTORE_PROJECT_ID=dummy-project-id
+      - PORT=8090
+    ports:
+      - 8200:8200
+  
