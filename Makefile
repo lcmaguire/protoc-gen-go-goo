@@ -66,7 +66,7 @@ grpc-connect-streaming: # grpc curl for connect streaming service
 grpc-firebase-create: 
 	grpcurl \
     -import-path ./examplefirebase -proto firebase.proto -plaintext \
-    -d '{"name": "testCollection/myname", "display_name": "displayName"}' \
+    -d '{"name": "testCollection/asdfasdf", "display_name": "displayName"}' \
     localhost:8080 tutorial.ExampleService/CreateExample
 
 grpc-firebase-get:
@@ -106,7 +106,7 @@ curl-firebase-create: # normal curl for connect service
 	curl \
     --header "Content-Type: application/json" \
 	--header "Authorization: Bearer asdfasdf" \
-    --data '{"name": "testCollection/myname", "display_name": "displayName"}' \
+    --data '{"name": "testCollection/asdfasdf", "display_name": "displayName"}' \
     http://localhost:8080/tutorial.ExampleService/CreateExample
 
 curl-firebase-get: # normal curl for connect service
