@@ -9,8 +9,9 @@ import (
 	"github.com/rs/cors"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
+	"google.golang.org/api/option"
 
-	"cloud.google.com/go/firestore"
+	v4 "firebase.google.com/go/v4"
 
 	// your protoPathHere
 	"github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sampleconnect"
@@ -39,24 +40,21 @@ func main() {
 
 // createNewService creates a new Service, exampleservice pkg is hard coded for now
 func createNewService() *exampleservice.Service {
-	//opt := option.WithCredentialsFile("./test-firebase-service-account.json")
-	// set
-	//app, err := v4.NewApp(context.Background(), nil, opt)
-	// set env var to localhost:8080
-	/*app, err := v4.NewApp(context.Background(), nil)
+	opt := option.WithCredentialsFile("./test-firebase-service-account.json")
+	// todo check config struct
+	app, err := v4.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Fatalf("error initializing app: %v\n", err)
 	}
 	auth, err := app.Auth(context.Background())
 	if err != nil {
 		log.Fatalf("error initializing app: %v\n", err)
-	}*/
-	//fstore, err := app.Firestore(context.Background())
-	fstore, err := firestore.NewClient(context.Background(), "dummy-project-id")
+	}
+	fstore, err := app.Firestore(context.Background())
 	if err != nil {
 		log.Fatalf("error initializing app: %v\n", err)
 	}
-	return exampleservice.NewService(nil, fstore)
+	return exampleservice.NewService(auth, fstore)
 }
 
 func newCORS() *cors.Cors {
