@@ -16,44 +16,42 @@ type Service struct {
 	sampleconnect.UnimplementedExampleServiceHandler
 	firestore *firestore.Client
 	auth      *auth.Client
-	db        Database
+	db        Database[*sample.Example]
 }
 
 func NewService(auth *auth.Client, firestore *firestore.Client) *Service {
 	return &Service{
 		auth:      auth,
 		firestore: firestore,
-		db:        &FirestoreDb{firestore: firestore},
+		db:        &FirestoreDb[*sample.Example]{firestore: firestore},
 	}
 }
 
-type Database interface {
-	Get(ctx context.Context, name string) (proto.Message, error)
-	List(ctx context.Context) (proto.Message, error) // todo opts
-	Delete(ctx context.Context, name string) (proto.Message, error)
-	Create(ctx context.Context, msg proto.Message) (proto.Message, error)
-	Update(ctx context.Context, msg proto.Message) (proto.Message, error) // todo fieldmask
+type Database[T proto.Message] interface {
+	Get(ctx context.Context, name string) (T, error)
+	List(ctx context.Context) ([]T, error) // todo opts
+	Delete(ctx context.Context, name string) (T, error)
+	Create(ctx context.Context, msg T) (T, error)
+	Update(ctx context.Context, msg T) (T, error) // todo fieldmask
 }
 
-type FirestoreDb struct {
-	Database
+type FirestoreDb[T proto.Message] struct {
+	Database[T]
 	firestore *firestore.Client
 }
 
-func (f *FirestoreDb) Get(ctx context.Context, name string) (proto.Message, error) {
-	//
+func (f *FirestoreDb[T]) Get(ctx context.Context, name string) (res T, err error) {
 	docSnap, err := f.firestore.Doc(name).Get(ctx)
 	if err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, err)
+		return res, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 
 	if docSnap == nil || docSnap.Data() == nil {
-		return nil, connect_go.NewError(connect_go.CodeNotFound, err)
+		return res, connect_go.NewError(connect_go.CodeNotFound, err)
 	}
 
-	res := &sample.Example{}
 	if err := docSnap.DataTo(res); err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, err)
+		return res, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 	return res, err
 }
