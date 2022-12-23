@@ -29,8 +29,9 @@ func NewService(auth *auth.Client, firestore *firestore.Client) *Service {
 }
 
 type Database[T proto.Message] interface {
+	// may need some path for collection + UID stuff passed in for user controlled data.
 	Get(ctx context.Context, name string) (T, error)
-	List(ctx context.Context) ([]T, error) // todo opts, this is going to be a pain to to golang not recognising []interface as interface
+	List(ctx context.Context) ([]T, error) // todo opts + for return list params
 	Delete(ctx context.Context, name string) (T, error)
 	Create(ctx context.Context, name string, msg T) (T, error)
 	Update(ctx context.Context, name string, msg T) (T, error) // todo fieldmask
