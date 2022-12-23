@@ -33,7 +33,7 @@ type Database[T proto.Message] interface {
 	List(ctx context.Context) ([]T, error) // todo opts, this is going to be a pain to to golang not recognising []interface as interface
 	Delete(ctx context.Context, name string) (T, error)
 	Create(ctx context.Context, name string, msg T) (T, error)
-	Update(ctx context.Context, msg T) (T, error) // todo fieldmask
+	Update(ctx context.Context, name string, msg T) (T, error) // todo fieldmask
 }
 
 type FirestoreDb[T proto.Message] struct {
@@ -73,4 +73,12 @@ func (f *FirestoreDb[T]) Delete(ctx context.Context, name string) (res T, err er
 		return res, connect_go.NewError(connect_go.CodeInternal, err)
 	}
 	return res, nil
+}
+
+func (f *FirestoreDb[T]) Update(ctx context.Context, name string, in T) (res T, err error) {
+	_, err = f.firestore.Doc(name).Set(ctx, in)
+	if err != nil {
+		return res, connect_go.NewError(connect_go.CodeInternal, err)
+	}
+	return in, nil
 }
