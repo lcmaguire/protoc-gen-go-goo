@@ -37,6 +37,7 @@ type Database[T proto.Message] interface {
 	Update(ctx context.Context, name string, msg T) (T, error) // todo fieldmask
 }
 
+// gen below when message firebase included in cfg for plugin
 type FirestoreDb[T proto.Message] struct {
 	Database[T]
 	firestore *firestore.Client
