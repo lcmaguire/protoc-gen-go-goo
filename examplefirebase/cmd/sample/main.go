@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/rs/cors"
+
 	v4 "firebase.google.com/go/v4"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
