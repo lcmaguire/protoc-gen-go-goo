@@ -9,7 +9,7 @@ plugins:
   - name: go-goo
     out: examplefirebase
     opt:
-    - tests=true
+    - tests=false # todo set up test gen for firebase stuff
     - server=true
     - connectGo=true 
     - generatedPath=github.com/lcmaguire/protoc-gen-go-goo/examplefirebase
