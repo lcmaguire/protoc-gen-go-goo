@@ -25,9 +25,9 @@ type methodData struct {
 	GoPkgName    string                        // name for pkg. Same as ServiceName but lower case.
 	methodDesc   protoreflect.MethodDescriptor // for extra data from methodDescriptor.
 
-	// for firebase trial
-	ProtoPkg    string
-	MessageName string
+	// Workaround for List for firebase option
+	ProtoPkg    string // pkg name of the Proto message we are using.
+	MessageName string // the name of the Message that will be used by the service. e.g. MyMessage
 }
 
 func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protogen.GeneratedFile {
