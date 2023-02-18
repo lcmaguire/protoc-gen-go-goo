@@ -13,7 +13,7 @@ func (s *Service) ListExamples(ctx context.Context, req *connect_go.Request[samp
 	if err != nil {
 		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
-	arr := []*sample.Example{}
+	arr := make([]*sample.Example, 0)
 	for _, v := range docSnaps {
 		if v == nil || v.Data() == nil {
 			return nil, connect_go.NewError(connect_go.CodeInternal, err)

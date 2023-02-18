@@ -22,12 +22,11 @@ type methodData struct {
 	FullName     string
 	Imports      string
 	Pkg          string                        // proto pkg
-	GoPkgName    string                        // name for pkg. Same as ServiceName but lower case.
+	GoPkgName    string                        // PKG for where service will go. Same as ServiceName but lower case.
 	methodDesc   protoreflect.MethodDescriptor // for extra data from methodDescriptor.
 
-	// for firebase trial
-	ProtoPkg    string
-	MessageName string
+	// Workaround for List for firebase option
+	MessageName string // the name of the Message that will be used by the service. e.g. MyMessage
 }
 
 func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protogen.GeneratedFile {
@@ -46,9 +45,12 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 			data.template = templates.FirebaseGetMethod
 		case strings.HasPrefix(data.MethodName, "List"):
 			// TODO look at having below be done cleaner ( perhaps via annotations).
+			a := data.methodDesc.Output().Name()
+			b := strings.TrimPrefix(string(a), "List")
+			b = strings.TrimSuffix(b, "Response")
+			data.MessageName = b
+
 			data.template = templates.FirebaseListMethod
-			data.ProtoPkg = data.Pkg
-			data.MessageName = "Example" // hard coding for now.
 		}
 	}
 
