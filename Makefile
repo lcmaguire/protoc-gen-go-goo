@@ -34,15 +34,15 @@ grpc-curl-reflect: # should return endpoints
 
 grpc-curl-connect: # grpc curl for connect service
 	grpcurl \
-    -import-path ./exampleconnect -proto example.proto -plaintext \
+    -import-path ./examplefirebase -proto example.proto -plaintext \
     -d '{}' \
-    localhost:8080 tutorial.ExampleService/GetExample
+    localhost:8080 tutorial.ExampleService/ListExamples
 	
 curl-connect: # normal curl for connect service
 	curl \
     --header "Content-Type: application/json" \
-    --data '{"name": "testCollection/oMeuNombre"}' \
-    http://localhost:8080/tutorial.ExampleService/GetExample
+    --data '{}' \
+    http://localhost:8080/tutorial.ExampleService/ListExamples
 
 ## Streaming curls.
 grpc-connect-streaming: # grpc curl for connect streaming service

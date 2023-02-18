@@ -22,11 +22,11 @@ type methodData struct {
 	FullName     string
 	Imports      string
 	Pkg          string                        // proto pkg
-	GoPkgName    string                        // name for pkg. Same as ServiceName but lower case.
+	GoPkgName    string                        // PKG for where service will go. Same as ServiceName but lower case.
 	methodDesc   protoreflect.MethodDescriptor // for extra data from methodDescriptor.
 
 	// Workaround for List for firebase option
-	ProtoPkg    string // pkg name of the Proto message we are using.
+	ProtoPkg    string // pkg name of the Proto message we are using. What is diff between this and Pkg.
 	MessageName string // the name of the Message that will be used by the service. e.g. MyMessage
 }
 

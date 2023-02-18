@@ -160,12 +160,12 @@ func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{
 	if err != nil {
 		return nil, connect_go.NewError(connect_go.CodeInternal, err)
 	}
-	arr := []*{{.ProtoPkg}}.{{.MessageName}}{}
+	arr := make([]*{{.Pkg}}.{{.MessageName}}, 0)
 	for _, v := range docSnaps {
 		if v == nil || v.Data() == nil {
 			return nil, connect_go.NewError(connect_go.CodeInternal, err)
 		}
-		var data *{{.ProtoPkg}}.{{.MessageName}}
+		var data *{{.Pkg}}.{{.MessageName}}
 		if err := v.DataTo(&data); err != nil {
 			return nil, connect_go.NewError(connect_go.CodeInternal, err)
 		}
