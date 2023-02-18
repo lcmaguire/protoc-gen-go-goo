@@ -2,15 +2,12 @@ package main
 
 import (
 	"context"
-	"log"
-	"net/http"
-	"os"
-
 	v4 "firebase.google.com/go/v4"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/api/option"
-
+	"log"
+	"net/http"
 	// your protoPathHere
 	"github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sampleconnect"
 	// your services
@@ -33,7 +30,7 @@ func main() {
 
 // createNewService creates a new Service, exampleservice pkg is hard coded for now
 func createNewService() *exampleservice.Service {
-	opt := option.WithCredentialsFile(os.Getenv("firebase-service-key")) // todo have this be env var
+	opt := option.WithCredentialsFile("your-firebase-service-account.json") // todo have this be env var
 	app, err := v4.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Fatalf("error initializing app: %v\n", err)
