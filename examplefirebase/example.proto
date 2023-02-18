@@ -1,0 +1,30 @@
+// todo make AIP approved
+service ExampleService {
+    rpc CreateExample(Example) returns (Example);
+    rpc GetExample(GetExampleRequest) returns (Example);
+    rpc ListExamples(ListExampleRequest) returns (ListExampleResponse);
+    rpc UpdateExample(Example) returns (Example);
+    rpc DeleteExample(DeleteExampleRequest) returns (google.protobuf.Empty);
+}
+
+message Example {
+    string name = 1;
+    string display_name = 2;
+    bool active = 3;
+    int32 count = 4;
+}
+
+message GetExampleRequest {
+    string name = 1;
+}
+
+message DeleteExampleRequest {
+    string name = 1;
+}
+
+message ListExampleRequest {
+}
+
+message ListExampleResponse {
+    repeated Example examples = 1;
+}
