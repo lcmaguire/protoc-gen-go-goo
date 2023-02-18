@@ -41,7 +41,7 @@ grpc-curl-connect: # grpc curl for connect service
 curl-connect: # normal curl for connect service
 	curl \
     --header "Content-Type: application/json" \
-    --data '{}' \
+    --data '{"name": "testCollection/oMeuNombre"}' \
     http://localhost:8080/tutorial.ExampleService/GetExample
 
 ## Streaming curls.
@@ -50,3 +50,6 @@ grpc-connect-streaming: # grpc curl for connect streaming service
     -import-path ./exampleconnect -proto streaming.proto -plaintext \
     -d '{}' \
     localhost:8080 tutorial.StreamingService/ResponseStream
+
+run-firebase:
+	go run ./examplefirebase/cmd/sample/main.go

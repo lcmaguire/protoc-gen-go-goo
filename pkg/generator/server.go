@@ -30,6 +30,10 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file FileInfo, services
 		resgisteredServices += templates.ExecuteTemplate(g.RegisterServerTemplate, serviceHandleData{Pkg: pkg, ServiceName: serviceName.ServiceName, ServiceStruct: strings.ToLower(serviceName.ServiceName) + "." + serviceName.ServiceName})
 	}
 
+	if g.Firebase { // TODO have this determined in generator.
+		g.ServerTemplate = templates.FirebaseServer
+	}
+
 	f.P(templates.ExecuteTemplate(g.ServerTemplate, serverData{Services: resgisteredServices, GenImportPath: genCodeImportPath, ServiceImports: servicePaths, FullName: fullNames}))
 }
 
