@@ -20,8 +20,6 @@ func main() {
 	// The generated constructors return a path and a plain net/http
 	// handler.
 	mux.Handle(sampleconnect.NewExampleServiceHandler(createNewService()))
-	// export FIREBASE_AUTH_EMULATOR_HOST="localhost:9099"
-	// export FIRESTORE_EMULATOR_HOST="localhost:8080"
 	err := http.ListenAndServe(
 		"localhost:8080", // auth host users 8080
 		// For gRPC clients, it's convenient to support HTTP/2 without TLS. You can
@@ -32,7 +30,7 @@ func main() {
 }
 // createNewService creates a new Service, exampleservice pkg is hard coded for now
 func createNewService() *exampleservice.Service {
-	opt := option.WithCredentialsFile("./test-firebase-service-account.json")
+	opt := option.WithCredentialsFile(os.Getenv("firebase-service-key")) // todo have this be env var
 	app, err := v4.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Fatalf("error initializing app: %v\n", err)
