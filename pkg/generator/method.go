@@ -26,7 +26,6 @@ type methodData struct {
 	methodDesc   protoreflect.MethodDescriptor // for extra data from methodDescriptor.
 
 	// Workaround for List for firebase option
-	ProtoPkg    string // pkg name of the Proto message we are using. What is diff between this and Pkg.
 	MessageName string // the name of the Message that will be used by the service. e.g. MyMessage
 }
 
@@ -47,7 +46,6 @@ func (g *Generator) genRpcMethod(gen *protogen.Plugin, data methodData) *protoge
 		case strings.HasPrefix(data.MethodName, "List"):
 			// TODO look at having below be done cleaner ( perhaps via annotations).
 			data.template = templates.FirebaseListMethod
-			data.ProtoPkg = data.Pkg
 			data.MessageName = "Example" // hard coding for now.
 		}
 	}
