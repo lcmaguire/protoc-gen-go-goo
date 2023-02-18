@@ -1,3 +1,10 @@
+syntax = "proto3";
+package tutorial; // todo rename and re gen to be different package
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample";
+
 // todo make AIP approved
 service ExampleService {
     rpc CreateExample(Example) returns (Example);
