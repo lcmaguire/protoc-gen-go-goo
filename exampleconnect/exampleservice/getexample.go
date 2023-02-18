@@ -9,7 +9,7 @@ import (
 )
 
 // GetExample implements tutorial.ExampleService.GetExample.
-func (e *ExampleService) GetExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
+func (s *ExampleService) GetExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
 	res := connect_go.NewResponse(&sample.SearchResponse{})
 	return res, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
 }

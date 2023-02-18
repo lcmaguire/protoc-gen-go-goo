@@ -9,7 +9,7 @@ import (
 )
 
 // ListExamples implements tutorial.ExampleService.ListExamples.
-func (e *ExampleService) ListExamples(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
+func (s *ExampleService) ListExamples(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
 	res := connect_go.NewResponse(&sample.SearchResponse{})
 	return res, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
 }

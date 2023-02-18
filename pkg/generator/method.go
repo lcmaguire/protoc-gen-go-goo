@@ -14,6 +14,7 @@ type methodData struct {
 	template     string
 	testTemplate string
 	MethodCaller string
+	ServiceChar  string
 	ServiceName  string
 	MethodName   string
 	RequestType  string // input param.

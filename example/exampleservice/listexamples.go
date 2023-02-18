@@ -9,6 +9,6 @@ import (
 )
 
 // ListExamples implements tutorial.ExampleService.ListExamples.
-func (e *ExampleService) ListExamples(ctx context.Context, in *example.SearchRequest) (out *example.SearchResponse, err error) {
+func (s *ExampleService) ListExamples(ctx context.Context, in *example.SearchRequest) (out *example.SearchResponse, err error) {
 	return nil, status.Error(codes.Unimplemented, "yet to be implemented")
 }

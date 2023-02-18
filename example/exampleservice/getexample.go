@@ -9,6 +9,6 @@ import (
 )
 
 // GetExample implements tutorial.ExampleService.GetExample.
-func (e *ExampleService) GetExample(ctx context.Context, in *example.SearchRequest) (out *example.SearchResponse, err error) {
+func (s *ExampleService) GetExample(ctx context.Context, in *example.SearchRequest) (out *example.SearchResponse, err error) {
 	return nil, status.Error(codes.Unimplemented, "yet to be implemented")
 }

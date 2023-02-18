@@ -84,7 +84,7 @@ import (
 )
 
 // {{.MethodName}} implements {{.FullName}}.
-func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
+func (s * {{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	res := connect_go.NewResponse(&{{.ResponseType}}{})
 	return res, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
 }
@@ -104,7 +104,7 @@ import (
 )
 
 // {{.MethodName}} implements {{.FullName}}.
-func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, stream *connect_go.ClientStream[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
+func (s * {{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *connect_go.ClientStream[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
 	for stream.Receive() {
 		// implement logic here.
 	}
@@ -130,7 +130,7 @@ import (
 )
 
 // {{.MethodName}} implements {{.FullName}}.
-func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}], stream *connect_go.ServerStream[{{.ResponseType}}]) error {
+func (s * {{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}], stream *connect_go.ServerStream[{{.ResponseType}}]) error {
 	ticker := time.NewTicker(time.Second) // You should set this via config.
 	defer ticker.Stop()
 	for i := 0; i < 5 ; i++ {
@@ -164,7 +164,7 @@ import (
 )
 
 // {{.MethodName}} implements {{.FullName}}.
-func ({{.MethodCaller}}) {{.MethodName}}(ctx context.Context, stream *connect_go.BidiStream[{{.RequestType}}, {{.ResponseType}}]) error {
+func (s * {{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *connect_go.BidiStream[{{.RequestType}}, {{.ResponseType}}]) error {
 	for {
 		if err := ctx.Err(); err != nil {
 			return err

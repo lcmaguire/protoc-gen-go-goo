@@ -10,7 +10,7 @@ import (
 )
 
 // DeleteExample implements tutorial.ExampleService.DeleteExample.
-func (e *ExampleService) DeleteExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[emptypb.Empty], error) {
+func (s *ExampleService) DeleteExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[emptypb.Empty], error) {
 	res := connect_go.NewResponse(&emptypb.Empty{})
 	return res, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
 }

@@ -1,12 +1,3 @@
-# generate only goo generated code, can also include --go-goo_opt= (must have already generated grpc and go code)
-gen-goo:
-	go install . && \
-	protoc -I=example \
-	--go-goo_out=example \
-	--go-goo_opt=tests=true,server=true,connectGo=false \
-	example/*.proto 
-
-
 # generates grpc-go, go proto code and goo generated code, can also include -go-goo_opt=
 grpc-go-goo:
 	go install . && \

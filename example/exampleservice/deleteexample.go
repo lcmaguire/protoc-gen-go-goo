@@ -10,6 +10,6 @@ import (
 )
 
 // DeleteExample implements tutorial.ExampleService.DeleteExample.
-func (e *ExampleService) DeleteExample(ctx context.Context, in *example.SearchRequest) (out *emptypb.Empty, err error) {
+func (s *ExampleService) DeleteExample(ctx context.Context, in *example.SearchRequest) (out *emptypb.Empty, err error) {
 	return nil, status.Error(codes.Unimplemented, "yet to be implemented")
 }
