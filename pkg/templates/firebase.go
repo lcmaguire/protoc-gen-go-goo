@@ -52,7 +52,7 @@ package {{.GoPkgName}}
 import (
 	firestore "cloud.google.com/go/firestore"
 	auth "firebase.google.com/go/v4/auth"
-	sampleconnect "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sampleconnect"
+	{{.Imports}}
 )
 // Service implements {{.FullName}}.
 type Service struct {
