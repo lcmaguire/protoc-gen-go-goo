@@ -30,12 +30,34 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file FileInfo, services
 		resgisteredServices += templates.ExecuteTemplate(g.RegisterServerTemplate, serviceHandleData{Pkg: pkg, ServiceName: serviceName.ServiceName, ServiceStruct: strings.ToLower(serviceName.ServiceName) + "." + serviceName.ServiceName})
 	}
 
-	if g.Firebase { // TODO have this determined in generator.
-		g.ServerTemplate = templates.FirebaseServer
+	/*
+		if g.Firebase { // TODO have this determined in generator.
+			g.ServerTemplate = templates.FirebaseServer
+		}
+	*/
+
+	severTemplateData := serverData{
+		Services:       resgisteredServices,
+		GenImportPath:  genCodeImportPath,
+		ServiceImports: servicePaths,
+		FullName:       fullNames,
 	}
 
-	f.P(templates.ExecuteTemplate(g.ServerTemplate, serverData{Services: resgisteredServices, GenImportPath: genCodeImportPath, ServiceImports: servicePaths, FullName: fullNames}))
+	if g.Firebase {
+		// disgusting work around
+		severTemplateData.ServiceName = strings.ToLower(services[0].ServiceName)
+	}
+	f.P(templates.ExecuteTemplate(g.ServerTemplate, severTemplateData))
 }
+
+/*
+	within server it will hardcode mux.Handle(sampleconnect.NewExampleServiceHandler(createNewService()))
+
+	and the pkg exampleservice
+
+	import is also off.
+
+*/
 
 // serverData for registering specific services
 type serviceHandleData struct {
@@ -50,4 +72,8 @@ type serverData struct {
 	GenImportPath  string // import path for the service.
 	ServiceImports string // what is imported by the func
 	FullName       string // used for reflection
+
+	// TODO fix below
+	// Temporary workaround to get Firebase working.
+	ServiceName string // the go pkg import path. SHOULD be removed in future.
 }

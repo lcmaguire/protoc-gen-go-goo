@@ -3,8 +3,8 @@ package exampleservice
 import (
 	"context"
 	connect_go "github.com/bufbuild/connect-go"
-	sample "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	sample "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"
 )
 
 // DeleteExample implements tutorial.ExampleService.DeleteExample.

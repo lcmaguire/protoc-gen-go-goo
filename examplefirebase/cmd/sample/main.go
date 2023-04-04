@@ -18,9 +18,12 @@ func main() {
 	mux := http.NewServeMux()
 	// The generated constructors return a path and a plain net/http
 	// handler.
+	// change to be RegisteredServices template
+
 	mux.Handle(sampleconnect.NewExampleServiceHandler(createNewService()))
+
 	err := http.ListenAndServe(
-		"localhost:8080", // auth host users 8080
+		"localhost:8080", // todo have this not be hardcoded.
 		// For gRPC clients, it's convenient to support HTTP/2 without TLS. You can
 		// avoid x/net/http2 by using http.ListenAndServeTLS.
 		h2c.NewHandler(mux, &http2.Server{}),
@@ -28,7 +31,6 @@ func main() {
 	log.Fatalf("listen failed: " + err.Error())
 }
 
-// createNewService creates a new Service, exampleservice pkg is hard coded for now
 func createNewService() *exampleservice.Service {
 	opt := option.WithCredentialsFile("your-firebase-service-account.json") // todo have this be env var
 	app, err := v4.NewApp(context.Background(), nil, opt)
