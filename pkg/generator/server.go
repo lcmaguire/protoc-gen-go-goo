@@ -34,8 +34,19 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file FileInfo, services
 		g.ServerTemplate = templates.FirebaseServer
 	}
 
-	f.P(templates.ExecuteTemplate(g.ServerTemplate, serverData{Services: resgisteredServices, GenImportPath: genCodeImportPath, ServiceImports: servicePaths, FullName: fullNames}))
+	severTemplateData := serverData{Services: resgisteredServices, GenImportPath: genCodeImportPath, ServiceImports: servicePaths, FullName: fullNames}
+
+	f.P(templates.ExecuteTemplate(g.ServerTemplate, severTemplateData))
 }
+
+/*
+	within server it will hardcode mux.Handle(sampleconnect.NewExampleServiceHandler(createNewService()))
+
+	and the pkg exampleservice
+
+	import is also off.
+
+*/
 
 // serverData for registering specific services
 type serviceHandleData struct {
