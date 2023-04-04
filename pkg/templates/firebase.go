@@ -30,6 +30,34 @@ func main() {
 	)
 	log.Fatalf("listen failed: " + err.Error())
 }
+
+func createNewService() *{{.Pkg}}.Service {
+	opt := option.WithCredentialsFile("your-firebase-service-account.json") // todo have this be env var
+	app, err := v4.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		log.Fatalf("error initializing app: %v\n", err)
+	}
+	auth, err := app.Auth(context.Background())
+	if err != nil {
+		log.Fatalf("error initializing app: %v\n", err)
+	}
+	firestore, err := app.Firestore(context.Background())
+	if err != nil {
+		log.Fatalf("error initializing app: %v\n", err)
+	}
+	return {{.Pkg}}.NewService(auth, firestore)
+}
+`
+
+// TODO have createNewService() be for each different pkg
+const ServiceHandleTemplate = `
+
+mux.Handle({{.Pkg}}connect.New{{.ServiceName}}Handler(createNewService()))
+`
+
+// TODO change createNewService to take in PKG param.
+const FirebaseInitServiceHandlerTemplate = `
+
 // createNewService creates a new Service, exampleservice pkg is hard coded for now Will need this to be done in a loop.
 func createNewService() *{{.Pkg}}.Service {
 	opt := option.WithCredentialsFile("your-firebase-service-account.json") // todo have this be env var

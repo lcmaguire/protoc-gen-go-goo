@@ -52,6 +52,11 @@ func (g *Generator) Run(gen *protogen.Plugin) error {
 			g.RegisterServerTemplate = connectgo.ServiceHandleTemplate
 		}
 
+		if g.Firebase {
+			g.ServerTemplate = templates.FirebaseServer
+			g.RegisterServerTemplate = templates.FirebaseInitServiceHandlerTemplate
+		}
+
 		for _, v := range fileInfoMap {
 			g.generateServer(gen, v, servicesData)
 		}
