@@ -54,7 +54,7 @@ func (g *Generator) Run(gen *protogen.Plugin) error {
 
 		if g.Firebase {
 			g.ServerTemplate = templates.FirebaseServer
-			g.RegisterServerTemplate = templates.FirebaseInitServiceHandlerTemplate
+			g.RegisterServerTemplate = templates.ServiceHandleTemplate
 		}
 
 		for _, v := range fileInfoMap {

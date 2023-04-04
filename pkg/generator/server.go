@@ -45,9 +45,8 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file FileInfo, services
 
 	if g.Firebase {
 		// disgusting work around
-		severTemplateData.Pkg = pkg
+		severTemplateData.ServiceName = strings.ToLower(services[0].ServiceName)
 	}
-
 	f.P(templates.ExecuteTemplate(g.ServerTemplate, severTemplateData))
 }
 
@@ -76,5 +75,5 @@ type serverData struct {
 
 	// TODO fix below
 	// Temporary workaround to get Firebase working.
-	Pkg string // the go pkg import path. SHOULD be removed in future.
+	ServiceName string // the go pkg import path. SHOULD be removed in future.
 }

@@ -31,7 +31,7 @@ func main() {
 	log.Fatalf("listen failed: " + err.Error())
 }
 
-func createNewService() *{{.Pkg}}.Service {
+func createNewService() *{{.ServiceName}}.Service {
 	opt := option.WithCredentialsFile("your-firebase-service-account.json") // todo have this be env var
 	app, err := v4.NewApp(context.Background(), nil, opt)
 	if err != nil {
@@ -45,7 +45,7 @@ func createNewService() *{{.Pkg}}.Service {
 	if err != nil {
 		log.Fatalf("error initializing app: %v\n", err)
 	}
-	return {{.Pkg}}.NewService(auth, firestore)
+	return {{.ServiceName}}.NewService(auth, firestore)
 }
 `
 
