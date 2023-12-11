@@ -2,22 +2,22 @@ package exampleservice
 
 import (
 	"context"
-	connect_go "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/assert"
 	"testing"
 
-	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+	sample "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"
 )
 
 func TestListExamples(t *testing.T) {
 	t.Parallel()
 	service := &ExampleService{}
-	req := &connect_go.Request[sample.SearchRequest]{
-		Msg: &sample.SearchRequest{},
+	req := &connect.Request[sample.ListExampleRequest]{
+		Msg: &sample.ListExampleRequest{},
 	}
 	res, err := service.ListExamples(context.Background(), req)
 	assert.Error(t, err)
-	assert.Equal(t, connect_go.CodeUnimplemented, connect_go.CodeOf(err))
-	proto.Equal(res.Msg, &sample.SearchResponse{})
+	assert.Equal(t, connect.CodeUnimplemented, connect.CodeOf(err))
+	proto.Equal(res.Msg, &sample.ListExampleResponse{})
 }

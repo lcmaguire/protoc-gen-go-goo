@@ -27,6 +27,11 @@ make buf:
 	go install 
 	buf generate
 
+# same as above but easier to manage via buf files.
+make buf-connect:
+	go install 
+	buf generate --template buf.gen.connect.yaml
+	
 grpc-curl: # should return unimplemented
 	grpcurl -plaintext localhost:8080 tutorial.ExampleService/GetExample
 

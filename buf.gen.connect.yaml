@@ -1,16 +1,16 @@
 version: v1
 plugins:
   - name: go
-    out: examplefirebase/sample
+    out: exampleconnect/sample
     opt: paths=source_relative
   - name: connect-go
-    out: examplefirebase
+    out: exampleconnect
     opt: paths=source_relative
   - name: go-goo
-    out: examplefirebase
+    out: exampleconnect
     opt:
-    - tests=false # todo set up test gen for firebase stuff
+    - tests=true
     - server=true
     - connectGo=true 
-    - generatedPath=github.com/lcmaguire/protoc-gen-go-goo/examplefirebase
-    - firebase=true
+    - generatedPath=github.com/lcmaguire/protoc-gen-go-goo/exampleconnect
+    - firebase=false

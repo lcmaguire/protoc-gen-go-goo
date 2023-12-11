@@ -5,10 +5,10 @@
 package sampleconnect
 
 import (
+	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	connect_go "github.com/bufbuild/connect-go"
-	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+	sample "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
 	strings "strings"
@@ -19,20 +19,45 @@ import (
 // generated with a version of connect newer than the one compiled into your binary. You can fix the
 // problem by either regenerating this code with an older version of connect or updating the connect
 // version compiled into your binary.
-const _ = connect_go.IsAtLeastVersion0_1_0
+const _ = connect.IsAtLeastVersion0_1_0
 
 const (
 	// ExampleServiceName is the fully-qualified name of the ExampleService service.
 	ExampleServiceName = "tutorial.ExampleService"
 )
 
+// These constants are the fully-qualified names of the RPCs defined in this package. They're
+// exposed at runtime as Spec.Procedure and as the final two segments of the HTTP route.
+//
+// Note that these are different from the fully-qualified method names used by
+// google.golang.org/protobuf/reflect/protoreflect. To convert from these constants to
+// reflection-formatted method names, remove the leading slash and convert the remaining slash to a
+// period.
+const (
+	// ExampleServiceCreateExampleProcedure is the fully-qualified name of the ExampleService's
+	// CreateExample RPC.
+	ExampleServiceCreateExampleProcedure = "/tutorial.ExampleService/CreateExample"
+	// ExampleServiceGetExampleProcedure is the fully-qualified name of the ExampleService's GetExample
+	// RPC.
+	ExampleServiceGetExampleProcedure = "/tutorial.ExampleService/GetExample"
+	// ExampleServiceListExamplesProcedure is the fully-qualified name of the ExampleService's
+	// ListExamples RPC.
+	ExampleServiceListExamplesProcedure = "/tutorial.ExampleService/ListExamples"
+	// ExampleServiceUpdateExampleProcedure is the fully-qualified name of the ExampleService's
+	// UpdateExample RPC.
+	ExampleServiceUpdateExampleProcedure = "/tutorial.ExampleService/UpdateExample"
+	// ExampleServiceDeleteExampleProcedure is the fully-qualified name of the ExampleService's
+	// DeleteExample RPC.
+	ExampleServiceDeleteExampleProcedure = "/tutorial.ExampleService/DeleteExample"
+)
+
 // ExampleServiceClient is a client for the tutorial.ExampleService service.
 type ExampleServiceClient interface {
-	CreateExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	GetExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	ListExamples(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	UpdateExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	DeleteExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[emptypb.Empty], error)
+	CreateExample(context.Context, *connect.Request[sample.Example]) (*connect.Response[sample.Example], error)
+	GetExample(context.Context, *connect.Request[sample.GetExampleRequest]) (*connect.Response[sample.Example], error)
+	ListExamples(context.Context, *connect.Request[sample.ListExampleRequest]) (*connect.Response[sample.ListExampleResponse], error)
+	UpdateExample(context.Context, *connect.Request[sample.Example]) (*connect.Response[sample.Example], error)
+	DeleteExample(context.Context, *connect.Request[sample.DeleteExampleRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewExampleServiceClient constructs a client for the tutorial.ExampleService service. By default,
@@ -42,32 +67,32 @@ type ExampleServiceClient interface {
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
-func NewExampleServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) ExampleServiceClient {
+func NewExampleServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ExampleServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &exampleServiceClient{
-		createExample: connect_go.NewClient[sample.SearchRequest, sample.SearchResponse](
+		createExample: connect.NewClient[sample.Example, sample.Example](
 			httpClient,
-			baseURL+"/tutorial.ExampleService/CreateExample",
+			baseURL+ExampleServiceCreateExampleProcedure,
 			opts...,
 		),
-		getExample: connect_go.NewClient[sample.SearchRequest, sample.SearchResponse](
+		getExample: connect.NewClient[sample.GetExampleRequest, sample.Example](
 			httpClient,
-			baseURL+"/tutorial.ExampleService/GetExample",
+			baseURL+ExampleServiceGetExampleProcedure,
 			opts...,
 		),
-		listExamples: connect_go.NewClient[sample.SearchRequest, sample.SearchResponse](
+		listExamples: connect.NewClient[sample.ListExampleRequest, sample.ListExampleResponse](
 			httpClient,
-			baseURL+"/tutorial.ExampleService/ListExamples",
+			baseURL+ExampleServiceListExamplesProcedure,
 			opts...,
 		),
-		updateExample: connect_go.NewClient[sample.SearchRequest, sample.SearchResponse](
+		updateExample: connect.NewClient[sample.Example, sample.Example](
 			httpClient,
-			baseURL+"/tutorial.ExampleService/UpdateExample",
+			baseURL+ExampleServiceUpdateExampleProcedure,
 			opts...,
 		),
-		deleteExample: connect_go.NewClient[sample.SearchRequest, emptypb.Empty](
+		deleteExample: connect.NewClient[sample.DeleteExampleRequest, emptypb.Empty](
 			httpClient,
-			baseURL+"/tutorial.ExampleService/DeleteExample",
+			baseURL+ExampleServiceDeleteExampleProcedure,
 			opts...,
 		),
 	}
@@ -75,45 +100,45 @@ func NewExampleServiceClient(httpClient connect_go.HTTPClient, baseURL string, o
 
 // exampleServiceClient implements ExampleServiceClient.
 type exampleServiceClient struct {
-	createExample *connect_go.Client[sample.SearchRequest, sample.SearchResponse]
-	getExample    *connect_go.Client[sample.SearchRequest, sample.SearchResponse]
-	listExamples  *connect_go.Client[sample.SearchRequest, sample.SearchResponse]
-	updateExample *connect_go.Client[sample.SearchRequest, sample.SearchResponse]
-	deleteExample *connect_go.Client[sample.SearchRequest, emptypb.Empty]
+	createExample *connect.Client[sample.Example, sample.Example]
+	getExample    *connect.Client[sample.GetExampleRequest, sample.Example]
+	listExamples  *connect.Client[sample.ListExampleRequest, sample.ListExampleResponse]
+	updateExample *connect.Client[sample.Example, sample.Example]
+	deleteExample *connect.Client[sample.DeleteExampleRequest, emptypb.Empty]
 }
 
 // CreateExample calls tutorial.ExampleService.CreateExample.
-func (c *exampleServiceClient) CreateExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
+func (c *exampleServiceClient) CreateExample(ctx context.Context, req *connect.Request[sample.Example]) (*connect.Response[sample.Example], error) {
 	return c.createExample.CallUnary(ctx, req)
 }
 
 // GetExample calls tutorial.ExampleService.GetExample.
-func (c *exampleServiceClient) GetExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
+func (c *exampleServiceClient) GetExample(ctx context.Context, req *connect.Request[sample.GetExampleRequest]) (*connect.Response[sample.Example], error) {
 	return c.getExample.CallUnary(ctx, req)
 }
 
 // ListExamples calls tutorial.ExampleService.ListExamples.
-func (c *exampleServiceClient) ListExamples(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
+func (c *exampleServiceClient) ListExamples(ctx context.Context, req *connect.Request[sample.ListExampleRequest]) (*connect.Response[sample.ListExampleResponse], error) {
 	return c.listExamples.CallUnary(ctx, req)
 }
 
 // UpdateExample calls tutorial.ExampleService.UpdateExample.
-func (c *exampleServiceClient) UpdateExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
+func (c *exampleServiceClient) UpdateExample(ctx context.Context, req *connect.Request[sample.Example]) (*connect.Response[sample.Example], error) {
 	return c.updateExample.CallUnary(ctx, req)
 }
 
 // DeleteExample calls tutorial.ExampleService.DeleteExample.
-func (c *exampleServiceClient) DeleteExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[emptypb.Empty], error) {
+func (c *exampleServiceClient) DeleteExample(ctx context.Context, req *connect.Request[sample.DeleteExampleRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteExample.CallUnary(ctx, req)
 }
 
 // ExampleServiceHandler is an implementation of the tutorial.ExampleService service.
 type ExampleServiceHandler interface {
-	CreateExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	GetExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	ListExamples(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	UpdateExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error)
-	DeleteExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[emptypb.Empty], error)
+	CreateExample(context.Context, *connect.Request[sample.Example]) (*connect.Response[sample.Example], error)
+	GetExample(context.Context, *connect.Request[sample.GetExampleRequest]) (*connect.Response[sample.Example], error)
+	ListExamples(context.Context, *connect.Request[sample.ListExampleRequest]) (*connect.Response[sample.ListExampleResponse], error)
+	UpdateExample(context.Context, *connect.Request[sample.Example]) (*connect.Response[sample.Example], error)
+	DeleteExample(context.Context, *connect.Request[sample.DeleteExampleRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewExampleServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -121,55 +146,69 @@ type ExampleServiceHandler interface {
 //
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
-func NewExampleServiceHandler(svc ExampleServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
-	mux := http.NewServeMux()
-	mux.Handle("/tutorial.ExampleService/CreateExample", connect_go.NewUnaryHandler(
-		"/tutorial.ExampleService/CreateExample",
+func NewExampleServiceHandler(svc ExampleServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	exampleServiceCreateExampleHandler := connect.NewUnaryHandler(
+		ExampleServiceCreateExampleProcedure,
 		svc.CreateExample,
 		opts...,
-	))
-	mux.Handle("/tutorial.ExampleService/GetExample", connect_go.NewUnaryHandler(
-		"/tutorial.ExampleService/GetExample",
+	)
+	exampleServiceGetExampleHandler := connect.NewUnaryHandler(
+		ExampleServiceGetExampleProcedure,
 		svc.GetExample,
 		opts...,
-	))
-	mux.Handle("/tutorial.ExampleService/ListExamples", connect_go.NewUnaryHandler(
-		"/tutorial.ExampleService/ListExamples",
+	)
+	exampleServiceListExamplesHandler := connect.NewUnaryHandler(
+		ExampleServiceListExamplesProcedure,
 		svc.ListExamples,
 		opts...,
-	))
-	mux.Handle("/tutorial.ExampleService/UpdateExample", connect_go.NewUnaryHandler(
-		"/tutorial.ExampleService/UpdateExample",
+	)
+	exampleServiceUpdateExampleHandler := connect.NewUnaryHandler(
+		ExampleServiceUpdateExampleProcedure,
 		svc.UpdateExample,
 		opts...,
-	))
-	mux.Handle("/tutorial.ExampleService/DeleteExample", connect_go.NewUnaryHandler(
-		"/tutorial.ExampleService/DeleteExample",
+	)
+	exampleServiceDeleteExampleHandler := connect.NewUnaryHandler(
+		ExampleServiceDeleteExampleProcedure,
 		svc.DeleteExample,
 		opts...,
-	))
-	return "/tutorial.ExampleService/", mux
+	)
+	return "/tutorial.ExampleService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case ExampleServiceCreateExampleProcedure:
+			exampleServiceCreateExampleHandler.ServeHTTP(w, r)
+		case ExampleServiceGetExampleProcedure:
+			exampleServiceGetExampleHandler.ServeHTTP(w, r)
+		case ExampleServiceListExamplesProcedure:
+			exampleServiceListExamplesHandler.ServeHTTP(w, r)
+		case ExampleServiceUpdateExampleProcedure:
+			exampleServiceUpdateExampleHandler.ServeHTTP(w, r)
+		case ExampleServiceDeleteExampleProcedure:
+			exampleServiceDeleteExampleHandler.ServeHTTP(w, r)
+		default:
+			http.NotFound(w, r)
+		}
+	})
 }
 
 // UnimplementedExampleServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedExampleServiceHandler struct{}
 
-func (UnimplementedExampleServiceHandler) CreateExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.ExampleService.CreateExample is not implemented"))
+func (UnimplementedExampleServiceHandler) CreateExample(context.Context, *connect.Request[sample.Example]) (*connect.Response[sample.Example], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tutorial.ExampleService.CreateExample is not implemented"))
 }
 
-func (UnimplementedExampleServiceHandler) GetExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.ExampleService.GetExample is not implemented"))
+func (UnimplementedExampleServiceHandler) GetExample(context.Context, *connect.Request[sample.GetExampleRequest]) (*connect.Response[sample.Example], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tutorial.ExampleService.GetExample is not implemented"))
 }
 
-func (UnimplementedExampleServiceHandler) ListExamples(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.ExampleService.ListExamples is not implemented"))
+func (UnimplementedExampleServiceHandler) ListExamples(context.Context, *connect.Request[sample.ListExampleRequest]) (*connect.Response[sample.ListExampleResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tutorial.ExampleService.ListExamples is not implemented"))
 }
 
-func (UnimplementedExampleServiceHandler) UpdateExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.ExampleService.UpdateExample is not implemented"))
+func (UnimplementedExampleServiceHandler) UpdateExample(context.Context, *connect.Request[sample.Example]) (*connect.Response[sample.Example], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tutorial.ExampleService.UpdateExample is not implemented"))
 }
 
-func (UnimplementedExampleServiceHandler) DeleteExample(context.Context, *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[emptypb.Empty], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("tutorial.ExampleService.DeleteExample is not implemented"))
+func (UnimplementedExampleServiceHandler) DeleteExample(context.Context, *connect.Request[sample.DeleteExampleRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tutorial.ExampleService.DeleteExample is not implemented"))
 }

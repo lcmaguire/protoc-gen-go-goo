@@ -3,13 +3,13 @@ package exampleservice
 import (
 	"context"
 	"errors"
-	connect_go "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 
-	sample "github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/sample"
+	sample "github.com/lcmaguire/protoc-gen-go-goo/examplefirebase/sample"
 )
 
 // UpdateExample implements tutorial.ExampleService.UpdateExample.
-func (s *ExampleService) UpdateExample(ctx context.Context, req *connect_go.Request[sample.SearchRequest]) (*connect_go.Response[sample.SearchResponse], error) {
-	res := connect_go.NewResponse(&sample.SearchResponse{})
-	return res, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
+func (s *ExampleService) UpdateExample(ctx context.Context, req *connect.Request[sample.Example]) (*connect.Response[sample.Example], error) {
+	res := connect.NewResponse(&sample.Example{})
+	return res, connect.NewError(connect.CodeUnimplemented, errors.New("not yet implemented"))
 }

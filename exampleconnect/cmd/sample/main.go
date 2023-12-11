@@ -1,3 +1,5 @@
+// comment
+
 package main
 
 import (
@@ -13,7 +15,6 @@ import (
 
 	// your services
 	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/exampleservice"
-	"github.com/lcmaguire/protoc-gen-go-goo/exampleconnect/streamingservice"
 )
 
 func main() {
@@ -21,7 +22,6 @@ func main() {
 
 	reflector := grpcreflect.NewStaticReflector(
 		"tutorial.ExampleService",
-		"tutorial.StreamingService",
 	)
 
 	mux.Handle(grpcreflect.NewHandlerV1(reflector))
@@ -31,8 +31,6 @@ func main() {
 	// handler.
 
 	mux.Handle(sampleconnect.NewExampleServiceHandler(&exampleservice.ExampleService{}))
-
-	mux.Handle(sampleconnect.NewStreamingServiceHandler(&streamingservice.StreamingService{}))
 
 	err := http.ListenAndServe(
 		"localhost:8080",
