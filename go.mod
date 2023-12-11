@@ -3,14 +3,15 @@ module github.com/lcmaguire/protoc-gen-go-goo
 go 1.19
 
 require (
+	connectrpc.com/connect v1.13.0
 	github.com/bufbuild/connect-go v1.0.0
 	github.com/bufbuild/connect-grpcreflect-go v1.0.0
 	github.com/golang/protobuf v1.5.2
 	github.com/stretchr/testify v1.8.1
-	golang.org/x/net v0.0.0-20221014081412-f15817d10f9b
+	golang.org/x/net v0.17.0
 	google.golang.org/api v0.103.0
 	google.golang.org/grpc v1.50.1
-	google.golang.org/protobuf v1.28.1
+	google.golang.org/protobuf v1.31.0
 )
 
 require (
@@ -41,8 +42,8 @@ require (
 	firebase.google.com/go/v4 v4.10.0
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8 // indirect
-	golang.org/x/text v0.4.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/text v0.13.0 // indirect
 	google.golang.org/genproto v0.0.0-20221118155620-16455021b5e6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

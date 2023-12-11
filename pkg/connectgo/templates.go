@@ -78,15 +78,15 @@ package {{.GoPkgName}}
 import (
 	"context"
 	"errors"
-	connect_go "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 
 	{{.Imports}}
 )
 
 // {{.MethodName}} implements {{.FullName}}.
-func (s * {{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
-	res := connect_go.NewResponse(&{{.ResponseType}}{})
-	return res, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
+func (s * {{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect.Request[{{.RequestType}}]) (*connect.Response[{{.ResponseType}}], error) {
+	res := connect.NewResponse(&{{.ResponseType}}{})
+	return res, connect.NewError(connect.CodeUnimplemented, errors.New("not yet implemented"))
 }
 
 `
@@ -98,21 +98,21 @@ package {{.GoPkgName}}
 import (
 	"context"
 	"errors"
-	connect_go "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 
 	{{.Imports}}
 )
 
 // {{.MethodName}} implements {{.FullName}}.
-func (s * {{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *connect_go.ClientStream[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
+func (s * {{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *connect.ClientStream[{{.RequestType}}]) (*connect.Response[{{.ResponseType}}], error) {
 	for stream.Receive() {
 		// implement logic here.
 	}
 	if err := stream.Err(); err != nil {
-	  return nil, connect_go.NewError(connect_go.CodeUnknown, err)
+	  return nil, connect.NewError(connect.CodeUnknown, err)
 	}
-	res := connect_go.NewResponse(&{{.ResponseType}}{})
-	return res, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented")) 
+	res := connect.NewResponse(&{{.ResponseType}}{})
+	return res, connect.NewError(connect.CodeUnimplemented, errors.New("not yet implemented")) 
   }  
 `
 
@@ -123,14 +123,14 @@ package {{.GoPkgName}}
 import (
 	"context"
 	"errors"
-	connect_go "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	"time"
 
 	{{.Imports}}
 )
 
 // {{.MethodName}} implements {{.FullName}}.
-func (s * {{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}], stream *connect_go.ServerStream[{{.ResponseType}}]) error {
+func (s * {{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect.Request[{{.RequestType}}], stream *connect.ServerStream[{{.ResponseType}}]) error {
 	ticker := time.NewTicker(time.Second) // You should set this via config.
 	defer ticker.Stop()
 	for i := 0; i < 5 ; i++ {
@@ -145,7 +145,7 @@ func (s * {{.ServiceName}}) {{.MethodName}}(ctx context.Context, req *connect_go
 			return err
 		}
 	}
-	return connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
+	return connect.NewError(connect.CodeUnimplemented, errors.New("not yet implemented"))
 }
 `
 
@@ -157,14 +157,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	connect_go "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	"io"
 
 	{{.Imports}}
 )
 
 // {{.MethodName}} implements {{.FullName}}.
-func (s * {{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *connect_go.BidiStream[{{.RequestType}}, {{.ResponseType}}]) error {
+func (s * {{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *connect.BidiStream[{{.RequestType}}, {{.ResponseType}}]) error {
 	for {
 		if err := ctx.Err(); err != nil {
 			return err
@@ -179,7 +179,7 @@ func (s * {{.ServiceName}}) {{.MethodName}}(ctx context.Context, stream *connect
 		if err := stream.Send(&{{.ResponseType}}{}); err != nil {
 			return err
 		}
-		connect_go.NewError(connect_go.CodeUnimplemented, errors.New("not yet implemented"))
+		connect.NewError(connect.CodeUnimplemented, errors.New("not yet implemented"))
 	}
 }
 `
@@ -190,7 +190,7 @@ package {{.GoPkgName}}
 
 import (
 	"context"
-	connect_go "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -201,12 +201,12 @@ import (
 	func Test{{.MethodName}}(t *testing.T){
 		t.Parallel()
 		service := &{{.ServiceName}}{}
-		req := &connect_go.Request[{{.RequestType}}]{
+		req := &connect.Request[{{.RequestType}}]{
 			Msg: &{{.RequestType}}{},
 		}
 		res, err := service.{{.MethodName}}(context.Background(), req)
 		assert.Error(t, err)
-		assert.Equal(t, connect_go.CodeUnimplemented, connect_go.CodeOf(err))
+		assert.Equal(t, connect.CodeUnimplemented, connect.CodeOf(err))
 		proto.Equal(res.Msg, &{{.ResponseType}}{})
 	}
 	`
@@ -219,7 +219,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	connect_go "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io"
@@ -248,7 +248,7 @@ func Test{{.MethodName}}(t *testing.T){
 	grpcClient := {{.Pkg}}connect.New{{.ServiceName}}Client(
 		server.Client(),
 		server.URL,
-		connect_go.WithGRPC(),
+		connect.WithGRPC(),
 	)
 	clients := []{{.Pkg}}connect.{{.ServiceName}}Client{connectClient, grpcClient}
 
@@ -293,7 +293,7 @@ package {{.GoPkgName}}
 
 import (
 	"context"
-	connect_go "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"net/http"
@@ -321,7 +321,7 @@ func Test{{.MethodName}}(t *testing.T) {
 	grpcClient := {{.Pkg}}connect.New{{.ServiceName}}Client(
 		server.Client(),
 		server.URL,
-		connect_go.WithGRPC(),
+		connect.WithGRPC(),
 	)
 	clients := []{{.Pkg}}connect.{{.ServiceName}}Client{connectClient, grpcClient}
 
@@ -341,7 +341,7 @@ func Test{{.MethodName}}(t *testing.T) {
 		wg.Wait()
 		res, err := stream.CloseAndReceive()
 		require.Error(t, err)
-		assert.Equal(t, connect_go.CodeUnimplemented, connect_go.CodeOf(err))
+		assert.Equal(t, connect.CodeUnimplemented, connect.CodeOf(err))
 		assert.Nil(t, res)
 	}
 }
@@ -353,7 +353,7 @@ package {{.GoPkgName}}
 
 import (
 	"context"
-	connect_go "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -380,14 +380,14 @@ func Test{{.MethodName}}(t *testing.T) {
 	grpcClient := {{.Pkg}}connect.New{{.ServiceName}}Client(
 		server.Client(),
 		server.URL,
-		connect_go.WithGRPC(),
+		connect.WithGRPC(),
 	)
 	clients := []{{.Pkg}}connect.{{.ServiceName}}Client{connectClient, grpcClient}
 
 	t.Run("response_stream", func(t *testing.T) {
 		total := 0
 		for _, client := range clients {
-			request := connect_go.NewRequest(&{{.RequestType}}{})
+			request := connect.NewRequest(&{{.RequestType}}{})
 			stream, err := client.{{.MethodName}}(context.Background(), request)
 			assert.Nil(t, err)
 			for stream.Receive() {
@@ -396,7 +396,7 @@ func Test{{.MethodName}}(t *testing.T) {
 			assert.Nil(t, err)
 			assert.Error(t, stream.Err())
 			assert.Nil(t, stream.Close())
-			assert.Equal(t, connect_go.CodeUnimplemented, connect_go.CodeOf(stream.Err()))
+			assert.Equal(t, connect.CodeUnimplemented, connect.CodeOf(stream.Err()))
 			assert.True(t, total > 0)
 		}
 	})

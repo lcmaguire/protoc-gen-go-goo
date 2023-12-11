@@ -102,16 +102,16 @@ const FirebaseCreateMethod = `
 package {{.GoPkgName}}
 import (
 	"context"
-	connect_go "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	{{.Imports}}
 )
 // {{.MethodName}} implements {{.FullName}}.
-func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
+func (s *Service) {{.MethodName}}(ctx context.Context, req *connect.Request[{{.RequestType}}]) (*connect.Response[{{.ResponseType}}], error) {
 	_, err := s.firestore.Doc(req.Msg.Name).Create(ctx, req.Msg)
 	if err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, err)
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	res := connect_go.NewResponse(req.Msg) // hard coding for now assuming req and res type are same and Write is always successful.
+	res := connect.NewResponse(req.Msg) // hard coding for now assuming req and res type are same and Write is always successful.
 	return res, nil
 }
 `
@@ -120,16 +120,16 @@ const FirebaseUpdateMethod = `
 package {{.GoPkgName}}
 import (
 	"context"
-	connect_go "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	{{.Imports}}
 )
 // {{.MethodName}} implements {{.FullName}}.
-func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
+func (s *Service) {{.MethodName}}(ctx context.Context, req *connect.Request[{{.RequestType}}]) (*connect.Response[{{.ResponseType}}], error) {
 	_, err := s.firestore.Doc(req.Msg.Name).Set(ctx, req.Msg) // .Update may be useful with FieldMask.
 	if err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, err)
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	res := connect_go.NewResponse(req.Msg) // hard coding for now assuming req and res type are same and Write is always successful.
+	res := connect.NewResponse(req.Msg) // hard coding for now assuming req and res type are same and Write is always successful.
 	return res, nil
 }
 `
@@ -138,16 +138,16 @@ const FirebaseDeleteMethod = `
 package {{.GoPkgName}}
 import (
 	"context"
-	connect_go "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	{{.Imports}}
 )
 // {{.MethodName}} implements {{.FullName}}.
-func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
+func (s *Service) {{.MethodName}}(ctx context.Context, req *connect.Request[{{.RequestType}}]) (*connect.Response[{{.ResponseType}}], error) {
 	_, err := s.firestore.Doc(req.Msg.Name).Delete(ctx)
 	if err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, err)
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	return connect_go.NewResponse(&{{.ResponseType}}{}), nil
+	return connect.NewResponse(&{{.ResponseType}}{}), nil
 }
 `
 
@@ -155,24 +155,24 @@ const FirebaseGetMethod = `
 package {{.GoPkgName}}
 import (
 	"context"
-	connect_go "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	
 	{{.Imports}}
 )
 // {{.MethodName}} implements {{.FullName}}.
-func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
+func (s *Service) {{.MethodName}}(ctx context.Context, req *connect.Request[{{.RequestType}}]) (*connect.Response[{{.ResponseType}}], error) {
 	docSnap, err := s.firestore.Doc(req.Msg.Name).Get(ctx)
 	if err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, err)
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	if docSnap == nil || docSnap.Data() == nil {
-		return nil, connect_go.NewError(connect_go.CodeNotFound, err)
+		return nil, connect.NewError(connect.CodeNotFound, err)
 	}
 	res := &{{.ResponseType}}{}
 	if err := docSnap.DataTo(res); err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, err)
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	return connect_go.NewResponse(res), nil
+	return connect.NewResponse(res), nil
 }
 `
 
@@ -180,28 +180,28 @@ const FirebaseListMethod = `
 package {{.GoPkgName}}
 import (
 	"context"
-	connect_go "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	
 	{{.Imports}}
 )
 // {{.MethodName}} implements {{.FullName}}.
-func (s *Service) {{.MethodName}}(ctx context.Context, req *connect_go.Request[{{.RequestType}}]) (*connect_go.Response[{{.ResponseType}}], error) {
+func (s *Service) {{.MethodName}}(ctx context.Context, req *connect.Request[{{.RequestType}}]) (*connect.Response[{{.ResponseType}}], error) {
 	docSnaps, err := s.firestore.Collection("testCollection").Documents(ctx).GetAll() // hardcoding collection for now. Should probably be MessageName plural.
 	if err != nil {
-		return nil, connect_go.NewError(connect_go.CodeInternal, err)
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	arr := make([]*{{.Pkg}}.{{.MessageName}}, 0)
 	for _, v := range docSnaps {
 		if v == nil || v.Data() == nil {
-			return nil, connect_go.NewError(connect_go.CodeInternal, err)
+			return nil, connect.NewError(connect.CodeInternal, err)
 		}
 		var data *{{.Pkg}}.{{.MessageName}}
 		if err := v.DataTo(&data); err != nil {
-			return nil, connect_go.NewError(connect_go.CodeInternal, err)
+			return nil, connect.NewError(connect.CodeInternal, err)
 		}
 		arr = append(arr, data)
 	}
-	return connect_go.NewResponse(
+	return connect.NewResponse(
 		&{{.ResponseType}}{
 			{{.MessageName}}s: arr,
 		},

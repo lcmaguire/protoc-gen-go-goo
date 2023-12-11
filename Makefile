@@ -24,7 +24,8 @@ connect-go-goo:
 
 # same as above but easier to manage via buf files.
 make buf:
-	go install . && buf generate
+	go install 
+	buf generate
 
 grpc-curl: # should return unimplemented
 	grpcurl -plaintext localhost:8080 tutorial.ExampleService/GetExample

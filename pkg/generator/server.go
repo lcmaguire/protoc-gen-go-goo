@@ -11,6 +11,7 @@ import (
 func (g *Generator) generateServer(gen *protogen.Plugin, file FileInfo, services []serviceT) {
 	fileName := strings.ToLower("cmd" + "/" + file.GoPackageName + "/" + "main.go")
 	f := gen.NewGeneratedFile(fileName, protogen.GoImportPath("."))
+	f.P("// comment")
 
 	genCodeImportPath := g.GoModPath
 	if g.ConnectGo { // maybe this should be handled prior or by the incoming g.GoModPath or template.
@@ -29,12 +30,6 @@ func (g *Generator) generateServer(gen *protogen.Plugin, file FileInfo, services
 		fullNames += fmt.Sprintf("\"%s\",\n", serviceName.FullName)
 		resgisteredServices += templates.ExecuteTemplate(g.RegisterServerTemplate, serviceHandleData{Pkg: pkg, ServiceName: serviceName.ServiceName, ServiceStruct: strings.ToLower(serviceName.ServiceName) + "." + serviceName.ServiceName})
 	}
-
-	/*
-		if g.Firebase { // TODO have this determined in generator.
-			g.ServerTemplate = templates.FirebaseServer
-		}
-	*/
 
 	severTemplateData := serverData{
 		Services:       resgisteredServices,
